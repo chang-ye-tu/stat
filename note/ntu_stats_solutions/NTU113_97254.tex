@@ -1,0 +1,809 @@
+\documentclass[addpoints,12pt,a4paper]{exam}
+\printanswers
+\usepackage[AutoFakeBold,AutoFakeSlant]{xeCJK}
+\setCJKmainfont[AutoFakeSlant=.1,AutoFakeBold=2]{Noto Serif CJK TC} 
+\usepackage{amsthm,amsmath,amssymb,graphicx,hyperref,booktabs,tabularx,enumitem,multirow}
+\pagestyle{headandfoot}
+\firstpageheadrule
+\firstpageheader{題號：296}{國立臺灣大學113學年度碩士班招生考試試題}{統計學(H)}
+\runningheader{題號：296}{國立臺灣大學113學年度碩士班招生考試試題}{統計學(H)}
+\runningheadrule
+\firstpagefooter{}{第\thepage\ 頁（共\numpages 頁）}{}
+\runningfooter{}{第\thepage\ 頁（共\numpages 頁）}{}
+\footrule
+\extraheadheight{-8mm}
+\extrafootheight{-10mm}
+\extrawidth{35mm}
+\newcommand{\ie}{\,\Longrightarrow\,}
+\newcommand{\ifff}{\,\Longleftrightarrow\,}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\plim}{\mathrm{plim}}
+\newcommand{\Prob}{\mathbb{P}}
+\renewcommand{\solutiontitle}{
+  \noindent\textbf{解：}
+}
+\usepackage{multicol}
+
+\begin{document}
+\begin{center}
+    \fbox{\fbox{\parbox{14cm}{\centering
+  共 5 頁，20 題選擇題，每題 5 分，總分 100 分。
+    }}}
+\end{center}
+\vspace{3mm}
+
+\begin{questions}
+\pointname{ 分}
+
+%% ===== Question 1 =====
+\question[5] Which descriptive statistic is least affected by extremely small or extremely large data values?
+
+\begin{choices}
+\choice Mean
+\choice Median
+\choice Range
+\choice Mean and Median
+\choice Median and Range
+\end{choices}
+
+\begin{solution}
+\textbf{答案：B（Median）}
+
+\textbf{各統計量對極端值的敏感度：}
+\begin{itemize}
+    \item \textbf{平均數（Mean）}：對極端值\textbf{非常敏感}。一個極端值可以大幅改變平均數。
+    \item \textbf{中位數（Median）}：對極端值\textbf{不敏感}（穩健統計量）。中位數只看資料的位置，不受極端值影響。
+    \item \textbf{全距（Range）}：對極端值\textbf{非常敏感}。全距 = 最大值 $-$ 最小值，任何極端值都會直接影響全距。
+\end{itemize}
+
+\textbf{例子}：考慮資料 $\{1, 2, 3, 4, 5\}$
+\begin{itemize}
+    \item Mean = 3, Median = 3, Range = 4
+\end{itemize}
+若加入極端值變成 $\{1, 2, 3, 4, 5, 100\}$
+\begin{itemize}
+    \item Mean = 19.17（大幅增加）
+    \item Median = 3.5（幾乎不變）
+    \item Range = 99（大幅增加）
+\end{itemize}
+
+因此，\textbf{只有中位數}對極端值最不敏感。
+\end{solution}
+
+%% ===== Question 2 =====
+\question[5] What is the relationship among the mean, median, and mode in a right-skewed (or positively skewed) distribution?
+
+\begin{choices}
+\choice The mean is typically the smallest value.
+\choice The median is typically the smallest value.
+\choice The mode is typically the smallest value.
+\choice They are all equal.
+\choice Cannot conclude without further information.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：C（The mode is typically the smallest value）}
+
+\textbf{正偏（右偏）分配的特性：}
+\begin{itemize}
+    \item 分配的尾巴向右延伸（有較多極端大值）
+    \item 關係：\textbf{眾數 $<$ 中位數 $<$ 平均數}
+\end{itemize}
+
+因此，在右偏分配中，眾數（Mode）通常是最小的。
+
+\textbf{記憶方法}：
+\begin{itemize}
+    \item 右偏 = 正偏 = 尾巴在右邊 = 平均數被極端大值拉高 = Mean $>$ Median $>$ Mode
+    \item 左偏 = 負偏 = 尾巴在左邊 = 平均數被極端小值拉低 = Mean $<$ Median $<$ Mode
+\end{itemize}
+\end{solution}
+
+%% ===== Question 3 =====
+\question[5] Suppose there are two distributions, A and B. A is a normal distribution with a mean of 4 and a standard deviation of 3. B is a normal distribution with a mean of 5 and a standard deviation of 2. Which of the following statements is false?
+
+\begin{choices}
+\choice The width of distribution A is wider than that of distribution B.
+\choice The mean, median, and mode are equal to 4 for distribution A and 5 for distribution B.
+\choice The frequency of values peaks at the mean for both distributions.
+\choice 100\% of the values fall between $\pm 3$ standard deviations for both distributions A and B.
+\choice All of the statements above are correct.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：D}
+
+分析各選項：
+\begin{itemize}
+    \item \textbf{A) 正確}：分配 A 的標準差 (3) $>$ 分配 B 的標準差 (2)，所以 A 較寬（更分散）。
+    
+    \item \textbf{B) 正確}：常態分配是對稱的，平均數 = 中位數 = 眾數。A 的三者都等於 4，B 的三者都等於 5。
+    
+    \item \textbf{C) 正確}：常態分配的最高點在平均數處。
+    
+    \item \textbf{D) 錯誤}：根據經驗法則，約 \textbf{99.7\%}（不是 100\%）的值落在 $\pm 3$ 個標準差內。常態分配的範圍是 $(-\infty, +\infty)$，總有極小機率的值落在 3 個標準差之外。
+\end{itemize}
+
+因此，D 是錯誤的敘述。
+\end{solution}
+
+%% ===== Question 4 =====
+\question[5] The wait time at a specific stoplight follows a uniform distribution ranging from zero to five minutes. What is the probability of having to wait more than 120 seconds at the stoplight?
+
+\begin{choices}
+\choice 0.2
+\choice 0.4
+\choice 0.6
+\choice 0.8
+\choice 1.0
+\end{choices}
+
+\begin{solution}
+\textbf{答案：C（0.6）}
+
+\textbf{設定}：
+\begin{itemize}
+    \item 等待時間 $X \sim \text{Uniform}(0, 5)$ 分鐘
+    \item 120 秒 = 2 分鐘
+\end{itemize}
+
+\textbf{均勻分配的機率計算}：
+
+對於 $X \sim \text{Uniform}(a, b)$：
+\[
+\Prob(X > c) = \frac{b - c}{b - a}, \quad \text{當 } a \leq c \leq b
+\]
+
+\textbf{計算}：
+\[
+\Prob(X > 2) = \frac{5 - 2}{5 - 0} = \frac{3}{5} = 0.6
+\]
+
+\textbf{答案}：等待超過 120 秒（2 分鐘）的機率為 \textbf{0.6}。
+\end{solution}
+
+%% ===== Question 5 =====
+\question[5] Why is the central limit theorem important in statistics?
+
+\begin{choices}
+\choice Because for a large sample size $n$, it asserts the population is approximately normal.
+\choice Because for any population, it asserts the sampling distribution of the sample mean is approximately normal, regardless of the shape of the population.
+\choice Because for a large sample size $n$, it asserts the sampling distribution of the sample mean is approximately normal, regardless of the shape of the population.
+\choice Because for any sample size $n$, it asserts the sampling distribution of the sample mean is approximately normal.
+\choice None of the above.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：C}
+
+\textbf{中央極限定理（CLT）的正確陳述}：
+
+當樣本大小 $n$ 足夠大時，無論母體分配的形狀為何，\textbf{樣本平均數的抽樣分配}會趨近於常態分配。
+
+\[
+\bar{X} \stackrel{\text{approx}}{\sim} N\left(\mu, \frac{\sigma^2}{n}\right), \quad \text{當 } n \text{ 夠大}
+\]
+
+分析各選項：
+\begin{itemize}
+    \item \textbf{A) 錯誤}：CLT 說的是\textbf{樣本平均數的分配}趨近常態，不是母體變成常態。
+    \item \textbf{B) 錯誤}：不是「任何母體」都成立，而是需要「足夠大的 $n$」。
+    \item \textbf{C) 正確}：這是 CLT 的正確陳述——當 $n$ 夠大時，不論母體分配為何，$\bar{X}$ 的分配趨近常態。
+    \item \textbf{D) 錯誤}：不是「任何樣本大小」，而是需要「足夠大的 $n$」。
+\end{itemize}
+
+\textbf{備註}：一般認為 $n \geq 30$ 就足夠大，但若母體嚴重偏態可能需要更大的 $n$。
+\end{solution}
+
+%% ===== Question 6 =====
+\question[5] A company is recruiting management trainees for entry-level marketing positions. Based on historical data, approximately 20\% are expected to remain employed after six months. If the company has recently hired five trainees, what is the approximate probability that exactly three of them will still be employed at the end of six months?
+
+\begin{choices}
+\choice 0.005
+\choice 0.008
+\choice 0.05
+\choice 0.2
+\choice 0.5
+\end{choices}
+
+\begin{solution}
+\textbf{答案：C（0.05）}
+
+\textbf{設定}：
+\begin{itemize}
+    \item $n = 5$（僱用人數）
+    \item $p = 0.2$（六個月後仍在職的機率）
+    \item 求 $\Prob(X = 3)$，其中 $X \sim \text{Binomial}(5, 0.2)$
+\end{itemize}
+
+\textbf{二項分配公式}：
+\[
+\Prob(X = k) = \binom{n}{k} p^k (1-p)^{n-k}
+\]
+
+\textbf{計算}：
+\[
+\Prob(X = 3) = \binom{5}{3} (0.2)^3 (0.8)^2
+\]
+
+\[
+= 10 \times 0.008 \times 0.64 = 10 \times 0.00512 = 0.0512 \approx 0.05
+\]
+
+\textbf{答案}：約 \textbf{0.05}（或 5.12\%）
+\end{solution}
+
+%% ===== Question 7 =====
+\question[5] For a given population proportion, which of the following statements is true regarding the width of a confidence interval for the population proportion?
+
+\begin{choices}
+\choice It is narrower for a lower confidence level than for a higher confidence level.
+\choice It is wider for a larger sample size than for a smaller sample size.
+\choice It is narrower for a larger sample proportion than for a smaller sample proportion.
+\choice It is wider for a larger sample proportion than for a smaller sample proportion.
+\choice None of the above is correct.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：A}
+
+\textbf{比例的信賴區間公式}：
+\[
+\hat{p} \pm z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}
+\]
+
+信賴區間的\textbf{寬度} $= 2 \times z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$
+
+分析各選項：
+\begin{itemize}
+    \item \textbf{A) 正確}：較低的信賴水準 $\Rightarrow$ 較小的 $z_{\alpha/2}$ $\Rightarrow$ \textbf{較窄的區間}
+    \begin{itemize}
+        \item 90\% CI: $z = 1.645$
+        \item 95\% CI: $z = 1.96$
+        \item 99\% CI: $z = 2.576$
+    \end{itemize}
+    
+    \item \textbf{B) 錯誤}：較大的 $n$ $\Rightarrow$ 分母較大 $\Rightarrow$ \textbf{較窄的區間}（不是較寬）
+    
+    \item \textbf{C) 錯誤}：$\hat{p}(1-\hat{p})$ 在 $\hat{p} = 0.5$ 時最大。當 $\hat{p}$ 從小值增加到 0.5 時，區間變寬；從 0.5 增加到 1 時，區間變窄。不能一概而論。
+    
+    \item \textbf{D) 錯誤}：同上，不能一概而論。
+\end{itemize}
+\end{solution}
+
+%% ===== Question 8 =====
+\question[5] The head of a research team claims that he can accurately determine whether a person has a medical background or an engineering background based on their problem-solving approach. When presented with one individual and asked to identify their background (either medical or engineering), the team lead treats this as a hypothesis test with the null hypothesis being that the person has a medical background and the alternative that the person has an engineering background. Which of the following statements illustrates a Type II error?
+
+\begin{choices}
+\choice Identifying the person as having an engineering background when, in fact, the person has a medical background.
+\choice Identifying the person as having a medical background when, in fact, the person has a medical background.
+\choice Identifying the person as having a medical background when, in fact, the person has an engineering background.
+\choice Identifying the person as having an engineering background when, in fact, the person has an engineering background.
+\choice None of the above.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：C}
+
+\textbf{假設設定}：
+\begin{align*}
+H_0 &: \text{此人有醫學背景}\\
+H_1 &: \text{此人有工程背景}
+\end{align*}
+
+\textbf{型一與型二錯誤的定義}：
+\begin{itemize}
+    \item \textbf{型一錯誤}：$H_0$ 為真時拒絕 $H_0$（錯誤地拒絕真的虛無假設）
+    \item \textbf{型二錯誤}：$H_1$ 為真時未拒絕 $H_0$（錯誤地未拒絕假的虛無假設）
+\end{itemize}
+
+分析各選項：
+\begin{itemize}
+    \item \textbf{A)}：判定為工程背景（拒絕 $H_0$），實際為醫學背景（$H_0$ 為真）$\Rightarrow$ \textbf{型一錯誤}
+    \item \textbf{B)}：判定為醫學背景（不拒絕 $H_0$），實際為醫學背景（$H_0$ 為真）$\Rightarrow$ \textbf{正確決策}
+    \item \textbf{C)}：判定為醫學背景（不拒絕 $H_0$），實際為工程背景（$H_1$ 為真）$\Rightarrow$ \textbf{型二錯誤}
+    \item \textbf{D)}：判定為工程背景（拒絕 $H_0$），實際為工程背景（$H_1$ 為真）$\Rightarrow$ \textbf{正確決策}
+\end{itemize}
+\end{solution}
+
+%% ===== Question 9 =====
+\question[5] Which of the following does not influence the standard error of the regression slope?
+
+\begin{choices}
+\choice The spread around the regression line
+\choice The spread of $x$ values
+\choice The sample size
+\choice The critical value
+\choice All of these affect the standard error
+\end{choices}
+
+\begin{solution}
+\textbf{答案：D（The critical value）}
+
+\textbf{迴歸斜率的標準誤公式}：
+\[
+SE(\hat{\beta}_1) = \frac{s}{\sqrt{\sum(x_i - \bar{x})^2}} = \frac{s}{s_x \sqrt{n-1}}
+\]
+
+其中：
+\begin{itemize}
+    \item $s$ = 迴歸標準誤（residual standard error）= 資料點在迴歸線周圍的分散程度
+    \item $\sum(x_i - \bar{x})^2$ = $x$ 值的離散程度
+    \item $n$ = 樣本大小
+\end{itemize}
+
+分析各選項：
+\begin{itemize}
+    \item \textbf{A) 影響}：迴歸線周圍的分散程度（$s$）直接出現在公式中
+    \item \textbf{B) 影響}：$x$ 值的分散程度出現在分母
+    \item \textbf{C) 影響}：樣本大小 $n$ 影響分母
+    \item \textbf{D) 不影響}：臨界值用於計算信賴區間或進行檢定，但\textbf{不影響標準誤本身}
+\end{itemize}
+
+臨界值（如 $t_{\alpha/2}$）是在計算信賴區間 $\hat{\beta}_1 \pm t_{\alpha/2} \times SE(\hat{\beta}_1)$ 時使用，但它不是標準誤的組成部分。
+\end{solution}
+
+%% ===== Question 10 =====
+\question[5] To evaluate the effectiveness of a new exercise program, a random sample of 25 individuals is chosen from a population of adults engaged in the program. Each participant's weight is measured both before and after the program. Assuming that the population of differences in weight before and after the program follows a normal distribution, the mean decrease in weights for the 25 participants is determined to be 2.5 pounds, with a standard deviation of differences of 3.2 pounds. What conclusion can be drawn about the effectiveness of the exercise program based on the test at the 0.05 level of significance?
+
+\begin{choices}
+\choice The exercise program is not effective.
+\choice The exercise program is effective.
+\choice The sample size is relatively small to make a conclusion.
+\choice A conclusion cannot be drawn without calculating the $p$-value.
+\choice None of the above.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：B（The exercise program is effective）}
+
+\textbf{假設檢定設定}（配對樣本 $t$ 檢定）：
+\begin{align*}
+H_0 &: \mu_d = 0 \text{（體重差異為零，運動無效）}\\
+H_1 &: \mu_d > 0 \text{（體重減少，運動有效）}
+\end{align*}
+
+\textbf{已知資訊}：
+\begin{itemize}
+    \item $n = 25$
+    \item $\bar{d} = 2.5$ 磅（平均減重）
+    \item $s_d = 3.2$ 磅
+    \item $\alpha = 0.05$
+\end{itemize}
+
+\textbf{計算 $t$ 統計量}：
+\[
+t = \frac{\bar{d} - 0}{s_d / \sqrt{n}} = \frac{2.5}{3.2 / \sqrt{25}} = \frac{2.5}{3.2 / 5} = \frac{2.5}{0.64} = 3.91
+\]
+
+\textbf{臨界值}：$df = 24$，單尾 $\alpha = 0.05$
+
+$t_{0.05, 24} \approx 1.711$
+
+\textbf{結論}：$t = 3.91 > 1.711$，\textbf{拒絕 $H_0$}。
+
+在 0.05 顯著水準下，運動計畫\textbf{有效}（平均體重顯著減少）。
+\end{solution}
+
+%% ===== Question 11 =====
+\question[5] Which of the following is a violation of one of the major assumptions of the simple regression model?
+
+\begin{choices}
+\choice The error terms are independent of each other.
+\choice A histogram of the residuals forms a bell-shaped, symmetrical curve.
+\choice A plot of the residual versus $x$ forms a horizontal band pattern.
+\choice As the value of $x$ increases, the value of the error term also increases.
+\choice The error terms show no pattern.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：D}
+
+\textbf{簡單迴歸的主要假設}：
+\begin{enumerate}
+    \item 線性關係：$Y$ 與 $X$ 之間是線性的
+    \item 獨立性：誤差項相互獨立
+    \item 常態性：誤差項服從常態分配
+    \item 同質變異數：誤差項的變異數為常數（不隨 $X$ 改變）
+\end{enumerate}
+
+分析各選項：
+\begin{itemize}
+    \item \textbf{A) 符合假設}：誤差項獨立是假設之一
+    \item \textbf{B) 符合假設}：殘差呈鐘形對稱表示常態性成立
+    \item \textbf{C) 符合假設}：殘差對 $x$ 的圖呈水平帶狀表示同質變異數成立
+    \item \textbf{D) 違反假設}：當 $x$ 增加時誤差項也增加，表示\textbf{異質變異數}（heteroscedasticity），違反同質變異數假設
+    \item \textbf{E) 符合假設}：誤差項無規律表示符合隨機性假設
+\end{itemize}
+\end{solution}
+
+%% ===== Question 12 =====
+\question[5] Which, if any, of the following statements about the chi-square test of independence is false?
+
+\begin{choices}
+\choice If $r_i$ is the row total for row $i$ and $c_j$ is the column total for column $j$, then the estimated expected cell frequency corresponding to row $i$ and column $j$ equals $(r_i)(c_j)/n$.
+\choice The test is valid if all of the estimated cell frequencies are at least five.
+\choice The chi-square statistic is based on $(r-1)(c-1)$ degrees of freedom, where $r$ and $c$ denote, respectively, the number of rows and columns in the contingency table.
+\choice The alternative hypothesis states that the two classifications are statistically independent.
+\choice All of the other statements about the chi-square test of independence are true.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：D}
+
+分析各選項：
+\begin{itemize}
+    \item \textbf{A) 正確}：期望次數公式 $E_{ij} = \frac{r_i \times c_j}{n}$
+    
+    \item \textbf{B) 正確}：卡方檢定的經驗法則是所有期望次數至少為 5
+    
+    \item \textbf{C) 正確}：自由度 $df = (r-1)(c-1)$
+    
+    \item \textbf{D) 錯誤}：對立假設應該是「兩分類變數\textbf{不獨立}（有關聯）」，而不是「獨立」。
+    \begin{itemize}
+        \item $H_0$：兩變數獨立
+        \item $H_1$：兩變數不獨立（有關聯）
+    \end{itemize}
+    選項 D 把 $H_0$ 和 $H_1$ 搞反了。
+\end{itemize}
+\end{solution}
+
+%% ===== Question 13 =====
+\question[5] A marketer aims to test the effectiveness of the ABC filter designed to reduce harmful chemicals in drinking water. The marketer measured harmful chemical levels in 30 households' water before installing the product. Next, the same 30 households installed the ABC filter. After two weeks of continuous use, the harmful chemical levels were measured again. The comparison of harmful chemical levels before versus after using the product is an example of testing the difference between \underline{\hspace{2cm}}.
+
+\begin{choices}
+\choice two means from independent populations.
+\choice two population variances from independent populations.
+\choice two population proportions.
+\choice two population medians.
+\choice matched pairs from two dependent populations.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：E（matched pairs from two dependent populations）}
+
+\textbf{分析實驗設計}：
+\begin{itemize}
+    \item 同一組 30 戶家庭
+    \item 測量兩次：安裝前和安裝後
+    \item 每戶的前後測量是配對的（同一戶的兩次測量）
+\end{itemize}
+
+這是典型的\textbf{配對樣本}（matched pairs / paired samples）設計，屬於\textbf{相依樣本}（dependent populations）。
+
+\textbf{為什麼不是其他選項}：
+\begin{itemize}
+    \item \textbf{A) 錯誤}：不是獨立樣本，因為前後測量來自同一組家庭
+    \item \textbf{B) 錯誤}：題目比較的是平均值，不是變異數
+    \item \textbf{C) 錯誤}：化學物質濃度是連續變數，不是比例
+    \item \textbf{D) 錯誤}：雖然可以比較中位數，但標準做法是比較平均數
+    \item \textbf{E) 正確}：這是配對樣本檢定
+\end{itemize}
+
+\textbf{適用的檢定方法}：配對樣本 $t$ 檢定（paired $t$-test）
+\end{solution}
+
+\newpage
+%% ===== Questions 14-16 情境 =====
+\noindent\textbf{For Questions 14--16, please read the scenario and output below.}
+
+To compare the performance characteristics of four brands of space heaters, a researcher bought all the heaters they could find from these brands and tested them. For performance, the researcher measured the amount of time it took to warm up a specific-sized room by 5 degrees from a set temperature. They also coded the characteristics of the space heaters. The researcher first conducted a one-way ANOVA on the space heaters' performance among the four brands. The output is given below.
+
+\begin{center}
+\textbf{ANOVA table}
+
+\begin{tabular}{lccccc}
+\toprule
+Source & SS & df & MS & $F$ & $p$-value \\
+\midrule
+Treatment & 6.000 & 3 & 1.9998 & 18.85 & 3.46E-05 \\
+Error & 1.713 & 16 & 0.1061 & & \\
+\midrule
+Total & 7.713 & 19 & & & \\
+\bottomrule
+\end{tabular}
+
+\vspace{5mm}
+\textbf{Post hoc analysis}
+
+Tukey simultaneous comparison $t$-values ($d.f. = 16$)
+
+\begin{tabular}{l|cccc}
+& Brand 2 & Brand 3 & Brand 4 & Brand 1 \\
+\hline
+& 1.40 & 2.28 & 2.58 & 2.95 \\
+Brand 2 & 1.40 & & & \\
+Brand 3 & 2.28 & 4.27 & & \\
+Brand 4 & 2.58 & 5.38 & 1.35 & \\
+Brand 1 & 2.95 & 7.09 & 3.07 & 1.63 \\
+\end{tabular}
+
+\vspace{3mm}
+Critical values for experimentwise error rate:
+
+\begin{tabular}{cc}
+0.05 & 2.91 \\
+0.01 & 3.76 \\
+\end{tabular}
+\end{center}
+
+\question[5] Based on the output, at a significance level of .05, we would conclude that \underline{\hspace{2cm}}.
+
+\begin{choices}
+\choice brand 1 differs from brand 3, and brand 3 differs from brand 2, while the rest of the space heater pairs do not differ from each other in terms of their performance.
+\choice brand 1 differs from brand 3, and brand 2 differs from brands 1, 3, and 4, while the rest of the space heater pairs do not differ from each other in terms of their performance.
+\choice only brand 2 differs from the other three brands, while the rest of the space heater pairs do not differ from each other in terms of their performance.
+\choice all four brands of space heaters differ from each other in terms of their performance.
+\choice none of the four brands of space heaters differ from each other in terms of their performance.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：B}
+
+\textbf{Tukey HSD 檢定的判讀}：
+
+比較 $t$-value 與臨界值 2.91（$\alpha = 0.05$）：
+
+\begin{itemize}
+    \item Brand 2 vs Brand 3: $t = 4.27 > 2.91$ $\Rightarrow$ \textbf{顯著不同}
+    \item Brand 2 vs Brand 4: $t = 5.38 > 2.91$ $\Rightarrow$ \textbf{顯著不同}
+    \item Brand 2 vs Brand 1: $t = 7.09 > 2.91$ $\Rightarrow$ \textbf{顯著不同}
+    \item Brand 3 vs Brand 4: $t = 1.35 < 2.91$ $\Rightarrow$ 無顯著差異
+    \item Brand 3 vs Brand 1: $t = 3.07 > 2.91$ $\Rightarrow$ \textbf{顯著不同}
+    \item Brand 4 vs Brand 1: $t = 1.63 < 2.91$ $\Rightarrow$ 無顯著差異
+\end{itemize}
+
+\textbf{整理結果}：
+\begin{itemize}
+    \item Brand 2 與其他三個品牌（1, 3, 4）都顯著不同
+    \item Brand 3 與 Brand 1 顯著不同（$t = 3.07 > 2.91$）
+    \item Brand 3 與 Brand 4 無顯著差異（$t = 1.35 < 2.91$）
+    \item Brand 4 與 Brand 1 無顯著差異（$t = 1.63 < 2.91$）
+\end{itemize}
+
+分析選項：
+\begin{itemize}
+    \item \textbf{A)}：只提到 Brand 1 與 Brand 3 不同，Brand 3 與 Brand 2 不同，遺漏了 Brand 2 與 Brand 4、Brand 2 與 Brand 1 的差異
+    \item \textbf{B) 正確}：Brand 1 與 Brand 3 不同，Brand 2 與 Brands 1, 3, 4 都不同——這與分析結果完全一致
+    \item \textbf{C)}：說「只有 Brand 2」與其他不同，但 Brand 1 和 Brand 3 之間也有顯著差異
+    \item \textbf{D)}：不是所有品牌都兩兩不同
+    \item \textbf{E)}：有顯著差異存在
+\end{itemize}
+
+\textbf{答案：B}
+\end{solution}
+
+%% ===== Question 15 =====
+\question[5] How many heaters did the researcher test in this research?
+
+\begin{choices}
+\choice 17
+\choice 19
+\choice 20
+\choice 21
+\choice 38
+\end{choices}
+
+\begin{solution}
+\textbf{答案：C（20）}
+
+\textbf{從 ANOVA 表讀取資訊}：
+
+總自由度 $df_{Total} = n - 1 = 19$
+
+因此，總樣本數 $n = 19 + 1 = 20$
+
+\textbf{驗證}：
+\begin{itemize}
+    \item $df_{Treatment} = k - 1 = 4 - 1 = 3$（4 個品牌）
+    \item $df_{Error} = n - k = 20 - 4 = 16$ $\checkmark$
+    \item $df_{Total} = n - 1 = 19$ $\checkmark$
+\end{itemize}
+
+研究者共測試了 \textbf{20} 台暖氣機。
+\end{solution}
+
+%% ===== Question 16 =====
+\question[5] To further understand the space heaters' performance, in addition to the brand, the researcher would like to add voltage as a predictor. Hence, they decided to conduct a multiple regression model. How many independent variables should they create for the brand in this multiple regression model?
+
+\begin{choices}
+\choice One
+\choice Two
+\choice Three
+\choice Four
+\choice Five
+\end{choices}
+
+\begin{solution}
+\textbf{答案：C（Three）}
+
+\textbf{類別變數在迴歸中的處理}：
+
+當類別變數有 $k$ 個水準時，需要建立 $k - 1$ 個虛擬變數（dummy variables）。
+
+\textbf{本題}：
+\begin{itemize}
+    \item 品牌是類別變數，有 4 個水準（Brand 1, 2, 3, 4）
+    \item 需要建立 $4 - 1 = 3$ 個虛擬變數
+\end{itemize}
+
+\textbf{例如}：以 Brand 1 為參照組
+\begin{itemize}
+    \item $D_2 = 1$ 若 Brand 2，否則 0
+    \item $D_3 = 1$ 若 Brand 3，否則 0
+    \item $D_4 = 1$ 若 Brand 4，否則 0
+\end{itemize}
+
+迴歸模型：$Y = \beta_0 + \beta_1 D_2 + \beta_2 D_3 + \beta_3 D_4 + \beta_4 \text{Voltage} + \epsilon$
+
+\textbf{為什麼是 $k-1$ 而不是 $k$}：避免完全多重共線性（dummy variable trap）。
+\end{solution}
+
+\newpage
+%% ===== Questions 17-20 情境 =====
+\noindent\textbf{For Questions 17--20, please read the scenario below.}
+
+A consultant hired by a chain restaurant focusing on eco-friendly practices has developed a multiple regression model for the chain restaurants' performances for their branches. In this multiple regression model, the dependent variable, performances, is the branch sales in thousands of dollars. For example, a data entry of 25 for the dependent variable indicates a sales of \$25,000. The dataset the consultant was given also included branch and market factors, such as the adaptation of eco-friendly practices, branch size, employee tenure, and population density of surrounding areas.
+
+%% ===== Question 17 =====
+\question[5] The consultant first tested a multiple regression model with the eco-friendly variable as one of the indicators ($X_1 = 0$ if not adopted and $X_1 = 1$ if adopted). The output of this multiple regression model shows that the coefficient for this variable ($X_1$) is $-1.6$. The $t$ test showed that $X_1$ was significant at $\alpha = .05$. This result implies that for companies adopting and not adopting sustainable practices, \underline{\hspace{2cm}}.
+
+\begin{choices}
+\choice on average, the branches that adopted eco-friendly practices made \$1,600 less than those that did not adopt eco-friendly practices.
+\choice on average, the branches that did not adopt eco-friendly practices made \$1,600 less than those that adopted eco-friendly practices.
+\choice on average, the branches that adopted eco-friendly practices made 1.6 times less than those that did not adopt eco-friendly practices.
+\choice on average, the branches that did not adopt eco-friendly practices made 1.6 times less than those that adopted eco-friendly practices.
+\choice on average, the performances were not affected by whether the branches adopted eco-friendly practices or not.
+\end{choices}
+
+\begin{solution}
+\textbf{答案：A}
+
+\textbf{模型設定}：
+\begin{itemize}
+    \item $Y$ = 銷售額（千美元）
+    \item $X_1 = 0$（未採用環保措施），$X_1 = 1$（採用環保措施）
+    \item 係數 $\beta_1 = -1.6$
+\end{itemize}
+
+\textbf{解釋係數}：
+
+當其他變數不變時：
+\begin{itemize}
+    \item 未採用環保措施（$X_1 = 0$）：$Y = \beta_0 + \text{其他項}$
+    \item 採用環保措施（$X_1 = 1$）：$Y = \beta_0 - 1.6 + \text{其他項}$
+\end{itemize}
+
+差異：採用環保措施的分店銷售額平均比未採用的\textbf{少 1.6 千美元 = \$1,600}。
+
+\textbf{注意}：$Y$ 的單位是「千美元」，所以係數 $-1.6$ 代表 $-\$1,600$。
+\end{solution}
+
+%% ===== Question 18 =====
+\question[5] The result on eco-friendly practice motivates the consultant to dig deeper into the dataset. While exploring, the consultant accidentally adds a very insignificant independent variable (an independent variable that has a very weak relationship with the dependent variable) to a multiple regression equation. As a result of this change, the value of the explained variation (SSR) will \underline{\hspace{1cm}}, the value of the multiple coefficient of determination ($R^2$) will \underline{\hspace{1cm}}, and the calculated value of the $F$ statistic will most likely \underline{\hspace{1cm}}.
+
+\begin{choices}
+\choice decrease, increase, decrease
+\choice increase, decrease, decrease
+\choice increase, increase, increase
+\choice increase, increase, decrease
+\choice decrease, decrease, decrease
+\end{choices}
+
+\begin{solution}
+\textbf{答案：D（increase, increase, decrease）}
+
+\textbf{分析加入不顯著變數的影響}：
+
+\textbf{1. SSR（解釋變異）}：
+\begin{itemize}
+    \item 加入任何新變數，SSR 只會增加或維持不變（不會減少）
+    \item 即使變數不顯著，它仍會解釋一點點變異
+    \item 結論：SSR \textbf{增加}
+\end{itemize}
+
+\textbf{2. $R^2$}：
+\[
+R^2 = \frac{SSR}{SST}
+\]
+\begin{itemize}
+    \item SST 固定不變
+    \item SSR 增加
+    \item 因此 $R^2$ \textbf{增加}（這是 $R^2$ 的缺點之一）
+\end{itemize}
+
+\textbf{3. $F$ 統計量}：
+\[
+F = \frac{MSR}{MSE} = \frac{SSR/k}{SSE/(n-k-1)}
+\]
+\begin{itemize}
+    \item 加入不顯著變數後，$k$ 增加 1
+    \item SSR 只增加一點點，但 $k$ 增加使 MSR 可能下降
+    \item SSE 減少一點點，但 $n-k-1$ 也減少 1
+    \item 整體效果：由於新變數不顯著，$F$ 統計量最可能\textbf{下降}
+\end{itemize}
+
+\textbf{備註}：這就是為什麼我們使用調整後 $R^2$（Adjusted $R^2$）來評估模型，它會對加入不顯著變數進行懲罰。
+\end{solution}
+
+%% ===== Question 19 =====
+\question[5] After a couple of days, the consultant developed this regression model: $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \varepsilon$. If the consultant wish to test the significance of higher-order terms ($x_1^2$ and $x_2^2$), which test would they use?
+
+\begin{choices}
+\choice overall $F$ test
+\choice partial $F$ test
+\choice Durbin-Watson test
+\choice $t$ test
+\choice Cook's distance measure
+\end{choices}
+
+\begin{solution}
+\textbf{答案：B（partial $F$ test）}
+
+\textbf{各檢定方法的用途}：
+
+\begin{itemize}
+    \item \textbf{Overall $F$ test}：檢定所有迴歸係數是否同時為零（$H_0: \beta_1 = \beta_2 = \cdots = \beta_k = 0$）
+    
+    \item \textbf{Partial $F$ test}：檢定一組變數是否對模型有顯著貢獻。比較完整模型與簡化模型。
+    
+    \item \textbf{Durbin-Watson test}：檢定殘差是否有自相關
+    
+    \item \textbf{$t$ test}：檢定單一係數是否為零
+    
+    \item \textbf{Cook's distance}：識別影響力觀測值（influential observations）
+\end{itemize}
+
+\textbf{本題情境}：
+
+要同時檢定 $x_1^2$ 和 $x_2^2$ 兩個高階項是否顯著（即 $H_0: \beta_3 = \beta_4 = 0$），應使用\textbf{部分 $F$ 檢定（partial $F$ test）}。
+
+\[
+F = \frac{(SSR_{full} - SSR_{reduced})/q}{MSE_{full}}
+\]
+
+其中 $q = 2$（被檢定的參數個數）。
+\end{solution}
+
+%% ===== Question 20 =====
+\question[5] Finally, the consultant would like to visualize some of the models they developed for the client. The graph of the prediction equation obtained from the model $y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \varepsilon$ is a(n) \underline{\hspace{2cm}}.
+
+\begin{choices}
+\choice line
+\choice parabola
+\choice exponential curve
+\choice ellipse
+\choice plane
+\end{choices}
+
+\begin{solution}
+\textbf{答案：E（plane）}
+
+\textbf{模型分析}：
+\[
+y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \varepsilon
+\]
+
+這是一個有兩個自變數（$X_1$ 和 $X_2$）的\textbf{多元線性迴歸模型}。
+
+\textbf{預測方程式}：
+\[
+\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 X_1 + \hat{\beta}_2 X_2
+\]
+
+\textbf{幾何解釋}：
+\begin{itemize}
+    \item 當只有一個自變數時（$y = \beta_0 + \beta_1 x$），預測方程式是一條\textbf{直線}
+    \item 當有兩個自變數時（$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2$），預測方程式是一個\textbf{平面}
+    \item 當有三個或更多自變數時，預測方程式是一個\textbf{超平面}
+\end{itemize}
+
+在三維空間 $(X_1, X_2, Y)$ 中，方程式 $Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2$ 代表一個平面。
+\end{solution}
+
+\end{questions}
+
+\end{document}

@@ -1,0 +1,462 @@
+\documentclass[addpoints,12pt,a4paper]{exam}
+\printanswers
+\usepackage[AutoFakeBold,AutoFakeSlant]{xeCJK}
+\setCJKmainfont[AutoFakeSlant=.1,AutoFakeBold=2]{Noto Serif CJK TC} 
+\usepackage{amsthm,amsmath,amssymb,graphicx,hyperref,booktabs,tabularx,enumitem,multirow}
+\pagestyle{headandfoot}
+\firstpageheadrule
+\firstpageheader{題號：275}{國立臺灣大學114學年度碩士班招生考試試題}{統計學(K)}
+\runningheader{題號：275}{國立臺灣大學114學年度碩士班招生考試試題}{統計學(K)}
+\runningheadrule
+\firstpagefooter{}{第\thepage\ 頁（共\numpages 頁）}{}
+\runningfooter{}{第\thepage\ 頁（共\numpages 頁）}{}
+\footrule
+\extraheadheight{-8mm}
+\extrafootheight{-10mm}
+\extrawidth{35mm}
+\newcommand{\ie}{\,\Longrightarrow\,}
+\newcommand{\ifff}{\,\Longleftrightarrow\,}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\plim}{\mathrm{plim}}
+\renewcommand{\solutiontitle}{
+  \noindent\textbf{解：}
+}
+\usepackage{multicol}
+
+\begin{document}
+\begin{center}
+    \fbox{\fbox{\parbox{14cm}{\centering
+  共 3 頁
+    }}}
+\end{center}
+\vspace{3mm}
+
+%% ========================================
+%% 第一部份：計算題 (20%)
+%% ========================================
+\begin{center}
+\textbf{\large 第一部份：計算題 (20\%)}
+\end{center}
+
+※ Show the detailed calculation process for all questions.
+
+\begin{questions}
+\pointname{ \%}
+
+%% ===== Question 1 =====
+\question[6] Find the interval of convergence of $\ds\sum_{n=1}^{\infty} \frac{(x-2)^{2n}}{4^n}$.
+
+\begin{solution}
+令 $u = (x-2)^2$，則級數變為：
+\[
+\sum_{n=1}^{\infty} \frac{u^n}{4^n} = \sum_{n=1}^{\infty} \left(\frac{u}{4}\right)^n
+\]
+
+這是首項為 $\frac{u}{4}$、公比為 $\frac{u}{4}$ 的等比級數。
+
+等比級數收斂的條件是 $\left|\frac{u}{4}\right| < 1$，即：
+\[
+|u| < 4 \implies |(x-2)^2| < 4 \implies (x-2)^2 < 4
+\]
+
+解這個不等式：
+\[
+-2 < x - 2 < 2 \implies 0 < x < 4
+\]
+
+\textbf{檢查端點：}
+
+\textbf{當 $x = 0$ 時：}$(x-2)^2 = 4$，級數變為 $\ds\sum_{n=1}^{\infty} \frac{4^n}{4^n} = \sum_{n=1}^{\infty} 1$，發散。
+
+\textbf{當 $x = 4$ 時：}$(x-2)^2 = 4$，級數同樣變為 $\ds\sum_{n=1}^{\infty} 1$，發散。
+
+\textbf{收斂區間：}$\boxed{(0, 4)}$ 或 $\boxed{0 < x < 4}$
+\end{solution}
+
+%% ===== Question 2 =====
+\question[6] Find the slope of the tangent line to the graph of $y^4 + 3y - 4x^3 = 5x + 1$ at the point $P(1, -2)$.
+
+\begin{solution}
+使用隱函數微分法。對等式兩邊對 $x$ 微分：
+\[
+\frac{d}{dx}(y^4 + 3y - 4x^3) = \frac{d}{dx}(5x + 1)
+\]
+
+\[
+4y^3 \cdot \frac{dy}{dx} + 3 \cdot \frac{dy}{dx} - 12x^2 = 5
+\]
+
+\[
+\frac{dy}{dx}(4y^3 + 3) = 5 + 12x^2
+\]
+
+\[
+\frac{dy}{dx} = \frac{5 + 12x^2}{4y^3 + 3}
+\]
+
+在點 $P(1, -2)$ 處（先驗證：$(-2)^4 + 3(-2) - 4(1)^3 = 16 - 6 - 4 = 6$，$5(1) + 1 = 6$ $\checkmark$）：
+\[
+\frac{dy}{dx}\bigg|_{(1,-2)} = \frac{5 + 12(1)^2}{4(-2)^3 + 3} = \frac{5 + 12}{4(-8) + 3} = \frac{17}{-32 + 3} = \frac{17}{-29} = \boxed{-\frac{17}{29}}
+\]
+\end{solution}
+
+%% ===== Question 3 =====
+\question[8] Evaluate $\ds\int_0^4 \int_{x/2}^{2} e^{y^2}\, dy\, dx$.
+
+\begin{solution}
+注意到 $e^{y^2}$ 沒有初等函數的反導數，因此需要交換積分順序。
+
+\textbf{原積分區域：}
+\begin{itemize}
+    \item $0 \leq x \leq 4$
+    \item $\frac{x}{2} \leq y \leq 2$
+\end{itemize}
+
+\textbf{轉換積分順序：}從 $y = \frac{x}{2}$ 得 $x = 2y$。
+\begin{itemize}
+    \item 當 $x = 0$ 時，$y = 0$；當 $x = 4$ 時，$y = 2$
+    \item 對於固定的 $y$（$0 \leq y \leq 2$），$x$ 的範圍是 $0 \leq x \leq 2y$
+\end{itemize}
+
+交換後的積分：
+\[
+\int_0^4 \int_{x/2}^{2} e^{y^2}\, dy\, dx = \int_0^{2} \int_{0}^{2y} e^{y^2}\, dx\, dy
+\]
+
+先對 $x$ 積分：
+\[
+\int_0^{2} e^{y^2} \left[\int_{0}^{2y} dx\right] dy = \int_0^{2} e^{y^2} \cdot 2y\, dy
+\]
+
+令 $u = y^2$，則 $du = 2y\, dy$：
+\[
+\int_0^{2} 2y \cdot e^{y^2}\, dy = \int_0^{4} e^u\, du = e^u \Big|_0^4 = e^4 - e^0 = \boxed{e^4 - 1}
+\]
+\end{solution}
+
+\end{questions}
+
+\newpage
+%% ========================================
+%% 第二部份：簡答題 (80%)
+%% ========================================
+\begin{center}
+\textbf{\large 第二部份：簡答題 (80\%)}
+\end{center}
+
+請依題號順序作答，每小題作答字數不得超過5行，可以用中文作答。
+
+\vspace{5mm}
+
+%% ========================================
+%% Question I
+%% ========================================
+\noindent\textbf{Question I (40 points; 10 points each)}
+
+\vspace{3mm}
+
+We aim to analyze the effect of a newly constructed domed stadium on housing values. The decision to build the dome was announced in 2001, and construction began in 2005, with the dome expected to be in operation soon after construction. There is a rumor that houses near the dome may be devalued, but wealthier residents might use their political influence to avoid having the dome built in their neighborhoods. We have data on prices of houses that sold in 2001 and another independent random sample on those sold in 2005. All house prices have been adjusted for inflation. Let \textit{rprice} denote the house price in real terms.
+
+\begin{questions}
+\setcounter{question}{3}
+\pointname{ points}
+
+\question[10] One hypothesis is that the price of houses located near the dome would fall relative to the price of more distant houses. For illustration, we define a house as ``near the dome'' if it is within three miles. To estimate the effect of the dome, we use data from 2005 and run the regression:
+\[
+rprice = \alpha_0 + \alpha_1 \cdot neardome + u_1,
+\]
+where \textit{neardome} denotes a dummy variable equal to 1 if the house is near the dome, and 0 otherwise. If the coefficient on \textit{neardome} is negative and statistically significant, does this imply that the siting of the dome caused the lower housing values? Discuss potential issues with this approach, if any.
+
+\begin{solution}
+\textbf{不能直接做出因果推論。}即使 $\alpha_1$ 顯著為負，這也不能證明球場選址「導致」房價下降。
+
+\textbf{主要問題：}
+
+\textbf{1. 選擇偏誤（Selection Bias）：}題目提到較富裕的居民可能利用政治影響力避免球場建在他們社區。這意味著球場可能被選址在原本就較便宜的區域，造成\textbf{內生性問題}。
+
+\textbf{2. 遺漏變數偏誤（Omitted Variable Bias）：}靠近球場的房屋可能在其他特徵上（如房屋大小、屋齡、社區品質等）與遠離球場的房屋系統性地不同。這些遺漏變數可能與 \textit{neardome} 相關，導致估計量有偏。
+
+\textbf{3. 僅使用橫截面資料：}只用2005年的資料無法區分「球場效應」與「區域固有差異」。我們無法知道這些區域在球場宣布前房價是否就已經不同。
+
+\textbf{結論：}$\alpha_1 < 0$ 可能反映的是區域間的預先存在差異，而非球場的因果效應。
+\end{solution}
+
+\question[10] To examine whether house prices changed over time in response to the dome, we use data on houses located near the dome and run the regression:
+\[
+rprice = \beta_0 + \beta_1 \cdot y05 + u_2,
+\]
+where $y05$ is a dummy variable equal to 1 if the house was sold in 2005, and 0 if sold in 2001. If the coefficient on $y05$ is negative and statistically significant, does this imply that building the new dome depressed housing values? Discuss potential issues with this approach, if any.
+
+\begin{solution}
+\textbf{不能直接做出因果推論。}即使 $\beta_1$ 顯著為負，這也不能證明球場建設「導致」房價下降。
+
+\textbf{主要問題：}
+
+\textbf{1. 時間趨勢混淆（Confounding Time Trends）：}2001年至2005年間，許多因素可能影響該區域的房價（如整體經濟狀況、利率變化、當地就業市場等）。$\beta_1$ 捕捉的可能是這些時間趨勢，而非球場效應。
+
+\textbf{2. 缺乏對照組：}我們只觀察靠近球場的房屋，無法與遠離球場區域的房價變化做比較。如果整個城市的房價都在下降，$\beta_1 < 0$ 不能歸因於球場。
+
+\textbf{3. 樣本組成變化：}2001年和2005年出售的房屋可能在特徵上有系統性差異，造成估計偏誤。
+
+\textbf{結論：}需要一個對照組（如遠離球場的房屋）來分離球場效應與一般時間趨勢。
+\end{solution}
+
+\question[10] To compare changes in housing values for houses near the dome with those farther away, we use the entire data set and run the regression:
+\[
+\Delta rprice = \gamma_0 + \gamma_1 \cdot neardome + u_3,
+\]
+where $\Delta rprice$ is the change in the price of a house between 2001 and 2005. If the coefficient on \textit{neardome} is negative and statistically significant, does this imply that houses near the dome fall in value more than houses far from the dome? Discuss potential issues with this approach, if any.
+
+\begin{solution}
+\textbf{這是差異中的差異（Difference-in-Differences, DID）方法的概念。}
+
+如果 $\gamma_1 < 0$ 且統計顯著，這表示靠近球場房屋的房價變化（從2001到2005）比遠離球場的房屋更為負面。這比前兩種方法更能識別球場效應。
+
+\textbf{DID 方法的優點：}
+\begin{itemize}
+    \item 控制了不隨時間變化的區域固有差異
+    \item 控制了共同的時間趨勢
+\end{itemize}
+
+\textbf{潛在問題：}
+
+\textbf{1. 平行趨勢假設（Parallel Trends Assumption）：}DID 假設若沒有球場，兩組房屋的價格變化趨勢應該相同。如果靠近球場區域原本就有不同的價格趨勢，估計量會有偏。
+
+\textbf{2. 預期效應（Anticipation Effects）：}球場在2001年宣布，2005年開工。2001年的房價可能已經反映了球場的預期效應，這會低估或高估真實效應。
+
+\textbf{3. 資料結構：}題目說是兩個獨立隨機樣本，不是追蹤同一批房屋。$\Delta rprice$ 的定義需要釐清——可能是計算各組的平均價格變化。
+
+\textbf{結論：}這是較好的方法，但仍需謹慎解釋，特別是平行趨勢假設是否成立。
+\end{solution}
+
+\question[10] We propose including various housing characteristics (e.g., house area in square feet, number of rooms, and number of baths) in our analysis of the dome siting. What are the advantages and potential drawbacks of incorporating these variables in our regression models?
+
+\begin{solution}
+\textbf{優點：}
+
+\textbf{1. 減少遺漏變數偏誤：}如果房屋特徵與 \textit{neardome} 相關（例如靠近球場的房屋普遍較小），加入這些變數可以減少偏誤，得到更準確的球場效應估計。
+
+\textbf{2. 提高估計精確度：}控制房屋特徵可以減少誤差項的變異，降低標準誤，使檢定更有統計檢力（power）。
+
+\textbf{3. 更好的模型配適：}$R^2$ 會提高，模型解釋力增強。
+
+\textbf{潛在缺點：}
+
+\textbf{1. 內生性問題（Bad Control）：}如果房屋特徵本身受球場影響（例如，球場宣布後開發商改變新建房屋的設計），這些變數就是「壞控制變數」，加入它們反而會導致偏誤。
+
+\textbf{2. 多重共線性：}如果房屋特徵之間高度相關（如房間數與面積），可能導致估計量的標準誤增大。
+
+\textbf{3. 過度控制：}若某些特徵是球場效應的傳導機制（mediator），控制它們會遮蓋部分效應。
+
+\textbf{結論：}應加入在球場選址決定\textbf{之前}就已確定的房屋特徵，避免加入可能受球場影響的變數。
+\end{solution}
+
+\end{questions}
+
+\newpage
+%% ========================================
+%% Question II
+%% ========================================
+\noindent\textbf{Question II (40 points; 10 points each)}
+
+\vspace{3mm}
+
+A widely used experimental design in business is the single-factor experiment with two levels, where customers in the control group receive the current version of a product or service, and those in the test group receive a new version. If customers are randomly assigned to the two groups and the response variable is quantitative, we can use a two-sample $t$-test to determine whether the means of the two groups are equal.
+
+\begin{questions}
+\setcounter{question}{7}
+\pointname{ points}
+
+\question[10] Suppose now we expand our single-factor experiment to include more levels. What issues might arise when doing pairwise $t$-tests for all possible treatment means? Explain.
+
+\begin{solution}
+\textbf{多重比較問題（Multiple Comparisons Problem）}
+
+當有 $k$ 個處理水準時，所有成對比較的數目為 $\binom{k}{2} = \frac{k(k-1)}{2}$。
+
+\textbf{主要問題：型一錯誤膨脹（Inflation of Type I Error）}
+
+若每次 $t$ 檢定的顯著水準為 $\alpha = 0.05$，進行多次獨立檢定時：
+\begin{itemize}
+    \item 整體型一錯誤率（Family-wise Error Rate, FWER）$\approx 1 - (1-\alpha)^m$
+    \item 若 $k = 4$，則有 $m = 6$ 次比較，FWER $\approx 1 - 0.95^6 \approx 0.265$
+    \item 若 $k = 5$，則有 $m = 10$ 次比較，FWER $\approx 1 - 0.95^{10} \approx 0.40$
+\end{itemize}
+
+這意味著即使所有組別的真實平均值相同（虛無假設為真），我們也很可能「發現」至少一個顯著差異（偽陽性）。
+
+\textbf{解決方案：}
+\begin{itemize}
+    \item 使用 ANOVA 進行整體檢定
+    \item 若 ANOVA 拒絕虛無假設，再使用事後比較方法（如 Bonferroni、Tukey HSD）調整顯著水準
+\end{itemize}
+\end{solution}
+
+\vspace{5mm}
+
+\noindent Supermarkets often place similar types of cereal on the same shelf. Suppose a researcher aims to investigate whether the sugar content varies by shelf. The shelf placement for 77 cereals was recorded as their sugar content.
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+Shelf & Number & Mean & StdDev \\
+\midrule
+1 & 20 & 4.80000 & 4.57223 \\
+2 & 21 & 9.61905 & 4.12888 \\
+3 & 36 & 6.52778 & 3.83582 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The researcher then applies an Analysis of Variance (ANOVA). The test statistic, called $F$-statistic, compares two quantities that measure variation. The numerator measures the variation \textit{between} the groups (treatments) and is called the Mean Square due to Treatments (MST). The denominator measures the variation \textit{within} the groups, and is called the Mean Square due to Error (MSE). The MST has $k-1$ degrees of freedom (df) because there are $k$ groups, and the MSE has $N-k$ degrees of freedom, where $N$ is the total number of observations. The partial ANOVA table shows the components of the calculation of the $F$-statistic.
+
+\begin{center}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{ANOVA} & & & & & \\
+Source of Variation & Sum of Squares (SS) & df & Mean Square (MS) & $F$-statistic & P-value \\
+\midrule
+Shelf (Between Groups) & 248.4079 & \# & \# & \# & 0.0012 \\
+Error (Within Groups) & 1253.1246 & \# & \# & & \\
+Total & 1501.5326 & \# & & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\question[10] State the null and alternative hypotheses. Compute the $F$-statistic using the values in the ANOVA table. What does the ANOVA table say about the null hypothesis? Explain your conclusion in terms of sugar content and shelf placement.
+
+\begin{solution}
+\textbf{假設檢定：}
+\begin{align*}
+H_0 &: \mu_1 = \mu_2 = \mu_3 \quad \text{（三個貨架的平均含糖量相等）}\\
+H_1 &: \text{至少有兩個貨架的平均含糖量不相等}
+\end{align*}
+
+\textbf{計算自由度與均方：}
+\begin{itemize}
+    \item 組數 $k = 3$，總樣本數 $N = 20 + 21 + 36 = 77$
+    \item 組間自由度：$df_{Between} = k - 1 = 3 - 1 = 2$
+    \item 組內自由度：$df_{Within} = N - k = 77 - 3 = 74$
+    \item 總自由度：$df_{Total} = N - 1 = 76$
+\end{itemize}
+
+\textbf{計算均方：}
+\begin{align*}
+MST &= \frac{SS_{Between}}{df_{Between}} = \frac{248.4079}{2} = 124.2040\\
+MSE &= \frac{SS_{Within}}{df_{Within}} = \frac{1253.1246}{74} = 16.9341
+\end{align*}
+
+\textbf{計算 $F$ 統計量：}
+\[
+F = \frac{MST}{MSE} = \frac{124.2040}{16.9341} = \boxed{7.334}
+\]
+
+\textbf{結論：}由於 p-value $= 0.0012 < 0.05$，我們\textbf{拒絕虛無假設}。
+
+在 5\% 顯著水準下，有充分證據顯示不同貨架上麥片的平均含糖量存在顯著差異。超市的貨架位置與麥片含糖量有關聯。
+\end{solution}
+
+\question[10] Explain the conceptual framework of how the ANOVA works. In particular, why does comparing the \textit{variation between} the groups to the \textit{variation within} the groups allow us to determine whether there is a significant difference in the \textit{mean} sugar content?
+
+\begin{solution}
+\textbf{ANOVA 的核心概念：變異拆解}
+
+ANOVA 將總變異（Total Variation）拆解為兩部分：
+\[
+SS_{Total} = SS_{Between} + SS_{Within}
+\]
+
+\textbf{組間變異（Between-Group Variation, MST）：}
+\begin{itemize}
+    \item 衡量各組平均值與總平均值的差異
+    \item 如果組間平均值差異大，MST 會很大
+    \item MST 同時反映「真實的組間差異」+「隨機誤差」
+\end{itemize}
+
+\textbf{組內變異（Within-Group Variation, MSE）：}
+\begin{itemize}
+    \item 衡量同一組內觀測值的分散程度
+    \item 僅反映「隨機誤差」（個體差異）
+    \item 作為誤差變異的估計量
+\end{itemize}
+
+\textbf{$F$ 統計量的邏輯：}
+\[
+F = \frac{MST}{MSE} = \frac{\text{組間變異}}{\text{組內變異}} = \frac{\text{處理效果 + 誤差}}{\text{誤差}}
+\]
+
+\textbf{若 $H_0$ 為真}（所有組平均值相等）：MST 和 MSE 都只估計誤差變異，$F \approx 1$。
+
+\textbf{若 $H_1$ 為真}（組平均值不等）：MST 會額外包含組間差異，$F > 1$。
+
+當 $F$ 值足夠大（超過臨界值），我們有證據認為組間變異不僅僅來自隨機誤差，而是存在真實的平均數差異。
+\end{solution}
+
+\newpage
+
+\noindent The researcher would hardly be satisfied with the report since the $F$-test fails to specify which shelves have cereals with higher sugar content and by how much. To address this, multiple comparisons can be performed to compare several pairs of group means. One such method is called the Bonferroni method, which adjusts the tests and confidence intervals to allow for making many comparisons. The result is a wider margin of error (called the minimum significant difference, or MSD) found by replacing the critical $t$-value with a slightly larger number.
+
+\begin{center}
+\begin{tabular}{cc|cccccc}
+\toprule
+\multicolumn{2}{c|}{Dependent Variable: SUGARS} & & & & \multicolumn{2}{c}{95\% Confidence} \\
+(I) & (J) & Mean & Std. & P-value & \multicolumn{2}{c}{Interval} \\
+SHELF & SHELF & Difference (I-J) & Error & & Lower Bound & Upper Bound \\
+\midrule
+\multirow{2}{*}{Bonferroni} & & & & & & \\
+1 & 2 & $-4.819$ & 1.2857 & 0.001 & $-7.969$ & $-1.670$ \\
+  & 3 & $-1.728$ & 1.1476 & 0.409 & $-4.539$ & 1.084 \\
+2 & 1 & 4.819 & 1.2857 & 0.001 & 1.670 & 7.969 \\
+  & 3 & 3.091 & 1.1299 & 0.023 & 0.323 & 5.859 \\
+3 & 1 & 1.728 & 1.1476 & 0.409 & $-1.084$ & 4.539 \\
+  & 2 & $-3.091$ & 1.1299 & 0.023 & $-5.859$ & $-0.323$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\question[10] To check for significant differences between the shelf means, we can use a Bonferroni test, the results of which are shown above. For each pair of shelves, the difference is shown along with its standard error and significance level. Identify which pairs of shelves have significant differences in sugar content based on the table. For instance, can we determine that cereals on shelf 1 have a different mean sugar content than cereals on shelf 2? What can we conclude from these results?
+
+\begin{solution}
+\textbf{顯著性判斷標準：}p-value $< 0.05$ 或 95\% 信賴區間不包含 0。
+
+\textbf{成對比較結果分析：}
+
+\textbf{貨架 1 vs 貨架 2：}
+\begin{itemize}
+    \item 平均差異 $= -4.819$（貨架1比貨架2低約4.82克）
+    \item p-value $= 0.001 < 0.05$ $\checkmark$
+    \item 95\% CI: $(-7.969, -1.670)$ 不包含0 $\checkmark$
+    \item \textbf{結論：顯著差異}
+\end{itemize}
+
+\textbf{貨架 1 vs 貨架 3：}
+\begin{itemize}
+    \item 平均差異 $= -1.728$
+    \item p-value $= 0.409 > 0.05$ $\times$
+    \item 95\% CI: $(-4.539, 1.084)$ 包含0 $\times$
+    \item \textbf{結論：無顯著差異}
+\end{itemize}
+
+\textbf{貨架 2 vs 貨架 3：}
+\begin{itemize}
+    \item 平均差異 $= 3.091$（貨架2比貨架3高約3.09克）
+    \item p-value $= 0.023 < 0.05$ $\checkmark$
+    \item 95\% CI: $(0.323, 5.859)$ 不包含0 $\checkmark$
+    \item \textbf{結論：顯著差異}
+\end{itemize}
+
+\textbf{整體結論：}
+\begin{itemize}
+    \item \textbf{貨架 2}（中層）的麥片含糖量\textbf{顯著高於}貨架 1 和貨架 3
+    \item 貨架 1（底層）和貨架 3（頂層）之間\textbf{無顯著差異}
+    \item 平均含糖量排序：貨架 2 (9.62) $>$ 貨架 3 (6.53) $>$ 貨架 1 (4.80)
+    \item 這可能反映超市將高糖麥片放在兒童視線高度（中層貨架）的行銷策略
+\end{itemize}
+\end{solution}
+
+\end{questions}
+
+\end{document}

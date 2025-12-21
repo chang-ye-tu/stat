@@ -1,0 +1,582 @@
+\documentclass[addpoints,12pt,a4paper]{exam}
+\printanswers
+\usepackage[AutoFakeBold,AutoFakeSlant]{xeCJK}
+\setCJKmainfont[AutoFakeSlant=.1,AutoFakeBold=2]{Noto Serif CJK TC} 
+\usepackage{amsthm,amsmath,amssymb,graphicx,hyperref,booktabs,tabularx,enumitem,multirow}
+\pagestyle{headandfoot}
+\firstpageheadrule
+\firstpageheader{題號：326}{國立臺灣大學112學年度碩士班招生考試試題}{統計學(H)}
+\runningheader{題號：326}{國立臺灣大學112學年度碩士班招生考試試題}{統計學(H)}
+\runningheadrule
+\firstpagefooter{}{第\thepage\ 頁（共\numpages 頁）}{}
+\runningfooter{}{第\thepage\ 頁（共\numpages 頁）}{}
+\footrule
+\extraheadheight{-8mm}
+\extrafootheight{-10mm}
+\extrawidth{35mm}
+\newcommand{\ie}{\,\Longrightarrow\,}
+\newcommand{\ifff}{\,\Longleftrightarrow\,}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\plim}{\mathrm{plim}}
+\newcommand{\Prob}{\mathbb{P}}
+\renewcommand{\solutiontitle}{
+  \noindent\textbf{解：}
+}
+\usepackage{multicol}
+
+\begin{document}
+\begin{center}
+    \fbox{\fbox{\parbox{14cm}{\centering
+  共 6 頁。$t$ 分配表、標準常態分配表、卡方分配表附於後。
+    }}}
+\end{center}
+\vspace{3mm}
+
+\begin{questions}
+\pointname{\%}
+
+%% ===== Question 1 =====
+\question[15] Suppose you are taking a multiple-choice test with $c$ choices for each question. In answering a question on this test, the probability that you know the answer is $p$. If you don't know the answer, you choose one at random. What is the probability that you knew the answer to a question, given that you answered it correctly?
+
+\begin{solution}
+設事件：
+\begin{itemize}
+    \item $K$ = 知道答案（Know）
+    \item $C$ = 答對（Correct）
+\end{itemize}
+
+\textbf{已知條件：}
+\begin{itemize}
+    \item $\Prob(K) = p$（知道答案的機率）
+    \item $\Prob(K^c) = 1-p$（不知道答案的機率）
+    \item $\Prob(C|K) = 1$（若知道答案，必定答對）
+    \item $\Prob(C|K^c) = \frac{1}{c}$（若不知道答案，隨機猜中的機率）
+\end{itemize}
+
+\textbf{求：}$\Prob(K|C)$ = 給定答對的條件下，知道答案的機率
+
+\textbf{應用貝氏定理：}
+\[
+\Prob(K|C) = \frac{\Prob(C|K) \cdot \Prob(K)}{\Prob(C)}
+\]
+
+\textbf{計算 $\Prob(C)$（全機率公式）：}
+\begin{align*}
+\Prob(C) &= \Prob(C|K)\Prob(K) + \Prob(C|K^c)\Prob(K^c)\\
+&= 1 \cdot p + \frac{1}{c} \cdot (1-p)\\
+&= p + \frac{1-p}{c}\\
+&= \frac{cp + 1 - p}{c}\\
+&= \frac{p(c-1) + 1}{c}
+\end{align*}
+
+\textbf{代入貝氏定理：}
+\begin{align*}
+\Prob(K|C) &= \frac{1 \cdot p}{\frac{p(c-1) + 1}{c}}\\
+&= \frac{cp}{p(c-1) + 1}\\
+&= \frac{cp}{pc - p + 1}
+\end{align*}
+
+\textbf{答案：}
+\[
+\boxed{\Prob(K|C) = \frac{cp}{1 + p(c-1)} = \frac{cp}{1 + pc - p}}
+\]
+
+\textbf{驗證（特殊情況）：}
+\begin{itemize}
+    \item 若 $p = 1$（總是知道答案）：$\Prob(K|C) = \frac{c}{c} = 1$ \checkmark
+    \item 若 $p = 0$（完全不知道答案）：$\Prob(K|C) = \frac{0}{1} = 0$ \checkmark
+    \item 若 $c = 1$（只有一個選項，必答對）：$\Prob(K|C) = \frac{p}{1} = p$ \checkmark
+    \item 當 $c \to \infty$（選項很多）：$\Prob(K|C) \to 1$（若答對很可能是真的知道）\checkmark
+\end{itemize}
+\end{solution}
+
+%% ===== Question 2 =====
+\question[20] Compute the median for the exponential distribution with parameter $\lambda$.
+
+\begin{solution}
+\textbf{指數分配的定義：}
+
+參數為 $\lambda$ 的指數分配，其機率密度函數（PDF）為：
+\[
+f(x) = \lambda e^{-\lambda x}, \quad x \geq 0
+\]
+
+累積分配函數（CDF）為：
+\[
+F(x) = \Prob(X \leq x) = 1 - e^{-\lambda x}, \quad x \geq 0
+\]
+
+\textbf{中位數的定義：}
+
+中位數 $m$ 滿足 $F(m) = 0.5$，即：
+\[
+\Prob(X \leq m) = 0.5
+\]
+
+\textbf{求解：}
+\[
+F(m) = 1 - e^{-\lambda m} = 0.5
+\]
+
+\[
+e^{-\lambda m} = 1 - 0.5 = 0.5
+\]
+
+取自然對數：
+\[
+-\lambda m = \ln(0.5) = \ln\left(\frac{1}{2}\right) = -\ln 2
+\]
+
+\[
+m = \frac{\ln 2}{\lambda}
+\]
+
+\textbf{答案：}
+\[
+\boxed{m = \frac{\ln 2}{\lambda} \approx \frac{0.693}{\lambda}}
+\]
+
+\textbf{備註：}
+\begin{itemize}
+    \item 指數分配的期望值 $\E[X] = \frac{1}{\lambda}$
+    \item 中位數 $\frac{\ln 2}{\lambda} \approx 0.693 \cdot \frac{1}{\lambda} < \frac{1}{\lambda}$
+    \item 這說明指數分配是右偏（正偏）分配：中位數 $<$ 平均數
+\end{itemize}
+\end{solution}
+
+%% ===== Question 3 =====
+\question[15] The average IQ in a population is 100 with standard deviation 15 (by definition, IQ is normalized so this is the case). What is the probability that a randomly selected group of 100 people has an average IQ above 115?
+
+\begin{solution}
+\textbf{已知條件：}
+\begin{itemize}
+    \item 母體平均數 $\mu = 100$
+    \item 母體標準差 $\sigma = 15$
+    \item 樣本大小 $n = 100$
+\end{itemize}
+
+\textbf{樣本平均數的分配：}
+
+根據中央極限定理，當 $n$ 足夠大時（$n = 100$ 足夠大）：
+\[
+\bar{X} \sim N\left(\mu, \frac{\sigma^2}{n}\right) = N\left(100, \frac{15^2}{100}\right) = N(100, 2.25)
+\]
+
+標準誤：
+\[
+\text{SE} = \frac{\sigma}{\sqrt{n}} = \frac{15}{\sqrt{100}} = \frac{15}{10} = 1.5
+\]
+
+\textbf{計算 $\Prob(\bar{X} > 115)$：}
+
+標準化：
+\[
+Z = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}} = \frac{115 - 100}{1.5} = \frac{15}{1.5} = 10
+\]
+
+\[
+\Prob(\bar{X} > 115) = \Prob(Z > 10)
+\]
+
+\textbf{查表：}
+
+$Z = 10$ 遠超過標準常態分配表的範圍（通常表只到 $Z = 3.9$）。
+
+從表中可知：
+\begin{itemize}
+    \item $\Prob(Z > 3.9) < 0.00005$
+    \item 對於 $Z = 10$，$\Prob(Z > 10) \approx 0$（實際上約為 $7.6 \times 10^{-24}$）
+\end{itemize}
+
+\textbf{答案：}
+\[
+\boxed{\Prob(\bar{X} > 115) \approx 0 \text{（幾乎不可能）}}
+\]
+
+\textbf{直觀解釋：}
+
+樣本平均 IQ 要超過 115，意味著要比母體平均高出 10 個標準誤（$\frac{15}{1.5} = 10$）。這是一個極端罕見的事件，在實務上可以認為不可能發生。
+\end{solution}
+
+%% ===== Question 4 =====
+\question[8] A leading company in the financial sector in Taiwan intends to redesign its service process for improving customer engagement and loyalty. If they assume that at least 75\% of their target audience will prefer their new, innovative service process over the existing one, and the margin of error is given as 0.05, what sample size they need to verify their prediction with a 95\% confident level?
+
+\begin{solution}
+\textbf{比例估計的樣本量公式：}
+
+對於估計母體比例 $p$，在信賴水準 $(1-\alpha)$ 下，若要求誤差界限（margin of error）為 $E$，所需樣本量為：
+\[
+n = \left(\frac{z_{\alpha/2}}{E}\right)^2 \cdot p(1-p)
+\]
+
+\textbf{已知條件：}
+\begin{itemize}
+    \item 預期比例 $p = 0.75$
+    \item 誤差界限 $E = 0.05$
+    \item 信賴水準 95\%，故 $\alpha = 0.05$，$z_{\alpha/2} = z_{0.025} = 1.96$
+\end{itemize}
+
+\textbf{計算：}
+\begin{align*}
+n &= \left(\frac{1.96}{0.05}\right)^2 \cdot (0.75)(1-0.75)\\
+&= (39.2)^2 \cdot (0.75)(0.25)\\
+&= 1536.64 \times 0.1875\\
+&= 288.12
+\end{align*}
+
+\textbf{答案：}
+
+無條件進位，所需樣本量為 $\boxed{n = 289}$
+
+\textbf{備註：}若使用最保守估計 $p = 0.5$（使 $p(1-p)$ 最大化）：
+\[
+n = (39.2)^2 \times 0.25 = 384.16 \approx 385
+\]
+\end{solution}
+
+%% ===== Question 5 =====
+\question A car maker just launches a newly-invented engine. They want to prove that their newly-invented engine really improves the fuel efficiency. The following data are the performance (consumed liters per 100 kilometers) of two engines (the original one vs.\ the new one).
+
+\begin{center}
+\begin{tabular}{l|cccccccccc}
+\toprule
+Original & 13 & 10 & 13 & 12 & 14 & 14 & 13 & 10 & 11 & 11 \\
+New & 11 & 8 & 8 & 9 & 12 & 11 & 10 & 9 & 9 & 8 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{parts}
+\part[8] Assuming the engine performance are measured independently (20 different cars), please conduct a hypothesis test here and conclude your result ($\alpha = 0.05$).
+
+\begin{solution}
+\textbf{假設檢定設定：}
+
+油耗越低代表燃油效率越好。若新引擎改善效率，則新引擎的平均油耗應低於原引擎。
+
+\begin{align*}
+H_0 &: \mu_{\text{Original}} = \mu_{\text{New}} \text{（或 } \mu_{\text{Original}} - \mu_{\text{New}} = 0\text{）}\\
+H_1 &: \mu_{\text{Original}} > \mu_{\text{New}} \text{（新引擎油耗較低，效率較好）}
+\end{align*}
+
+這是單尾（右尾）檢定。
+
+\textbf{計算樣本統計量：}
+
+\textbf{原引擎：}
+\[
+\bar{x}_1 = \frac{13+10+13+12+14+14+13+10+11+11}{10} = \frac{121}{10} = 12.1
+\]
+
+\[
+s_1^2 = \frac{\sum(x_i - \bar{x}_1)^2}{n_1-1} = \frac{(13-12.1)^2 + \cdots + (11-12.1)^2}{9}
+\]
+
+計算各項：$(0.9)^2 + (-2.1)^2 + (0.9)^2 + (-0.1)^2 + (1.9)^2 + (1.9)^2 + (0.9)^2 + (-2.1)^2 + (-1.1)^2 + (-1.1)^2$
+$= 0.81 + 4.41 + 0.81 + 0.01 + 3.61 + 3.61 + 0.81 + 4.41 + 1.21 + 1.21 = 20.9$
+
+\[
+s_1^2 = \frac{20.9}{9} = 2.322, \quad s_1 = 1.524
+\]
+
+\textbf{新引擎：}
+\[
+\bar{x}_2 = \frac{11+8+8+9+12+11+10+9+9+8}{10} = \frac{95}{10} = 9.5
+\]
+
+計算各項：$(1.5)^2 + (-1.5)^2 + (-1.5)^2 + (-0.5)^2 + (2.5)^2 + (1.5)^2 + (0.5)^2 + (-0.5)^2 + (-0.5)^2 + (-1.5)^2$
+$= 2.25 + 2.25 + 2.25 + 0.25 + 6.25 + 2.25 + 0.25 + 0.25 + 0.25 + 2.25 = 18.5$
+
+\[
+s_2^2 = \frac{18.5}{9} = 2.056, \quad s_2 = 1.434
+\]
+
+\textbf{獨立樣本 $t$ 檢定（假設等變異數）：}
+
+合併變異數：
+\[
+s_p^2 = \frac{(n_1-1)s_1^2 + (n_2-1)s_2^2}{n_1 + n_2 - 2} = \frac{9(2.322) + 9(2.056)}{18} = \frac{20.9 + 18.5}{18} = \frac{39.4}{18} = 2.189
+\]
+
+$t$ 統計量：
+\[
+t = \frac{\bar{x}_1 - \bar{x}_2}{s_p\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}} = \frac{12.1 - 9.5}{\sqrt{2.189}\sqrt{\frac{1}{10} + \frac{1}{10}}} = \frac{2.6}{1.479 \times 0.447} = \frac{2.6}{0.661} = 3.93
+\]
+
+\textbf{臨界值：}$df = n_1 + n_2 - 2 = 18$，$\alpha = 0.05$（單尾）
+
+查 $t$ 表：$t_{0.05, 18} = 1.734$
+
+\textbf{結論：}$t = 3.93 > 1.734$，\textbf{拒絕 $H_0$}。
+
+在 $\alpha = 0.05$ 顯著水準下，有充分證據支持新引擎的燃油效率優於原引擎。
+\end{solution}
+
+\part[8] Assuming the engine performance are gathered from paired samples (10 cars), please conduct a hypothesis test here and conclude your result ($\alpha = 0.05$).
+
+\begin{solution}
+\textbf{配對樣本 $t$ 檢定：}
+
+計算每對的差異 $d_i = \text{Original}_i - \text{New}_i$：
+
+\begin{center}
+\begin{tabular}{c|cccccccccc}
+Original & 13 & 10 & 13 & 12 & 14 & 14 & 13 & 10 & 11 & 11 \\
+New & 11 & 8 & 8 & 9 & 12 & 11 & 10 & 9 & 9 & 8 \\
+\hline
+$d_i$ & 2 & 2 & 5 & 3 & 2 & 3 & 3 & 1 & 2 & 3 \\
+\end{tabular}
+\end{center}
+
+\textbf{假設檢定設定：}
+\begin{align*}
+H_0 &: \mu_d = 0 \text{（差異為零）}\\
+H_1 &: \mu_d > 0 \text{（原引擎油耗較高，即新引擎較省油）}
+\end{align*}
+
+\textbf{計算差異的統計量：}
+\[
+\bar{d} = \frac{2+2+5+3+2+3+3+1+2+3}{10} = \frac{26}{10} = 2.6
+\]
+
+\[
+s_d^2 = \frac{\sum(d_i - \bar{d})^2}{n-1}
+\]
+
+計算各項：
+$(2-2.6)^2 + (2-2.6)^2 + (5-2.6)^2 + (3-2.6)^2 + (2-2.6)^2 + (3-2.6)^2 + (3-2.6)^2 + (1-2.6)^2 + (2-2.6)^2 + (3-2.6)^2$
+
+$= 0.36 + 0.36 + 5.76 + 0.16 + 0.36 + 0.16 + 0.16 + 2.56 + 0.36 + 0.16 = 10.4$
+
+\[
+s_d^2 = \frac{10.4}{9} = 1.156, \quad s_d = 1.075
+\]
+
+\textbf{$t$ 統計量：}
+\[
+t = \frac{\bar{d} - 0}{s_d / \sqrt{n}} = \frac{2.6}{1.075 / \sqrt{10}} = \frac{2.6}{0.340} = 7.65
+\]
+
+\textbf{臨界值：}$df = n - 1 = 9$，$\alpha = 0.05$（單尾）
+
+查 $t$ 表：$t_{0.05, 9} = 1.833$
+
+\textbf{結論：}$t = 7.65 > 1.833$，\textbf{拒絕 $H_0$}。
+
+在 $\alpha = 0.05$ 顯著水準下，有充分證據支持新引擎的燃油效率優於原引擎。
+
+\textbf{比較兩種方法：}配對樣本的 $t$ 值（7.65）遠大於獨立樣本的 $t$ 值（3.93），這是因為配對設計消除了車輛間的個體差異，使檢定更有統計檢力。
+\end{solution}
+\end{parts}
+
+%% ===== Question 6 =====
+\question The average purchase amount per customer in an outlet mall in Linkou is \$4,500 NTD according to a survey by a journalist. An outfit brand manager who has business in that outlet mall intended to confirm this information. She investigated the total purchase amount from 20 customers. The sample average is \$4,200 NTD, with a standard deviation of \$1,000 NTD. She found that the result of a hypothesis test here ($\alpha = 0.05$) suggested that the average purchase amount of current sample set was not significantly different from \$4,500.
+
+\begin{parts}
+\part[8] If the true average purchase amount is \$4,000, what is the probability of Type 2 error here?
+
+\begin{solution}
+\textbf{假設檢定設定：}
+\begin{align*}
+H_0 &: \mu = 4500\\
+H_1 &: \mu \neq 4500 \text{（雙尾檢定）}
+\end{align*}
+
+\textbf{已知條件：}
+\begin{itemize}
+    \item 樣本大小 $n = 20$
+    \item 樣本標準差 $s = 1000$
+    \item 顯著水準 $\alpha = 0.05$
+    \item 真實平均值 $\mu_1 = 4000$
+\end{itemize}
+
+\textbf{步驟一：找出在 $H_0$ 下的接受域}
+
+由於 $n = 20$ 且母體標準差未知，使用 $t$ 分配。
+$df = 19$，雙尾 $\alpha = 0.05$，臨界值 $t_{0.025, 19} = 2.093$
+
+在 $H_0: \mu = 4500$ 下，接受域為：
+\[
+4500 - 2.093 \times \frac{1000}{\sqrt{20}} < \bar{X} < 4500 + 2.093 \times \frac{1000}{\sqrt{20}}
+\]
+
+\[
+4500 - 2.093 \times 223.6 < \bar{X} < 4500 + 2.093 \times 223.6
+\]
+
+\[
+4500 - 468 < \bar{X} < 4500 + 468
+\]
+
+\[
+4032 < \bar{X} < 4968
+\]
+
+\textbf{步驟二：在 $\mu_1 = 4000$ 下計算型二錯誤機率}
+
+型二錯誤 = 在 $H_1$ 為真時，$\bar{X}$ 落在接受域的機率
+
+在 $\mu_1 = 4000$ 下：
+\[
+\bar{X} \sim N\left(4000, \frac{1000^2}{20}\right) = N(4000, 50000)
+\]
+
+標準化接受域的邊界：
+\[
+Z_L = \frac{4032 - 4000}{1000/\sqrt{20}} = \frac{32}{223.6} = 0.143
+\]
+
+\[
+Z_U = \frac{4968 - 4000}{1000/\sqrt{20}} = \frac{968}{223.6} = 4.33
+\]
+
+\textbf{型二錯誤機率：}
+\[
+\beta = \Prob(4032 < \bar{X} < 4968 \mid \mu = 4000) = \Prob(0.143 < Z < 4.33)
+\]
+
+\[
+\beta = \Phi(4.33) - \Phi(0.143) \approx 1 - 0.5569 = 0.4431
+\]
+
+（查表：$\Phi(0.14) \approx 0.5557$，$\Phi(4.33) \approx 1$）
+
+\textbf{答案：}$\boxed{\beta \approx 0.443}$ 或約 44.3\%
+\end{solution}
+
+\part[8] Given that the probability of committing a Type 2 error is set at 0.2 here, how many samples is required?
+
+\begin{solution}
+\textbf{已知條件：}
+\begin{itemize}
+    \item $H_0: \mu_0 = 4500$，$H_1: \mu \neq 4500$（雙尾）
+    \item 真實平均值 $\mu_1 = 4000$
+    \item $\alpha = 0.05$，$\beta = 0.20$
+    \item $\sigma = s = 1000$（以樣本標準差估計）
+\end{itemize}
+
+\textbf{雙尾檢定的樣本量公式：}
+
+對於雙尾檢定，所需樣本量為：
+\[
+n = \left(\frac{(z_{\alpha/2} + z_\beta) \sigma}{\mu_0 - \mu_1}\right)^2
+\]
+
+\textbf{查表：}
+\begin{itemize}
+    \item $z_{\alpha/2} = z_{0.025} = 1.96$
+    \item $z_\beta = z_{0.20} = 0.842$（因為 $\Phi(0.84) \approx 0.80$）
+\end{itemize}
+
+\textbf{計算：}
+\[
+n = \left(\frac{(1.96 + 0.842) \times 1000}{|4500 - 4000|}\right)^2 = \left(\frac{2.802 \times 1000}{500}\right)^2 = (5.604)^2 = 31.4
+\]
+
+\textbf{答案：}無條件進位，所需樣本量為 $\boxed{n = 32}$
+
+\textbf{驗證：}使用更精確的 $z_{0.20} = 0.8416$：
+\[
+n = \left(\frac{(1.96 + 0.8416) \times 1000}{500}\right)^2 = (5.6032)^2 = 31.4 \approx 32
+\]
+\end{solution}
+\end{parts}
+
+%% ===== Question 7 =====
+\question[10] The following is a table showing information about the year-end bonus of 100 employees within a company. Each person in this dataset is categorized in terms of his or her received bonus (using each person's monthly salary as a calculation basis) and job level. Does the dataset suggest that the job level and year-end bonus are related here? Please analyze this question with an appropriate hypothesis testing method ($\alpha = 0.05$).
+
+\begin{center}
+\begin{tabular}{l|c|ccc}
+\toprule
+& & \multicolumn{3}{c}{Job Level} \\
+& & Entry level & Mid-Level & Senior \\
+\midrule
+Bonus (as \# of & 1.5 & 33 & 5 & 2 \\
+month of monthly & 2.5 & 10 & 20 & 8 \\
+salary) & 3 & 7 & 5 & 10 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{solution}
+\textbf{假設檢定設定：}
+
+使用卡方獨立性檢定（Chi-square test of independence）
+
+\begin{align*}
+H_0 &: \text{工作級別與年終獎金獨立（無關聯）}\\
+H_1 &: \text{工作級別與年終獎金不獨立（有關聯）}
+\end{align*}
+
+\textbf{整理觀察值與邊際總和：}
+
+\begin{center}
+\begin{tabular}{l|ccc|c}
+\toprule
+Bonus & Entry & Mid & Senior & Row Total \\
+\midrule
+1.5 & 33 & 5 & 2 & 40 \\
+2.5 & 10 & 20 & 8 & 38 \\
+3.0 & 7 & 5 & 10 & 22 \\
+\midrule
+Column Total & 50 & 30 & 20 & 100 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{計算期望值：}$E_{ij} = \frac{\text{Row}_i \times \text{Col}_j}{n}$
+
+\begin{center}
+\begin{tabular}{l|ccc}
+\toprule
+Bonus & Entry & Mid & Senior \\
+\midrule
+1.5 & $\frac{40 \times 50}{100} = 20$ & $\frac{40 \times 30}{100} = 12$ & $\frac{40 \times 20}{100} = 8$ \\
+2.5 & $\frac{38 \times 50}{100} = 19$ & $\frac{38 \times 30}{100} = 11.4$ & $\frac{38 \times 20}{100} = 7.6$ \\
+3.0 & $\frac{22 \times 50}{100} = 11$ & $\frac{22 \times 30}{100} = 6.6$ & $\frac{22 \times 20}{100} = 4.4$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{計算卡方統計量：}
+\[
+\chi^2 = \sum \frac{(O_{ij} - E_{ij})^2}{E_{ij}}
+\]
+
+\begin{align*}
+\chi^2 &= \frac{(33-20)^2}{20} + \frac{(5-12)^2}{12} + \frac{(2-8)^2}{8}\\
+&\quad + \frac{(10-19)^2}{19} + \frac{(20-11.4)^2}{11.4} + \frac{(8-7.6)^2}{7.6}\\
+&\quad + \frac{(7-11)^2}{11} + \frac{(5-6.6)^2}{6.6} + \frac{(10-4.4)^2}{4.4}\\[2mm]
+&= \frac{169}{20} + \frac{49}{12} + \frac{36}{8} + \frac{81}{19} + \frac{73.96}{11.4} + \frac{0.16}{7.6}\\
+&\quad + \frac{16}{11} + \frac{2.56}{6.6} + \frac{31.36}{4.4}\\[2mm]
+&= 8.45 + 4.08 + 4.50 + 4.26 + 6.49 + 0.02 + 1.45 + 0.39 + 7.13\\[2mm]
+&= 36.77
+\end{align*}
+
+\textbf{自由度與臨界值：}
+\[
+df = (r-1)(c-1) = (3-1)(3-1) = 4
+\]
+
+查卡方表：$\chi^2_{0.05, 4} = 9.49$
+
+\textbf{結論：}
+
+$\chi^2 = 36.77 > 9.49$，\textbf{拒絕 $H_0$}。
+
+在 $\alpha = 0.05$ 顯著水準下，有充分證據顯示\textbf{工作級別與年終獎金有顯著關聯}。
+
+\textbf{觀察現象：}
+\begin{itemize}
+    \item 初級員工（Entry level）傾向獲得較低的年終獎金（1.5個月）
+    \item 中階員工（Mid-Level）傾向獲得中等的年終獎金（2.5個月）
+    \item 資深員工（Senior）傾向獲得較高的年終獎金（3個月）
+\end{itemize}
+\end{solution}
+
+\end{questions}
+
+\end{document}
