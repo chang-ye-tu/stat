@@ -1,0 +1,1094 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[left=1cm,right=1cm,bottom=15mm,top=20mm]{geometry}
+\usepackage[AutoFakeBold,AutoFakeSlant]{xeCJK}
+\setCJKmainfont[AutoFakeSlant=.1,AutoFakeBold=2]{Noto Serif CJK TC}
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{graphicx,xcolor,float}
+\usepackage{booktabs,tabularx,multirow,array}
+\usepackage{enumitem}
+\usepackage{parskip}
+\setlist{itemsep=0pt,parsep=0pt}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    urlcolor=blue!80!black
+}
+
+% 定理環境
+\theoremstyle{definition}
+\newtheorem{definition}{定義}[section]
+\newtheorem{example}{例題}[section]
+\newtheorem{exercise}{習題}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+\newtheorem{corollary}{推論}[section]
+\newtheorem{proposition}{命題}[section]
+\newtheorem{property}{性質}[section]
+\newtheorem*{remark}{註}
+\newtheorem*{solution}{解答}
+\newtheorem*{note}{說明}
+\newtheorem*{prf}{證明}
+
+% 常用指令
+\newcommand{\ds}{\displaystyle}
+\newcommand{\ie}{\;\Longrightarrow\;}
+\newcommand{\ifff}{\;\Longleftrightarrow\;}
+\newcommand\expc{\mathsf{E}}
+\DeclareMathOperator\var{var}
+\DeclareMathOperator\cov{cov}
+\DeclareMathOperator\corr{corr}
+\newcommand\prb{\mathsf{P}}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\diff}[2]{\frac{\mathrm{d} #1}{\mathrm{d} #2}}
+\newcommand{\pdiff}[2]{\frac{\partial #1}{\partial #2}}
+
+% 頁面設定
+\renewcommand{\figurename}{圖}
+\renewcommand{\tablename}{表}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{統計學講義}
+\fancyhead[R]{第二部分：隨機變數與常用分配}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\title{\vspace{-2cm}\textbf{統計學講義}\\[3mm] \Large 第二部分：隨機變數與常用分配}
+\author{}
+\date{\vspace{-2cm}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fbox{\parbox{0.9\textwidth}{\centering
+\textbf{參考書籍}\\[2mm]
+Jeffrey S. Rosenthal, \textit{Probability and Statistics: The Science of Uncertainty}, 2nd Edition\\
+Chapter 3: Random Variables and Distributions\\
+Chapter 4: More about Distributions (Sections 4.1--4.2)\\
+Chapter 5: Special Distributions\\[2mm]
+\url{https://utstat.utoronto.ca/mikevans/jeffrosenthal/}
+}}
+\end{center}
+
+%\tableofcontents
+
+%=============================================================================
+\section{隨機變數的基本概念}
+%=============================================================================
+
+\subsection{隨機變數的定義}
+
+\begin{definition}[隨機變數]
+\textbf{隨機變數}（random variable）是一個從樣本空間 $\Omega$ 到實數 $\Real$ 的函數：
+\[
+X: \Omega \to \Real
+\]
+對於樣本空間中的每個結果 $\omega$，隨機變數 $X$ 指定一個實數值 $X(\omega)$。
+\end{definition}
+
+\begin{remark}
+隨機變數通常用大寫字母 $X$、$Y$、$Z$ 表示，其取值用小寫字母 $x$、$y$、$z$ 表示。
+\end{remark}
+
+\begin{example}
+擲兩顆骰子，令 $X$ 為兩骰子點數之和。則 $X$ 是一個隨機變數，可能取值為 $\{2, 3, 4, \ldots, 12\}$。
+\end{example}
+
+\begin{definition}[離散型與連續型隨機變數]
+\begin{itemize}
+  \item[]
+    \item \textbf{離散型隨機變數}（discrete random variable）：取值為有限個或可數無限個數值。
+    \item \textbf{連續型隨機變數}（continuous random variable）：取值為某區間內的任意實數。
+\end{itemize}
+\end{definition}
+
+\subsection{機率質量函數（PMF）}
+
+\begin{definition}[機率質量函數]
+對於離散型隨機變數 $X$，其\textbf{機率質量函數}（probability mass function, PMF）定義為：
+\[
+p(x) = p_X(x) = \prb(X = x)
+\]
+即 $X$ 取值為 $x$ 的機率。
+\end{definition}
+
+\begin{property}[PMF 的性質]
+\begin{enumerate}[label=(\roman*)]
+  \item[]
+    \item $p(x) \geqslant 0$ 對所有 $x$
+    \item $\ds\sum_{\text{所有可能的 } x} p(x) = 1$
+    \item $\prb(X \in A) = \sum_{x \in A} p(x)$
+\end{enumerate}
+\end{property}
+
+\begin{example}
+擲一顆公正骰子，令 $X$ 為點數。則 PMF 為：
+\[
+p(x) = \prb(X = x) = \frac{1}{6}, \quad x = 1, 2, 3, 4, 5, 6
+\]
+
+驗證：$\ds\sum_{x=1}^{6} p(x) = 6 \times \frac{1}{6} = 1$ \checkmark
+\end{example}
+
+\subsection{機率密度函數（PDF）}
+
+\begin{definition}[機率密度函數]
+對於連續型隨機變數 $X$，其\textbf{機率密度函數}（probability density function, PDF）$f(x)$ 滿足：
+\[
+\prb(a \leqslant X \leqslant b) = \int_a^b f(x) \, dx
+\]
+\end{definition}
+
+\begin{property}[PDF 的性質]
+\begin{enumerate}[label=(\roman*)]
+  \item[]
+    \item $f(x) \geqslant 0$ 對所有 $x$
+    \item $\ds\int_{-\infty}^{\infty} f(x) \, dx = 1$
+    \item $\prb(X = a) = 0$ 對任意單點 $a$（連續型隨機變數取特定值的機率為 0）
+    \item $\prb(a \leqslant X \leqslant b) = \prb(a < X < b) = \prb(a \leqslant X < b) = \prb(a < X \leqslant b)$
+\end{enumerate}
+\end{property}
+
+\begin{remark}
+注意：$f(x)$ 本身不是機率！$f(x)$ 可以大於 1。只有 $f(x)$ 在區間上的積分才代表機率。
+\end{remark}
+
+\subsection{累積分配函數（CDF）}
+
+\begin{definition}[累積分配函數]
+隨機變數 $X$ 的\textbf{累積分配函數}（cumulative distribution function, CDF）定義為：
+\[
+F(x) = F_X(x) = \prb(X \leqslant x)
+\]
+\end{definition}
+
+\begin{property}[CDF 的性質]
+\begin{enumerate}[label=(\roman*)]
+  \item[]
+    \item $0 \leqslant F(x) \leqslant 1$ 對所有 $x$
+    \item $F$ 為\textbf{單調非遞減}函數：若 $x_1 < x_2$，則 $F(x_1) \leqslant F(x_2)$
+    \item $\ds\lim_{x \to -\infty} F(x) = 0$，$\ds\lim_{x \to \infty} F(x) = 1$
+    \item $\prb(a < X \leqslant b) = F(b) - F(a)$
+    \item 對連續型隨機變數：$f(x) = F'(x)$（PDF 是 CDF 的導數）
+\end{enumerate}
+\end{property}
+
+\begin{example}
+設連續型隨機變數 $X$ 的 PDF 為 $f(x) = 2x$，$0 \leqslant x \leqslant 1$。求 CDF。
+\end{example}
+
+\begin{solution}
+對於 $0 \leqslant x \leqslant 1$：
+\[
+F(x) = \prb(X \leqslant x) = \int_0^x 2t \, dt = \Big[t^2\Big]_0^x = x^2
+\]
+
+完整的 CDF 為：
+\[
+F(x) = \begin{cases}
+0 & x < 0\\
+x^2 & 0 \leqslant x \leqslant 1\\
+1 & x > 1
+\end{cases}
+\]
+\end{solution}
+
+%=============================================================================
+\section{期望值與變異數}
+%=============================================================================
+
+\subsection{期望值}
+
+\begin{definition}[期望值]
+隨機變數 $X$ 的\textbf{期望值}（expected value）或\textbf{平均數}（mean），記為 $\expc[X]$ 或 $\mu$：
+
+\textbf{離散型}：
+\[
+\expc[X] = \sum_{x} x \cdot p(x)
+\]
+
+\textbf{連續型}：
+\[
+\expc[X] = \int_{-\infty}^{\infty} x \cdot f(x) \, dx
+\]
+\end{definition}
+
+\begin{example}
+擲一顆公正骰子，求點數的期望值。
+\end{example}
+
+\begin{solution}
+\[
+\expc[X] = \sum_{x=1}^{6} x \cdot \frac{1}{6} = \frac{1}{6}(1 + 2 + 3 + 4 + 5 + 6) = \frac{21}{6} = 3.5
+\]
+\end{solution}
+
+\begin{theorem}[函數的期望值]
+若 $g(X)$ 為隨機變數 $X$ 的函數，則：
+
+\textbf{離散型}：$\ds \expc[g(X)] = \sum_{x} g(x) \cdot p(x)$
+
+\textbf{連續型}：$\ds \expc[g(X)] = \int_{-\infty}^{\infty} g(x) \cdot f(x) \, dx$
+\end{theorem}
+
+\begin{property}[期望值的性質]\label{prop:expectation}
+設 $a$、$b$ 為常數，$X$、$Y$ 為隨機變數：
+\begin{enumerate}[label=(\roman*)]
+    \item $\expc[a] = a$
+    \item $\expc[aX] = aE[X]$
+    \item $\expc[aX + b] = aE[X] + b$（線性性質）
+    \item $\expc[X + Y] = \expc[X] + \expc[Y]$（無論 $X$、$Y$ 是否獨立）
+    \item 若 $X$ 與 $Y$ \textbf{獨立}，則 $\expc[XY] = \expc[X] \cdot \expc[Y]$
+    \item $E\left[\sum_{i=1}^{n} X_i\right] = \sum_{i=1}^{n} \expc[X_i]$
+\end{enumerate}
+\end{property}
+
+\begin{example}
+設 $\expc[X] = 5$，$\expc[Y] = 3$。求 $\expc[2X - 3Y + 7]$。
+\end{example}
+
+\begin{solution}
+利用期望值的線性性質：
+\[
+\expc[2X - 3Y + 7] = 2\expc[X] - 3\expc[Y] + 7 = 2(5) - 3(3) + 7 = 10 - 9 + 7 = 8
+\]
+\end{solution}
+
+\subsection{變異數與標準差}
+
+\begin{definition}[變異數]
+隨機變數 $X$ 的\textbf{變異數}（variance），記為 $\var(X)$ 或 $\sigma^2$，定義為：
+\[
+\var(X) = \expc\left[(X - \mu)^2\right] = \expc\left[(X - \expc[X])^2\right]
+\]
+其中 $\mu = \expc[X]$。
+\end{definition}
+
+\begin{theorem}[變異數的計算公式]
+\[
+\var(X) = \expc[X^2] - (\expc[X])^2 = \expc[X^2] - \mu^2
+\]
+\end{theorem}
+
+\begin{prf}
+\begin{align*}
+\var(X) &= \expc[(X - \mu)^2]\\
+&= \expc[X^2 - 2\mu X + \mu^2]\\
+&= \expc[X^2] - 2\mu \expc[X] + \mu^2\\
+&= \expc[X^2] - 2\mu \cdot \mu + \mu^2\\
+&= \expc[X^2] - \mu^2 = \expc[X^2] - (\expc[X])^2
+\end{align*}
+\end{prf}
+
+\begin{definition}[標準差]
+隨機變數 $X$ 的\textbf{標準差}（standard deviation）為變異數的平方根：
+\[
+  \sigma = \text{SD}(X) = \sqrt{\var(X)}
+\]
+標準差與 $X$ 有相同的單位。
+\end{definition}
+
+\begin{property}[變異數的性質]\label{prop:variance}
+設 $a$、$b$ 為常數：
+\begin{enumerate}[label=(\roman*)]
+    \item $\var(a) = 0$
+    \item $\var(aX) = a^2 \var(X)$
+    \item $\var(X + b) = \var(X)$（平移不影響變異數）
+    \item $\var(aX + b) = a^2 \var(X)$
+    \item 若 $X$ 與 $Y$ \textbf{獨立}，則 $\var(X + Y) = \var(X) + \var(Y)$
+    \item 若 $X$ 與 $Y$ \textbf{獨立}，則 $\var(X - Y) = \var(X) + \var(Y)$
+    \item $\var(X) \geqslant 0$，且 $\var(X) = 0 \ifff X = c$（常數）
+\end{enumerate}
+\end{property}
+
+\begin{example}
+擲一顆公正骰子，求點數的變異數。
+\end{example}
+
+\begin{solution}
+由前例，$\expc[X] = 3.5$。
+
+計算 $\expc[X^2]$：
+\[
+\expc[X^2] = \sum_{x=1}^{6} x^2 \cdot \frac{1}{6} = \frac{1}{6}(1 + 4 + 9 + 16 + 25 + 36) = \frac{91}{6}
+\]
+
+因此：
+\[
+\var(X) = \expc[X^2] - (\expc[X])^2 = \frac{91}{6} - (3.5)^2 = \frac{91}{6} - \frac{49}{4} = \frac{182 - 147}{12} = \frac{35}{12} \approx 2.917
+\]
+
+標準差：$\sigma = \sqrt{35/12} \approx 1.708$
+\end{solution}
+
+\subsection{共變異數與相關係數}
+
+\begin{definition}[共變異數]
+兩個隨機變數 $X$ 與 $Y$ 的\textbf{共變異數}（covariance）定義為：
+\[
+\cov(X, Y) = E\left[(X - \mu_X)(Y - \mu_Y)\right] = \expc[XY] - \expc[X]\expc[Y]
+\]
+\end{definition}
+
+\begin{property}[共變異數的性質]
+\begin{enumerate}[label=(\roman*)]
+  \item[]
+    \item $\cov(X, X) = \var(X)$
+    \item $\cov(X, Y) = \cov(Y, X)$
+    \item $\cov(aX, bY) = ab \cdot \cov(X, Y)$
+    \item $\cov(X + a, Y + b) = \cov(X, Y)$
+    \item $\cov(X + Y, Z) = \cov(X, Z) + \cov(Y, Z)$
+    \item 若 $X$ 與 $Y$ 獨立，則 $\cov(X, Y) = 0$
+    \item $\var(X + Y) = \var(X) + \var(Y) + 2\cov(X, Y)$
+    \item $\var(X - Y) = \var(X) + \var(Y) - 2\cov(X, Y)$
+\end{enumerate}
+\end{property}
+
+\begin{remark}
+注意：$\cov(X, Y) = 0$ 不一定意味著 $X$ 與 $Y$ 獨立！獨立 $\Rightarrow$ $\cov = 0$，但反向不成立。
+\end{remark}
+
+\begin{definition}[相關係數]
+兩個隨機變數 $X$ 與 $Y$ 的\textbf{（Pearson）相關係數}（correlation coefficient）定義為：
+\[
+\rho_{XY} = \corr(X, Y) = \frac{\cov(X, Y)}{\sigma_X \sigma_Y} = \frac{\cov(X, Y)}{\sqrt{\var(X) \var(Y)}}
+\]
+\end{definition}
+
+\begin{property}[相關係數的性質]
+\begin{enumerate}[label=(\roman*)]
+  \item[]
+    \item $-1 \leqslant \rho_{XY} \leqslant 1$
+    \item $\rho_{XY} = 1 \ifff Y = aX + b$，其中 $a > 0$（完全正相關）
+    \item $\rho_{XY} = -1 \ifff Y = aX + b$，其中 $a < 0$（完全負相關）
+    \item $\rho_{XY} = 0$ 表示 $X$ 與 $Y$ 無\textbf{線性}相關
+    \item $\corr(aX + b, cY + d) = \text{sgn}(ac) \cdot \corr(X, Y)$
+\end{enumerate}
+\end{property}
+
+\begin{example}
+設 $(X, Y)$ 的聯合 PMF 如下表：
+
+\begin{center}
+\begin{tabular}{c|ccc}
+\toprule
+$X \backslash Y$ & 0 & 1 & 2 \\
+\midrule
+0 & 0.1 & 0.1 & 0.1 \\
+1 & 0.1 & 0.2 & 0.1 \\
+2 & 0.1 & 0.1 & 0.1 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+求 $\cov(X, Y)$ 與 $\rho_{XY}$。
+\end{example}
+
+\begin{solution}
+\textbf{步驟 1：計算邊際分配}
+
+$X$ 的邊際 PMF：$\prb(X = 0) = 0.3$，$\prb(X = 1) = 0.4$，$\prb(X = 2) = 0.3$
+
+$Y$ 的邊際 PMF：$\prb(Y = 0) = 0.3$，$\prb(Y = 1) = 0.4$，$\prb(Y = 2) = 0.3$
+
+\textbf{步驟 2：計算期望值}
+\[
+\expc[X] = 0(0.3) + 1(0.4) + 2(0.3) = 1
+\]
+\[
+\expc[Y] = 0(0.3) + 1(0.4) + 2(0.3) = 1
+\]
+
+\textbf{步驟 3：計算 $\expc[XY]$}
+\begin{align*}
+\expc[XY] &= \sum_x \sum_y xy \cdot \prb(X=x, Y=y)\\
+&= 0 \cdot 0 \cdot 0.1 + 0 \cdot 1 \cdot 0.1 + \cdots + 1 \cdot 1 \cdot 0.2 + \cdots + 2 \cdot 2 \cdot 0.1\\
+&= 0 + 0 + 0 + 0 + 0.2 + 0.2 + 0 + 0.2 + 0.4 = 1.0
+\end{align*}
+
+\textbf{步驟 4：計算共變異數}
+\[
+\cov(X, Y) = \expc[XY] - \expc[X]\expc[Y] = 1.0 - 1 \times 1 = 0
+\]
+
+\textbf{步驟 5：計算變異數}
+\[
+\expc[X^2] = 0^2(0.3) + 1^2(0.4) + 2^2(0.3) = 0 + 0.4 + 1.2 = 1.6
+\]
+\[
+\var(X) = \expc[X^2] - (\expc[X])^2 = 1.6 - 1 = 0.6
+\]
+
+同理，$\var(Y) = 0.6$。
+
+\textbf{步驟 6：計算相關係數}
+\[
+\rho_{XY} = \frac{\cov(X, Y)}{\sqrt{\var(X)\var(Y)}} = \frac{0}{\sqrt{0.6 \times 0.6}} = 0
+\]
+
+$X$ 與 $Y$ 無線性相關。
+\end{solution}
+
+%=============================================================================
+\section{常用離散分配}
+%=============================================================================
+
+\subsection{伯努利分配}
+
+\begin{definition}[伯努利分配]
+若隨機變數 $X$ 只取 0 或 1 兩個值，且
+\[
+\prb(X = 1) = p, \quad \prb(X = 0) = 1 - p = q
+\]
+則稱 $X$ 服從參數為 $p$ 的\textbf{伯努利分配}（Bernoulli distribution），記為 $X \sim \text{Bernoulli}(p)$。
+\end{definition}
+
+\begin{property}[伯努利分配的期望值與變異數]
+若 $X \sim \text{Bernoulli}(p)$，則：
+\[
+\expc[X] = p, \quad \var(X) = p(1-p) = pq
+\]
+\end{property}
+
+\begin{prf}
+\[
+\expc[X] = 0 \cdot (1-p) + 1 \cdot p = p
+\]
+\[
+\expc[X^2] = 0^2 \cdot (1-p) + 1^2 \cdot p = p
+\]
+\[
+\var(X) = \expc[X^2] - (\expc[X])^2 = p - p^2 = p(1-p)
+\]
+\end{prf}
+
+\subsection{二項分配}
+
+\begin{definition}[二項分配]
+若 $X$ 表示 $n$ 次獨立伯努利試驗中成功的次數，每次成功機率為 $p$，則 $X$ 服從\textbf{二項分配}（binomial distribution），記為 $X \sim \text{Binomial}(n, p)$ 或 $X \sim B(n, p)$。
+
+PMF：
+\[
+\prb(X = k) = \binom{n}{k} p^k (1-p)^{n-k}, \quad k = 0, 1, 2, \ldots, n
+\]
+\end{definition}
+
+\begin{property}[二項分配的期望值與變異數]
+若 $X \sim B(n, p)$，則：
+\[
+\expc[X] = np, \quad \var(X) = np(1-p)
+\]
+\end{property}
+
+\begin{prf}
+令 $X = X_1 + X_2 + \cdots + X_n$，其中 $X_i \sim \text{Bernoulli}(p)$ 獨立。
+
+\[
+\expc[X] = E\left[\sum_{i=1}^{n} X_i\right] = \sum_{i=1}^{n} \expc[X_i] = np
+\]
+
+\[
+\var(X) = \var\left(\sum_{i=1}^{n} X_i\right) = \sum_{i=1}^{n} \var(X_i) = np(1-p)
+\]
+（因獨立，變異數可相加）
+\end{prf}
+
+\begin{example}
+某商店每天有 100 位顧客，每位顧客購買商品的機率為 0.3。求：
+\begin{enumerate}[label=(\alph*)]
+    \item 恰好 30 位顧客購買的機率
+    \item 購買顧客數的期望值與標準差
+    \item 至少 25 位顧客購買的機率（使用常態近似）
+\end{enumerate}
+\end{example}
+
+\begin{solution}
+令 $X$ = 購買商品的顧客數，$X \sim B(100, 0.3)$。
+
+\begin{enumerate}[label=(\alph*)]
+    \item $\prb(X = 30) = \binom{100}{30} (0.3)^{30} (0.7)^{70}\approx 0.0868$
+    
+    \item $\expc[X] = np = 100 \times 0.3 = 30$
+    
+    $\var(X) = np(1-p) = 100 \times 0.3 \times 0.7 = 21$
+    
+    $\text{SD}(X) = \sqrt{21} \approx 4.58$
+    
+    \item 檢驗常態近似條件：$np = 30 > 5$，$n(1-p) = 70 > 5$ \checkmark
+    
+    使用連續性校正（continuity correction）：
+    \[
+    \prb(X \geqslant 25) \approx P\left(Z \geqslant \frac{24.5 - 30}{\sqrt{21}}\right) = \prb(Z \geqslant -1.20) = \Phi(1.20) \approx 0.885
+    \]
+\end{enumerate}
+\end{solution}
+
+\subsection{Poisson 分配}
+
+\begin{definition}[Poisson 分配]
+若隨機變數 $X$ 的 PMF 為：
+\[
+\prb(X = k) = \frac{e^{-\lambda} \lambda^k}{k!}, \quad k = 0, 1, 2, \ldots
+\]
+其中 $\lambda > 0$，則稱 $X$ 服從參數為 $\lambda$ 的 \textbf{Poisson 分配}，記為 $X \sim \text{Poisson}(\lambda)$。
+\end{definition}
+
+\begin{property}[Poisson 分配的期望值與變異數]
+若 $X \sim \text{Poisson}(\lambda)$，則：
+\[
+\expc[X] = \lambda, \quad \var(X) = \lambda
+\]
+\end{property}
+
+\begin{prf}
+\textbf{期望值：}
+\begin{align*}
+\expc[X] &= \sum_{k=0}^{\infty} k \cdot \frac{e^{-\lambda} \lambda^k}{k!} = e^{-\lambda} \sum_{k=1}^{\infty} \frac{\lambda^k}{(k-1)!}\\
+&= e^{-\lambda} \lambda \sum_{k=1}^{\infty} \frac{\lambda^{k-1}}{(k-1)!} = e^{-\lambda} \lambda \sum_{j=0}^{\infty} \frac{\lambda^j}{j!}\\
+&= e^{-\lambda} \lambda \cdot e^{\lambda} = \lambda
+\end{align*}
+
+\textbf{變異數：}可先證明 $\expc[X(X-1)] = \lambda^2$，然後
+\[
+\expc[X^2] = \expc[X(X-1)] + \expc[X] = \lambda^2 + \lambda
+\]
+\[
+\var(X) = \expc[X^2] - (\expc[X])^2 = \lambda^2 + \lambda - \lambda^2 = \lambda
+\]
+\end{prf}
+
+\begin{theorem}[Poisson 近似]
+當 $n$ 大、$p$ 小、且 $\lambda = np$ 固定時：
+\[
+\text{Binomial}(n, p) \approx \text{Poisson}(\lambda)
+\]
+經驗法則：當 $n \geqslant 20$ 且 $p \leqslant 0.05$ 時，近似效果良好。
+\end{theorem}
+
+\begin{example}
+某網站平均每分鐘有 3 次點擊。假設點擊次數服從 Poisson 分配。
+\begin{enumerate}[label=(\alph*)]
+    \item 求某分鐘恰好有 5 次點擊的機率
+    \item 求某分鐘至少有 1 次點擊的機率
+\end{enumerate}
+\end{example}
+
+\begin{solution}
+設 $X$ = 每分鐘點擊次數，$X \sim \text{Poisson}(3)$。
+
+\begin{enumerate}[label=(\alph*)]
+    \item $\prb(X = 5) = \dfrac{e^{-3} \cdot 3^5}{5!} = \dfrac{e^{-3} \cdot 243}{120} = \dfrac{243 e^{-3}}{120} \approx 0.1008$
+    
+    \item $\prb(X \geqslant 1) = 1 - \prb(X = 0) = 1 - \dfrac{e^{-3} \cdot 3^0}{0!} = 1 - e^{-3} \approx 1 - 0.0498 = 0.9502$
+\end{enumerate}
+\end{solution}
+
+\subsection{常用離散分配比較表}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|c|c|c|c}
+\toprule
+\textbf{分配} & \textbf{符號} & \textbf{PMF} & $\expc[X]$ & $\var(X)$ \\
+\midrule
+伯努利 & $\text{Bernoulli}(p)$ & $p^x(1-p)^{1-x}$ & $p$ & $p(1-p)$ \\
+\midrule
+二項 & $B(n,p)$ & $\binom{n}{k}p^k(1-p)^{n-k}$ & $np$ & $np(1-p)$ \\
+\midrule
+Poisson & $\text{Poisson}(\lambda)$ & $\dfrac{e^{-\lambda}\lambda^k}{k!}$ & $\lambda$ & $\lambda$ \\
+\bottomrule
+\end{tabular}
+\caption{常用離散分配摘要}
+\end{table}
+
+%=============================================================================
+\section{常用連續分配}
+%=============================================================================
+
+\subsection{均勻分配}
+
+\begin{definition}[均勻分配]
+若隨機變數 $X$ 在區間 $[a, b]$ 上均勻分布，則其 PDF 為：
+\[
+f(x) = \frac{1}{b-a}, \quad a \leqslant x \leqslant b
+\]
+記為 $X \sim \text{Uniform}(a, b)$ 或 $X \sim U(a, b)$。
+\end{definition}
+
+\begin{property}[均勻分配的 CDF、期望值與變異數]
+\[
+F(x) = \frac{x - a}{b - a}, \quad a \leqslant x \leqslant b
+\]
+\[
+\expc[X] = \frac{a + b}{2}, \quad \var(X) = \frac{(b-a)^2}{12}
+\]
+\end{property}
+
+\begin{prf}
+\textbf{期望值：}
+\[
+\expc[X] = \int_a^b x \cdot \frac{1}{b-a} \, dx = \frac{1}{b-a} \cdot \frac{x^2}{2} \Big|_a^b = \frac{b^2 - a^2}{2(b-a)} = \frac{a+b}{2}
+\]
+
+\textbf{變異數：}
+\[
+\expc[X^2] = \int_a^b x^2 \cdot \frac{1}{b-a} \, dx = \frac{1}{b-a} \cdot \frac{x^3}{3} \Big|_a^b = \frac{b^3 - a^3}{3(b-a)} = \frac{a^2 + ab + b^2}{3}
+\]
+\[
+\var(X) = \expc[X^2] - (\expc[X])^2 = \frac{a^2 + ab + b^2}{3} - \frac{(a+b)^2}{4} = \frac{(b-a)^2}{12}
+\]
+\end{prf}
+
+\subsection{指數分配}
+
+\begin{definition}[指數分配]
+若隨機變數 $X$ 的 PDF 為：
+\[
+f(x) = \lambda e^{-\lambda x}, \quad x \geqslant 0
+\]
+其中 $\lambda > 0$，則稱 $X$ 服從參數為 $\lambda$ 的\textbf{指數分配}（exponential distribution），記為 $X \sim \text{Exp}(\lambda)$。
+\end{definition}
+
+\begin{property}[指數分配的 CDF、期望值與變異數]
+\[
+F(x) = 1 - e^{-\lambda x}, \quad x \geqslant 0
+\]
+\[
+\expc[X] = \frac{1}{\lambda}, \quad \var(X) = \frac{1}{\lambda^2}
+\]
+\end{property}
+
+\begin{prf}[期望值的證明]
+\[
+\expc[X] = \int_0^{\infty} x \cdot \lambda e^{-\lambda x} \, dx
+\]
+
+使用分部積分，令 $u = x$，$dv = \lambda e^{-\lambda x} dx$：
+\begin{align*}
+\expc[X] &= \Big[-x e^{-\lambda x}\Big]_0^{\infty} + \int_0^{\infty} e^{-\lambda x} \, dx\\
+&= 0 + \Big[-\frac{1}{\lambda} e^{-\lambda x}\Big]_0^{\infty} = 0 + \frac{1}{\lambda} = \frac{1}{\lambda}
+\end{align*}
+\end{prf}
+
+\begin{theorem}[指數分配的中位數]\label{thm:exp-median}
+若 $X \sim \text{Exp}(\lambda)$，則中位數為：
+\[
+m = \frac{\ln 2}{\lambda}
+\]
+\end{theorem}
+
+\begin{prf}
+中位數 $m$ 滿足 $F(m) = 0.5$：
+\[
+1 - e^{-\lambda m} = 0.5
+\]
+\[
+e^{-\lambda m} = 0.5
+\]
+\[
+-\lambda m = \ln(0.5) = -\ln 2
+\]
+\[
+m = \frac{\ln 2}{\lambda}
+\]
+\end{prf}
+
+\begin{theorem}[無記憶性]
+指數分配具有\textbf{無記憶性}（memoryless property）：
+\[
+\prb(X > s + t \mid X > s) = \prb(X > t)
+\]
+\end{theorem}
+
+\begin{prf}
+\begin{align*}
+\prb(X > s + t \mid X > s) &= \frac{\prb(X > s + t \text{ 且 } X > s)}{\prb(X > s)} = \frac{\prb(X > s + t)}{\prb(X > s)}\\
+&= \frac{e^{-\lambda(s+t)}}{e^{-\lambda s}} = e^{-\lambda t} = \prb(X > t)
+\end{align*}
+\end{prf}
+
+\begin{remark}
+無記憶性的直觀意義：如果設備已經運作了 $s$ 小時還沒壞，那麼它再運作 $t$ 小時才壞的機率，與一個全新設備運作 $t$ 小時才壞的機率相同。過去不影響未來。
+\end{remark}
+
+\begin{example}
+某電子元件的壽命 $X$（小時）服從 $\text{Exp}(0.001)$。求：
+\begin{enumerate}[label=(\alph*)]
+    \item 元件壽命的期望值
+    \item 元件壽命的中位數
+    \item 元件壽命超過 1000 小時的機率
+    \item 已知元件已運作 500 小時，求它再運作至少 500 小時的機率
+\end{enumerate}
+\end{example}
+
+\begin{solution}
+$X \sim \text{Exp}(0.001)$，$\lambda = 0.001$。
+
+\begin{enumerate}[label=(\alph*)]
+    \item $\expc[X] = \dfrac{1}{\lambda} = \dfrac{1}{0.001} = 1000$ 小時
+    
+    \item $m = \dfrac{\ln 2}{\lambda} = \dfrac{0.693}{0.001} = 693$ 小時
+    
+    \item $\prb(X > 1000) = e^{-\lambda \cdot 1000} = e^{-1} \approx 0.368$
+    
+    \item 由無記憶性：
+    \[
+    \prb(X > 1000 \mid X > 500) = \prb(X > 500) = e^{-0.001 \times 500} = e^{-0.5} \approx 0.607
+    \]
+\end{enumerate}
+\end{solution}
+
+\subsection{常態分配}
+
+\begin{definition}[常態分配]
+若隨機變數 $X$ 的 PDF 為：
+\[
+f(x) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right), \quad -\infty < x < \infty
+\]
+其中 $\mu \in \Real$，$\sigma > 0$，則稱 $X$ 服從\textbf{常態分配}（normal distribution）或\textbf{高斯分配}（Gaussian distribution），記為 $X \sim N(\mu, \sigma^2)$。
+\end{definition}
+
+\begin{property}[常態分配的期望值與變異數]
+若 $X \sim N(\mu, \sigma^2)$，則：
+\[
+\expc[X] = \mu, \quad \var(X) = \sigma^2
+\]
+\end{property}
+
+\begin{definition}[標準常態分配]
+當 $\mu = 0$、$\sigma = 1$ 時，稱為\textbf{標準常態分配}（standard normal distribution），記為 $Z \sim N(0, 1)$。
+
+PDF：$\ds\phi(z) = \frac{1}{\sqrt{2\pi}} e^{-z^2/2}$
+
+CDF：$\ds\Phi(z) = \prb(Z \leqslant z) = \int_{-\infty}^{z} \phi(t) \, dt$
+\end{definition}
+
+\begin{theorem}[標準化]
+若 $X \sim N(\mu, \sigma^2)$，則：
+\[
+Z = \frac{X - \mu}{\sigma} \sim N(0, 1)
+\]
+\end{theorem}
+
+\begin{property}[標準常態分配的對稱性]
+\begin{enumerate}[label=(\roman*)]
+  \item[]
+    \item $\phi(-z) = \phi(z)$（PDF 對稱）
+    \item $\Phi(-z) = 1 - \Phi(z)$
+    \item $\prb(Z > z) = 1 - \Phi(z)$
+    \item $\prb(|Z| \leqslant z) = 2\Phi(z) - 1$
+    \item $\prb(-z \leqslant Z \leqslant z) = 2\Phi(z) - 1$
+\end{enumerate}
+\end{property}
+
+\begin{property}[常態分配的線性組合]
+若 $X_1, X_2, \ldots, X_n$ 為獨立常態隨機變數，$X_i \sim N(\mu_i, \sigma_i^2)$，則：
+\[
+\sum_{i=1}^{n} a_i X_i \sim N\left(\sum_{i=1}^{n} a_i \mu_i, \sum_{i=1}^{n} a_i^2 \sigma_i^2\right)
+\]
+\end{property}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c}
+\toprule
+\textbf{信賴水準} & \textbf{雙尾 $\alpha$} & \textbf{單尾 $\alpha/2$} & $z_{\alpha/2}$ \\
+\midrule
+90\% & 0.10 & 0.05 & 1.645 \\
+95\% & 0.05 & 0.025 & 1.96 \\
+99\% & 0.01 & 0.005 & 2.576 \\
+\bottomrule
+\end{tabular}
+\caption{常用標準常態分位數}
+\end{table}
+
+\begin{example}
+設 $X \sim N(100, 225)$（即 $\mu = 100$，$\sigma = 15$）。求：
+\begin{enumerate}[label=(\alph*)]
+    \item $\prb(X > 115)$
+    \item $\prb(85 < X < 130)$
+    \item 求 $c$ 使得 $\prb(X > c) = 0.10$
+\end{enumerate}
+\end{example}
+
+\begin{solution}
+\begin{enumerate}[label=(\alph*)]
+    \item 標準化：$Z = \dfrac{X - 100}{15}$
+    \[
+    \prb(X > 115) = P\left(Z > \frac{115 - 100}{15}\right) = \prb(Z > 1) = 1 - \Phi(1) \approx 1 - 0.8413 = 0.1587
+    \]
+    
+    \item 
+    \begin{align*}
+    \prb(85 < X < 130) &= P\left(\frac{85-100}{15} < Z < \frac{130-100}{15}\right)\\
+    &= \prb(-1 < Z < 2) = \Phi(2) - \Phi(-1)\\
+    &= \Phi(2) - (1 - \Phi(1)) = 0.9772 - 0.1587 = 0.8185
+    \end{align*}
+    
+    \item 需要 $\prb(X > c) = 0.10$，即 $\prb(X \leqslant c) = 0.90$。
+    
+    標準化後：$\prb(Z \leqslant z) = 0.90 \Rightarrow z = z_{0.10} \approx 1.28$
+    
+    因此：$\dfrac{c - 100}{15} = 1.28 \Rightarrow c = 100 + 15(1.28) = 119.2$
+\end{enumerate}
+\end{solution}
+
+\subsection{常用連續分配比較表}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|c|c|c|c}
+\toprule
+\textbf{分配} & \textbf{符號} & \textbf{PDF} & $\expc[X]$ & $\var(X)$ \\
+\midrule
+均勻 & $U(a,b)$ & $\dfrac{1}{b-a}$ & $\dfrac{a+b}{2}$ & $\dfrac{(b-a)^2}{12}$ \\
+\midrule
+指數 & $\text{Exp}(\lambda)$ & $\lambda e^{-\lambda x}$ & $\dfrac{1}{\lambda}$ & $\dfrac{1}{\lambda^2}$ \\
+\midrule
+常態 & $N(\mu, \sigma^2)$ & $\dfrac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$ & $\mu$ & $\sigma^2$ \\
+\bottomrule
+\end{tabular}
+\caption{常用連續分配摘要}
+\end{table}
+
+%=============================================================================
+\section{本章習題}
+%=============================================================================
+
+\begin{exercise}
+設離散型隨機變數 $X$ 的 PMF 為：$\prb(X = 0) = 0.1$，$\prb(X = 1) = 0.3$，$\prb(X = 2) = 0.4$，$\prb(X = 3) = 0.2$。
+\begin{enumerate}[label=(\alph*)]
+    \item 求 $\expc[X]$ 與 $\var(X)$
+    \item 求 CDF $F(x)$
+    \item 求 $\prb(1 \leqslant X < 3)$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[label=(\alph*)]
+    \item $\expc[X] = 0(0.1) + 1(0.3) + 2(0.4) + 3(0.2) = 0 + 0.3 + 0.8 + 0.6 = 1.7$
+    
+    $\expc[X^2] = 0^2(0.1) + 1^2(0.3) + 2^2(0.4) + 3^2(0.2) = 0 + 0.3 + 1.6 + 1.8 = 3.7$
+    
+    $\var(X) = \expc[X^2] - (\expc[X])^2 = 3.7 - (1.7)^2 = 3.7 - 2.89 = 0.81$
+    
+    \item CDF：
+    \[
+    F(x) = \begin{cases}
+    0 & x < 0\\
+    0.1 & 0 \leqslant x < 1\\
+    0.4 & 1 \leqslant x < 2\\
+    0.8 & 2 \leqslant x < 3\\
+    1 & x \geqslant 3
+    \end{cases}
+    \]
+    
+    \item $\prb(1 \leqslant X < 3) = \prb(X = 1) + \prb(X = 2) = 0.3 + 0.4 = 0.7$
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+某產品的不良率為 5\%。隨機抽取 20 件產品檢驗。
+\begin{enumerate}[label=(\alph*)]
+    \item 求恰好有 2 件不良品的機率
+    \item 求不良品數的期望值與標準差
+    \item 求至少有 1 件不良品的機率
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+設 $X$ = 不良品數，$X \sim B(20, 0.05)$。
+
+\begin{enumerate}[label=(\alph*)]
+    \item $\prb(X = 2) = \binom{20}{2}(0.05)^2(0.95)^{18} = 190 \times 0.0025 \times 0.3972 \approx 0.189$
+    
+    \item $\expc[X] = np = 20 \times 0.05 = 1$
+    
+    $\var(X) = np(1-p) = 20 \times 0.05 \times 0.95 = 0.95$
+    
+    $\text{SD}(X) = \sqrt{0.95} \approx 0.975$
+    
+    \item $\prb(X \geqslant 1) = 1 - \prb(X = 0) = 1 - (0.95)^{20} \approx 1 - 0.358 = 0.642$
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+某電話交換機平均每小時接到 4 通電話。假設電話數服從 Poisson 分配。
+\begin{enumerate}[label=(\alph*)]
+    \item 求 1 小時內恰好接到 3 通電話的機率
+    \item 求 1 小時內接到超過 5 通電話的機率
+    \item 求 30 分鐘內沒有電話的機率
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+設 $X$ = 每小時電話數，$X \sim \text{Poisson}(4)$。
+
+\begin{enumerate}[label=(\alph*)]
+    \item $\prb(X = 3) = \dfrac{e^{-4} \cdot 4^3}{3!} = \dfrac{64 e^{-4}}{6} \approx 0.195$
+    
+    \item $\prb(X > 5) = 1 - \prb(X \leqslant 5) = 1 - \sum_{k=0}^{5} \dfrac{e^{-4} \cdot 4^k}{k!}$
+    
+    計算：$\prb(X \leqslant 5) = e^{-4}(1 + 4 + 8 + 10.67 + 10.67 + 8.53) \approx e^{-4} \times 42.87 \approx 0.785$
+    
+    故 $\prb(X > 5) \approx 1 - 0.785 = 0.215$
+    
+    \item 30 分鐘的平均電話數為 $\lambda = 4/2 = 2$。
+    
+    設 $Y$ = 30 分鐘電話數，$Y \sim \text{Poisson}(2)$。
+    
+    $\prb(Y = 0) = e^{-2} \approx 0.135$
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+設隨機變數 $X$ 服從 $\text{Exp}(2)$。
+\begin{enumerate}[label=(\alph*)]
+    \item 求 $\expc[X]$ 與 $\var(X)$
+    \item 求 $\prb(X > 1)$
+    \item 求中位數 $m$
+    \item 驗證無記憶性：計算 $\prb(X > 1.5 \mid X > 0.5)$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+$X \sim \text{Exp}(2)$，$\lambda = 2$。
+
+\begin{enumerate}[label=(\alph*)]
+    \item $\expc[X] = \dfrac{1}{\lambda} = \dfrac{1}{2} = 0.5$
+    
+    $\var(X) = \dfrac{1}{\lambda^2} = \dfrac{1}{4} = 0.25$
+    
+    \item $\prb(X > 1) = e^{-\lambda \cdot 1} = e^{-2} \approx 0.135$
+    
+    \item $m = \dfrac{\ln 2}{\lambda} = \dfrac{\ln 2}{2} = \dfrac{0.693}{2} \approx 0.347$
+    
+    \item 由無記憶性：
+    \[
+    \prb(X > 1.5 \mid X > 0.5) = \prb(X > 1) = e^{-2} \approx 0.135
+    \]
+    
+    驗證：
+    \[
+    \prb(X > 1.5 \mid X > 0.5) = \frac{\prb(X > 1.5)}{\prb(X > 0.5)} = \frac{e^{-3}}{e^{-1}} = e^{-2} \approx 0.135
+    \]
+    
+    結果相同，驗證了無記憶性。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+設 $X \sim N(50, 100)$（即 $\mu = 50$，$\sigma = 10$）。
+\begin{enumerate}[label=(\alph*)]
+    \item 求 $\prb(X < 65)$
+    \item 求 $\prb(35 < X < 60)$
+    \item 求 $\prb(|X - 50| > 15)$
+    \item 求 $x_0$ 使得 $\prb(X > x_0) = 0.05$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+$X \sim N(50, 100)$，標準化 $Z = \dfrac{X - 50}{10}$。
+
+\begin{enumerate}[label=(\alph*)]
+    \item $\prb(X < 65) = P\left(Z < \dfrac{65-50}{10}\right) = \prb(Z < 1.5) = \Phi(1.5) \approx 0.9332$
+    
+    \item $\prb(35 < X < 60) = P\left(\dfrac{35-50}{10} < Z < \dfrac{60-50}{10}\right)$
+    
+    $= \prb(-1.5 < Z < 1) = \Phi(1) - \Phi(-1.5) = 0.8413 - 0.0668 = 0.7745$
+    
+    \item $\prb(|X - 50| > 15) = \prb(X < 35 \text{ 或 } X > 65)$
+    
+    $= \prb(Z < -1.5) + \prb(Z > 1.5) = 2 \times (1 - \Phi(1.5)) = 2 \times 0.0668 = 0.1336$
+    
+    \item 需要 $\prb(X > x_0) = 0.05$，即 $\prb(Z > z_0) = 0.05$。
+    
+    查表：$z_0 = z_{0.05} = 1.645$
+    
+    因此：$x_0 = 50 + 10(1.645) = 66.45$
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+設隨機變數 $X$ 與 $Y$ 滿足：$\expc[X] = 2$，$\expc[Y] = 3$，$\var(X) = 4$，$\var(Y) = 9$，$\expc[XY] = 10$。
+\begin{enumerate}[label=(\alph*)]
+    \item 求 $\cov(X, Y)$
+    \item 求 $\rho_{XY}$
+    \item 求 $\var(2X - Y + 5)$
+    \item 求 $\cov(X + Y, X - Y)$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[label=(\alph*)]
+    \item $\cov(X, Y) = \expc[XY] - \expc[X]\expc[Y] = 10 - 2 \times 3 = 4$
+    
+    \item $\rho_{XY} = \dfrac{\cov(X, Y)}{\sqrt{\var(X)\var(Y)}} = \dfrac{4}{\sqrt{4 \times 9}} = \dfrac{4}{6} = \dfrac{2}{3}$
+    
+    \item 使用公式 $\var(aX + bY + c) = a^2\var(X) + b^2\var(Y) + 2ab\cov(X, Y)$：
+    
+    $\var(2X - Y + 5) = 4 \cdot \var(X) + 1 \cdot \var(Y) + 2(2)(-1)\cov(X, Y)$
+    
+    $= 4(4) + 9 - 4(4) = 16 + 9 - 16 = 9$
+    
+    \item $\cov(X + Y, X - Y) = \cov(X, X) - \cov(X, Y) + \cov(Y, X) - \cov(Y, Y)$
+    
+    $= \var(X) - \cov(X, Y) + \cov(X, Y) - \var(Y) = \var(X) - \var(Y) = 4 - 9 = -5$
+\end{enumerate}
+\end{solution}
+
+%=============================================================================
+%% \section*{本章重點整理}
+%=============================================================================
+
+% \begin{enumerate}
+%     \item \textbf{隨機變數類型}：
+%     \begin{itemize}
+%         \item 離散型：PMF $p(x) = \prb(X = x)$，$\sum p(x) = 1$
+%         \item 連續型：PDF $f(x)$，$\prb(a \leqslant X \leqslant b) = \int_a^b f(x) dx$，$\int f(x) dx = 1$
+%         \item CDF：$F(x) = \prb(X \leqslant x)$，對連續型 $f(x) = F'(x)$
+%     \end{itemize}
+    
+%     \item \textbf{期望值}：
+%     \begin{itemize}
+%         \item 離散型：$\expc[X] = \sum x \cdot p(x)$
+%         \item 連續型：$\expc[X] = \int x \cdot f(x) dx$
+%         \item 線性性質：$\expc[aX + b] = aE[X] + b$，$\expc[X + Y] = \expc[X] + \expc[Y]$
+%     \end{itemize}
+    
+%     \item \textbf{變異數}：
+%     \begin{itemize}
+%         \item $\var(X) = \expc[(X-\mu)^2] = \expc[X^2] - (\expc[X])^2$
+%         \item $\var(aX + b) = a^2 \var(X)$
+%         \item 獨立時：$\var(X + Y) = \var(X) + \var(Y)$
+%     \end{itemize}
+    
+%     \item \textbf{共變異數與相關係數}：
+%     \begin{itemize}
+%         \item $\cov(X, Y) = \expc[XY] - \expc[X]\expc[Y]$
+%         \item $\rho = \cov(X, Y) / (\sigma_X \sigma_Y)$，$-1 \leqslant \rho \leqslant 1$
+%         \item 獨立 $\Rightarrow$ $\cov = 0$（反之不一定）
+%     \end{itemize}
+    
+%     \item \textbf{常用離散分配}：
+%     \begin{itemize}
+%         \item 伯努利：$\expc[X] = p$，$\var(X) = p(1-p)$
+%         \item 二項：$\expc[X] = np$，$\var(X) = np(1-p)$
+%         \item Poisson：$\expc[X] = \var(X) = \lambda$
+%     \end{itemize}
+    
+%     \item \textbf{常用連續分配}：
+%     \begin{itemize}
+%         \item 均勻 $U(a,b)$：$\expc[X] = (a+b)/2$，$\var(X) = (b-a)^2/12$
+%         \item 指數 $\text{Exp}(\lambda)$：$\expc[X] = 1/\lambda$，$\var(X) = 1/\lambda^2$，中位數 $= \ln 2 / \lambda$，無記憶性
+%         \item 常態 $N(\mu, \sigma^2)$：標準化 $Z = (X-\mu)/\sigma$
+%     \end{itemize}
+% \end{enumerate}
+
+\end{document}

@@ -1,0 +1,961 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[left=1cm,right=1cm,bottom=15mm,top=20mm]{geometry}
+\usepackage[AutoFakeBold,AutoFakeSlant]{xeCJK}
+\setCJKmainfont[AutoFakeSlant=.1,AutoFakeBold=2]{Noto Serif CJK TC}
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{graphicx,xcolor,float}
+\usepackage{booktabs,tabularx,multirow,array}
+\usepackage{enumitem}
+\usepackage{parskip}
+\setlist{itemsep=0pt,parsep=0pt}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    urlcolor=blue!80!black
+}
+
+% 定理環境
+\theoremstyle{definition}
+\newtheorem{definition}{定義}[section]
+\newtheorem{example}{例題}[section]
+\newtheorem{exercise}{習題}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+\newtheorem{corollary}{推論}[section]
+\newtheorem{proposition}{命題}[section]
+\newtheorem{property}{性質}[section]
+\newtheorem*{remark}{註}
+\newtheorem*{solution}{解答}
+\newtheorem*{note}{說明}
+\newtheorem*{prf}{證明}
+
+% 常用指令
+\newcommand{\ds}{\displaystyle}
+\newcommand{\ie}{\;\Longrightarrow\;}
+\newcommand{\ifff}{\;\Longleftrightarrow\;}
+\newcommand\expc{\mathsf{E}}
+\DeclareMathOperator\var{var}
+\DeclareMathOperator\cov{cov}
+\DeclareMathOperator\corr{corr}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\MSE}{\mathrm{MSE}}
+\newcommand\prb{\mathsf{P}}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\diff}[2]{\frac{\mathrm{d} #1}{\mathrm{d} #2}}
+\newcommand{\pdiff}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\simark}{\stackrel{\text{i.i.d.}}{\sim}}
+\newcommand{\pmark}{\stackrel{p}{\longrightarrow}}
+
+% 頁面設定
+\renewcommand{\figurename}{圖}
+\renewcommand{\tablename}{表}
+\renewcommand{\proofname}{\textbf{證明}}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{統計學講義}
+\fancyhead[R]{第四部分：點估計與區間估計}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\title{\vspace{-2cm}\textbf{統計學講義}\\[3mm] \Large 第四部分：點估計與區間估計}
+\author{}
+\date{\vspace{-2cm}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+\fbox{\parbox{0.9\textwidth}{\centering
+\textbf{參考書籍}\\[2mm]
+Jeffrey S. Rosenthal, \textit{Probability and Statistics: The Science of Uncertainty}, 2nd Edition\\
+Chapter 7: Estimation\\[2mm]
+\url{https://utstat.utoronto.ca/mikevans/jeffrosenthal/}
+}}
+\end{center}
+
+%\tableofcontents
+
+%=============================================================================
+\section{點估計的基本概念}
+%=============================================================================
+
+\subsection{估計量與估計值}
+
+\begin{definition}[估計量與估計值]
+\begin{itemize}
+  \item[]
+  \item \textbf{估計量}（estimator）：用樣本 $X_1, \ldots, X_n$ 計算的統計量，用來估計未知母體參數 $\theta$，記為 $\hat{\theta}$ 或 $\hat{\theta}(X_1, \ldots, X_n)$。
+    \item \textbf{估計值}（estimate）：將特定樣本觀測值代入估計量後得到的數值。
+\end{itemize}
+\end{definition}
+
+\begin{example}
+設 $X_1, \ldots, X_n$ 為來自母體（平均數 $\mu$，變異數 $\sigma^2$）的隨機樣本。
+
+\begin{itemize}
+    \item $\hat{\mu} = \bar{X} = \dfrac{1}{n}\sum_{i=1}^{n} X_i$ 是 $\mu$ 的估計量。
+    \item $\hat{\sigma}^2 = S^2 = \dfrac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X})^2$ 是 $\sigma^2$ 的估計量。
+    \item 若樣本觀測值為 $3, 5, 7, 9, 11$，則 $\hat{\mu} = 7$，$\hat{\sigma}^2 = 10$ 為估計值。
+\end{itemize}
+\end{example}
+
+\subsection{良好估計量的性質}
+
+\begin{definition}[不偏性]
+若估計量 $\hat{\theta}$ 滿足
+\[
+\expc[\hat{\theta}] = \theta
+\]
+則稱 $\hat{\theta}$ 為 $\theta$ 的\textbf{不偏估計量}（unbiased estimator）。
+
+若 $\expc[\hat{\theta}] \neq \theta$，則稱 $\hat{\theta}$ 為\textbf{有偏估計量}（biased estimator），\textbf{偏誤}（bias）定義為：
+\[
+\text{Bias}(\hat{\theta}) = \expc[\hat{\theta}] - \theta
+\]
+\end{definition}
+
+\begin{theorem}[常見的不偏估計量]
+設 $X_1, \ldots, X_n \simark F$，其中 $\expc[X_i] = \mu$，$\var(X_i) = \sigma^2$。則：
+\begin{enumerate}[label=(\roman*)]
+    \item $\bar{X}$ 是 $\mu$ 的不偏估計量：$\expc[\bar{X}] = \mu$
+    \item $S^2$ 是 $\sigma^2$ 的不偏估計量：$\expc[S^2] = \sigma^2$
+\end{enumerate}
+\end{theorem}
+
+\begin{remark}
+注意：$\hat{\sigma}^2 = \dfrac{1}{n}\sum_{i=1}^{n}(X_i - \bar{X})^2$ 是 $\sigma^2$ 的\textbf{有偏}估計量：
+\[
+\expc\left[\frac{1}{n}\sum_{i=1}^{n}(X_i - \bar{X})^2\right] = \frac{n-1}{n}\sigma^2 \neq \sigma^2
+\]
+偏誤為 $-\sigma^2/n$，但當 $n \to \infty$ 時偏誤趨近 0（漸近不偏）。
+\end{remark}
+
+\begin{definition}[有效性]
+在所有不偏估計量中，\textbf{變異數最小}的估計量稱為\textbf{最小變異數不偏估計量}（Minimum Variance Unbiased Estimator, MVUE）或\textbf{最佳不偏估計量}。
+
+若 $\hat{\theta}_1$ 與 $\hat{\theta}_2$ 都是 $\theta$ 的不偏估計量，且 $\var(\hat{\theta}_1) < \var(\hat{\theta}_2)$，則稱 $\hat{\theta}_1$ 比 $\hat{\theta}_2$ \textbf{更有效}（more efficient）。
+
+\textbf{相對效率}（relative efficiency）：
+\[
+\text{eff}(\hat{\theta}_1, \hat{\theta}_2) = \frac{\var(\hat{\theta}_2)}{\var(\hat{\theta}_1)}
+\]
+\end{definition}
+
+\begin{definition}[均方誤差]
+估計量 $\hat{\theta}$ 的\textbf{均方誤差}（Mean Squared Error, MSE）定義為：
+\[
+\MSE(\hat{\theta}) = \expc\left[(\hat{\theta} - \theta)^2\right]
+\]
+\end{definition}
+
+\begin{theorem}[MSE 分解公式]
+\[
+\MSE(\hat{\theta}) = \var(\hat{\theta}) + \left[\text{Bias}(\hat{\theta})\right]^2
+\]
+\end{theorem}
+
+\begin{prf}
+令 $b = \expc[\hat{\theta}] - \theta = \text{Bias}(\hat{\theta})$。
+\begin{align*}
+\MSE(\hat{\theta}) &= \expc[(\hat{\theta} - \theta)^2]\\
+&= \expc[(\hat{\theta} - \expc[\hat{\theta}] + \expc[\hat{\theta}] - \theta)^2]\\
+&= \expc[(\hat{\theta} - \expc[\hat{\theta}])^2] + 2\expc[(\hat{\theta} - \expc[\hat{\theta}])](\expc[\hat{\theta}] - \theta) + (\expc[\hat{\theta}] - \theta)^2\\
+&= \var(\hat{\theta}) + 2 \cdot 0 \cdot b + b^2\\
+&= \var(\hat{\theta}) + [\text{Bias}(\hat{\theta})]^2
+\end{align*}
+\end{prf}
+
+\begin{remark}
+對於不偏估計量，$\text{Bias} = 0$，故 $\MSE(\hat{\theta}) = \var(\hat{\theta})$。
+\end{remark}
+
+\begin{definition}[一致性]
+若估計量序列 $\{\hat{\theta}_n\}$ 滿足：對所有 $\epsilon > 0$，
+\[
+\lim_{n \to \infty} \prb(|\hat{\theta}_n - \theta| > \epsilon) = 0
+\]
+則稱 $\hat{\theta}_n$ 為 $\theta$ 的\textbf{一致估計量}（consistent estimator），記為 $\hat{\theta}_n \pmark \theta$。
+\end{definition}
+
+\begin{theorem}[一致性的充分條件]
+若 $\ds\lim_{n \to \infty} \expc[\hat{\theta}_n] = \theta$ 且 $\ds\lim_{n \to \infty} \var(\hat{\theta}_n) = 0$，則 $\hat{\theta}_n$ 是 $\theta$ 的一致估計量。
+\end{theorem}
+
+\begin{prf}
+由 Chebyshev 不等式：
+\[
+\prb(|\hat{\theta}_n - \expc[\hat{\theta}_n]| > \epsilon) \leqslant \frac{\var(\hat{\theta}_n)}{\epsilon^2}
+\]
+
+當 $n \to \infty$，$\var(\hat{\theta}_n) \to 0$，故右邊趨近 0。
+
+又 $\expc[\hat{\theta}_n] \to \theta$，故 $\hat{\theta}_n \pmark \theta$。
+\end{prf}
+
+\begin{example}
+證明 $\bar{X}$ 是 $\mu$ 的一致估計量。
+\end{example}
+
+\begin{solution}
+$\expc[\bar{X}] = \mu$（不偏）
+
+$\var(\bar{X}) = \dfrac{\sigma^2}{n} \to 0$ 當 $n \to \infty$
+
+由定理 1.4，$\bar{X} \pmark \mu$，故 $\bar{X}$ 是一致估計量。
+\end{solution}
+
+%=============================================================================
+\section{最大概似估計法}
+%=============================================================================
+
+\subsection{概似函數}
+
+\begin{definition}[概似函數]
+設 $X_1, \ldots, X_n$ 為來自機率分配 $f(x; \theta)$ 的隨機樣本。\textbf{概似函數}（likelihood function）定義為：
+\[
+L(\theta) = L(\theta; x_1, \ldots, x_n) = \prod_{i=1}^{n} f(x_i; \theta)
+\]
+
+\textbf{對數概似函數}（log-likelihood function）：
+\[
+\ell(\theta) = \ln L(\theta) = \sum_{i=1}^{n} \ln f(x_i; \theta)
+\]
+\end{definition}
+
+\begin{remark}
+概似函數是將樣本觀測值視為固定，將 $\theta$ 視為變數的函數。它衡量在不同參數值下，觀測到這組樣本的「可能性」。
+\end{remark}
+
+\subsection{最大概似估計量}
+
+\begin{definition}[最大概似估計量]
+使概似函數 $L(\theta)$（或等價地，對數概似函數 $\ell(\theta)$）達到最大的 $\theta$ 值，稱為\textbf{最大概似估計量}（Maximum Likelihood Estimator, MLE），記為 $\hat{\theta}_{\text{MLE}}$：
+\[
+\hat{\theta}_{\text{MLE}} = \arg\max_{\theta} L(\theta) = \arg\max_{\theta} \ell(\theta)
+\]
+\end{definition}
+
+\begin{property}[求 MLE 的步驟]
+\begin{enumerate}
+  \item[]
+    \item 寫出概似函數 $L(\theta) = \prod_{i=1}^{n} f(x_i; \theta)$
+    \item 取對數得 $\ell(\theta) = \sum_{i=1}^{n} \ln f(x_i; \theta)$
+    \item 對 $\theta$ 微分，令 $\dfrac{d\ell}{d\theta} = 0$（或 $\dfrac{\partial \ell}{\partial \theta_j} = 0$ 對所有參數）
+    \item 解方程得 $\hat{\theta}_{\text{MLE}}$
+    \item 確認為最大值（檢查二階導數或邊界條件）
+\end{enumerate}
+\end{property}
+
+\begin{example}[常態分配的 MLE]
+設 $X_1, \ldots, X_n \simark N(\mu, \sigma^2)$，求 $\mu$ 和 $\sigma^2$ 的 MLE。
+\end{example}
+
+\begin{solution}
+\textbf{步驟 1}：概似函數
+\[
+L(\mu, \sigma^2) = \prod_{i=1}^{n} \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x_i - \mu)^2}{2\sigma^2}\right)
+\]
+
+\textbf{步驟 2}：對數概似函數
+\begin{align*}
+\ell(\mu, \sigma^2) &= -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^{n}(x_i - \mu)^2
+\end{align*}
+
+\textbf{步驟 3}：對 $\mu$ 微分
+\[
+\pdiff{\ell}{\mu} = \frac{1}{\sigma^2}\sum_{i=1}^{n}(x_i - \mu) = 0
+\]
+\[
+\sum_{i=1}^{n}(x_i - \mu) = 0 \ie \sum_{i=1}^{n} x_i = n\mu \ie \hat{\mu}_{\text{MLE}} = \bar{x}
+\]
+
+\textbf{步驟 4}：對 $\sigma^2$ 微分
+\[
+\pdiff{\ell}{\sigma^2} = -\frac{n}{2\sigma^2} + \frac{1}{2(\sigma^2)^2}\sum_{i=1}^{n}(x_i - \mu)^2 = 0
+\]
+
+代入 $\hat{\mu} = \bar{x}$：
+\[
+\frac{n}{2\sigma^2} = \frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{2(\sigma^2)^2}
+\]
+\[
+\hat{\sigma}^2_{\text{MLE}} = \frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^2
+\]
+
+\textbf{結論}：
+\[
+\hat{\mu}_{\text{MLE}} = \bar{X}, \quad \hat{\sigma}^2_{\text{MLE}} = \frac{1}{n}\sum_{i=1}^{n}(X_i - \bar{X})^2
+\]
+
+注意：$\hat{\sigma}^2_{\text{MLE}}$ 是有偏的（分母為 $n$ 而非 $n-1$），但為一致估計量。
+\end{solution}
+
+\begin{example}[指數分配的 MLE]
+設 $X_1, \ldots, X_n \simark \text{Exp}(\lambda)$，PDF 為 $f(x; \lambda) = \lambda e^{-\lambda x}$，$x > 0$。求 $\lambda$ 的 MLE。
+\end{example}
+
+\begin{solution}
+\textbf{概似函數}：
+\[
+L(\lambda) = \prod_{i=1}^{n} \lambda e^{-\lambda x_i} = \lambda^n e^{-\lambda \sum_{i=1}^{n} x_i}
+\]
+
+\textbf{對數概似函數}：
+\[
+\ell(\lambda) = n\ln\lambda - \lambda\sum_{i=1}^{n} x_i
+\]
+
+\textbf{微分}：
+\[
+\diff{\ell}{\lambda} = \frac{n}{\lambda} - \sum_{i=1}^{n} x_i = 0
+\]
+\[
+\hat{\lambda}_{\text{MLE}} = \frac{n}{\sum_{i=1}^{n} x_i} = \frac{1}{\bar{x}}
+\]
+
+\textbf{驗證最大值}：$\dfrac{d^2\ell}{d\lambda^2} = -\dfrac{n}{\lambda^2} < 0$，確認為最大值。
+\end{solution}
+
+\begin{example}[Poisson 分配的 MLE]
+設 $X_1, \ldots, X_n \simark \text{Poisson}(\lambda)$。求 $\lambda$ 的 MLE。
+\end{example}
+
+\begin{solution}
+\textbf{概似函數}：
+\[
+L(\lambda) = \prod_{i=1}^{n} \frac{e^{-\lambda}\lambda^{x_i}}{x_i!} = \frac{e^{-n\lambda}\lambda^{\sum x_i}}{\prod_{i=1}^{n} x_i!}
+\]
+
+\textbf{對數概似函數}：
+\[
+\ell(\lambda) = -n\lambda + \left(\sum_{i=1}^{n} x_i\right)\ln\lambda - \sum_{i=1}^{n}\ln(x_i!)
+\]
+
+\textbf{微分}：
+\[
+\diff{\ell}{\lambda} = -n + \frac{\sum_{i=1}^{n} x_i}{\lambda} = 0
+\]
+\[
+\hat{\lambda}_{\text{MLE}} = \frac{\sum_{i=1}^{n} x_i}{n} = \bar{x}
+\]
+\end{solution}
+
+\begin{example}[伯努利分配的 MLE]
+設 $X_1, \ldots, X_n \simark \text{Bernoulli}(p)$。求 $p$ 的 MLE。
+\end{example}
+
+\begin{solution}
+\textbf{概似函數}：
+\[
+L(p) = \prod_{i=1}^{n} p^{x_i}(1-p)^{1-x_i} = p^{\sum x_i}(1-p)^{n - \sum x_i}
+\]
+
+\textbf{對數概似函數}：
+\[
+\ell(p) = \left(\sum_{i=1}^{n} x_i\right)\ln p + \left(n - \sum_{i=1}^{n} x_i\right)\ln(1-p)
+\]
+
+\textbf{微分}：
+\[
+\diff{\ell}{p} = \frac{\sum x_i}{p} - \frac{n - \sum x_i}{1-p} = 0
+\]
+\[
+(1-p)\sum x_i = p(n - \sum x_i)
+\]
+\[
+\sum x_i = np \ie \hat{p}_{\text{MLE}} = \frac{\sum_{i=1}^{n} x_i}{n} = \bar{x}
+\]
+
+即樣本比例 $\hat{p} = \dfrac{\text{成功次數}}{n}$。
+\end{solution}
+
+\subsection{MLE 的性質}
+
+\begin{theorem}[MLE 的不變性]
+若 $\hat{\theta}_{\text{MLE}}$ 是 $\theta$ 的 MLE，且 $g$ 是一對一函數，則 $g(\hat{\theta}_{\text{MLE}})$ 是 $g(\theta)$ 的 MLE。
+\end{theorem}
+
+\begin{example}
+若 $\hat{\sigma}^2_{\text{MLE}}$ 是 $\sigma^2$ 的 MLE，則 $\hat{\sigma}_{\text{MLE}} = \sqrt{\hat{\sigma}^2_{\text{MLE}}}$ 是 $\sigma$ 的 MLE。
+\end{example}
+
+\begin{theorem}[MLE 的漸近性質]
+在適當的正則條件下，MLE 具有以下漸近性質：
+\begin{enumerate}[label=(\roman*)]
+    \item \textbf{一致性}：當樣本數 $n \to \infty$ 時，$\hat{\theta}_{\text{MLE}}$ 依機率收斂至 $\theta$
+    \item \textbf{漸近常態性}：當 $n$ 夠大時，MLE 近似服從常態分配
+    \item \textbf{漸近有效性}：MLE 在大樣本下達到最小可能的變異數
+\end{enumerate}
+\end{theorem}
+
+\begin{note}
+上述「依機率收斂」的嚴格定義需要機率論課程的知識。直觀上，它表示 $\hat{\theta}_{\text{MLE}}$ 會越來越接近真實的 $\theta$。
+\end{note}
+
+%=============================================================================
+\section{區間估計的基本概念}
+%=============================================================================
+
+\subsection{信賴區間的定義}
+
+\begin{definition}[信賴區間]
+設 $\theta$ 為未知母體參數，$X_1, \ldots, X_n$ 為隨機樣本。若統計量 $L = L(X_1, \ldots, X_n)$ 與 $U = U(X_1, \ldots, X_n)$ 滿足：
+\[
+\prb(L \leqslant \theta \leqslant U) = 1 - \alpha
+\]
+則稱隨機區間 $[L, U]$ 為 $\theta$ 的 \textbf{$(1-\alpha) \times 100\%$ 信賴區間}（confidence interval），$1 - \alpha$ 稱為\textbf{信賴水準}（confidence level）。
+\end{definition}
+
+\begin{remark}
+\textbf{信賴區間的正確解釋}：
+\begin{itemize}
+    \item 信賴區間是\textbf{隨機的}——由隨機樣本計算得到。
+    \item 母體參數 $\theta$ 是\textbf{固定的}（雖然未知）。
+    \item 「95\% 信賴區間」的意義：若重複抽樣很多次，每次計算一個信賴區間，則約有 95\% 的區間會包含真正的 $\theta$。
+    \item \textbf{錯誤解釋}：「$\theta$ 有 95\% 的機率落在此區間內」——這是錯的，因為 $\theta$ 是固定值，不是隨機變數。
+\end{itemize}
+\end{remark}
+
+\subsection{樞紐量}
+
+\begin{definition}[樞紐量]
+\textbf{樞紐量}（pivotal quantity）是樣本與參數的函數，其分配不依賴任何未知參數。
+\end{definition}
+
+\begin{example}
+設 $X_1, \ldots, X_n \simark N(\mu, \sigma^2)$，$\sigma^2$ 已知。則
+\[
+Z = \frac{\bar{X} - \mu}{\sigma/\sqrt{n}} \sim N(0, 1)
+\]
+是樞紐量，因為其分配（標準常態）不依賴未知參數 $\mu$。
+\end{example}
+
+\begin{property}[用樞紐量建構信賴區間]
+\begin{enumerate}
+  \item[]
+    \item 找到包含 $\theta$ 的樞紐量 $Q$，其分配已知
+    \item 找 $a$ 和 $b$ 使得 $\prb(a \leqslant Q \leqslant b) = 1 - \alpha$
+    \item 將不等式 $a \leqslant Q \leqslant b$ 改寫為 $L \leqslant \theta \leqslant U$ 的形式
+    \item $[L, U]$ 即為 $(1-\alpha)$ 信賴區間
+\end{enumerate}
+\end{property}
+
+%=============================================================================
+\section{母體平均數的信賴區間}
+%=============================================================================
+
+\subsection{$\sigma$ 已知的情況}
+
+\begin{theorem}[$\sigma$ 已知時 $\mu$ 的信賴區間]\label{thm:CI-mu-sigma-known}
+設 $X_1, \ldots, X_n$ 為來自 $N(\mu, \sigma^2)$ 的隨機樣本，$\sigma^2$ 已知。則 $\mu$ 的 $(1-\alpha) \times 100\%$ 信賴區間為：
+\[
+\bar{X} \pm z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}
+\]
+即 $\left(\bar{X} - z_{\alpha/2} \cdot \dfrac{\sigma}{\sqrt{n}}, \; \bar{X} + z_{\alpha/2} \cdot \dfrac{\sigma}{\sqrt{n}}\right)$
+\end{theorem}
+
+\begin{prf}
+樞紐量：$Z = \dfrac{\bar{X} - \mu}{\sigma/\sqrt{n}} \sim N(0, 1)$
+
+由標準常態分配的對稱性：
+\[
+P\left(-z_{\alpha/2} \leqslant \frac{\bar{X} - \mu}{\sigma/\sqrt{n}} \leqslant z_{\alpha/2}\right) = 1 - \alpha
+\]
+
+將中間的不等式改寫：
+\[
+-z_{\alpha/2} \leqslant \frac{\bar{X} - \mu}{\sigma/\sqrt{n}} \leqslant z_{\alpha/2}
+\]
+\[
+-z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}} \leqslant \bar{X} - \mu \leqslant z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}
+\]
+\[
+\bar{X} - z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}} \leqslant \mu \leqslant \bar{X} + z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}
+\]
+\end{prf}
+
+\begin{definition}[誤差界限]
+信賴區間的\textbf{誤差界限}（margin of error）或\textbf{半寬}：
+\[
+E = z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}
+\]
+信賴區間可寫為 $\bar{X} \pm E$。
+\end{definition}
+
+\begin{example}
+某工廠生產的電池壽命服從常態分配，已知標準差 $\sigma = 10$ 小時。隨機抽取 25 顆電池，測得平均壽命 $\bar{x} = 48$ 小時。求 $\mu$ 的 95\% 信賴區間。
+\end{example}
+
+\begin{solution}
+$n = 25$，$\bar{x} = 48$，$\sigma = 10$，$\alpha = 0.05$，$z_{0.025} = 1.96$
+
+誤差界限：$E = 1.96 \times \dfrac{10}{\sqrt{25}} = 1.96 \times 2 = 3.92$
+
+95\% 信賴區間：$48 \pm 3.92 = (44.08, 51.92)$
+
+解釋：我們有 95\% 的信心認為母體平均壽命介於 44.08 到 51.92 小時之間。
+\end{solution}
+
+\subsection{$\sigma$ 未知的情況}
+
+\begin{theorem}[$\sigma$ 未知時 $\mu$ 的信賴區間]\label{thm:CI-mu-sigma-unknown}
+設 $X_1, \ldots, X_n$ 為來自 $N(\mu, \sigma^2)$ 的隨機樣本，$\sigma^2$ 未知。則 $\mu$ 的 $(1-\alpha) \times 100\%$ 信賴區間為：
+\[
+\bar{X} \pm t_{\alpha/2, n-1} \cdot \frac{S}{\sqrt{n}}
+\]
+其中 $t_{\alpha/2, n-1}$ 是自由度為 $n-1$ 的 t 分配的上 $\alpha/2$ 分位數。
+\end{theorem}
+
+\begin{prf}
+樞紐量：$T = \dfrac{\bar{X} - \mu}{S/\sqrt{n}} \sim t_{n-1}$
+
+由 t 分配的對稱性：
+\[
+P\left(-t_{\alpha/2, n-1} \leqslant \frac{\bar{X} - \mu}{S/\sqrt{n}} \leqslant t_{\alpha/2, n-1}\right) = 1 - \alpha
+\]
+
+改寫不等式：
+\[
+\bar{X} - t_{\alpha/2, n-1} \cdot \frac{S}{\sqrt{n}} \leqslant \mu \leqslant \bar{X} + t_{\alpha/2, n-1} \cdot \frac{S}{\sqrt{n}}
+\]
+\end{prf}
+
+\begin{example}
+隨機抽取 16 名學生，測得其統計學成績平均為 72 分，樣本標準差為 8 分。假設成績服從常態分配，求母體平均成績的 95\% 信賴區間。
+\end{example}
+
+\begin{solution}
+$n = 16$，$\bar{x} = 72$，$s = 8$，$\alpha = 0.05$
+
+自由度 $df = 16 - 1 = 15$，查表 $t_{0.025, 15} = 2.131$
+
+95\% 信賴區間：
+\[
+72 \pm 2.131 \times \frac{8}{\sqrt{16}} = 72 \pm 2.131 \times 2 = 72 \pm 4.262
+\]
+
+即 $(67.74, 76.26)$
+\end{solution}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|ccc}
+\toprule
+\textbf{信賴水準} & 90\% & 95\% & 99\% \\
+\midrule
+$\alpha$ & 0.10 & 0.05 & 0.01 \\
+$z_{\alpha/2}$ & 1.645 & 1.96 & 2.576 \\
+\bottomrule
+\end{tabular}
+\caption{常用的 $z_{\alpha/2}$ 值}
+\end{table}
+
+\subsection{大樣本情況}
+
+\begin{theorem}[大樣本時 $\mu$ 的近似信賴區間]
+當樣本量 $n$ 足夠大時（通常 $n \geqslant 30$），無論母體分配為何，$\mu$ 的 $(1-\alpha)$ 近似信賴區間為：
+\[
+\bar{X} \pm z_{\alpha/2} \cdot \frac{S}{\sqrt{n}}
+\]
+\end{theorem}
+
+\begin{prf}
+由中央極限定理，當 $n$ 大時 $\dfrac{\bar{X} - \mu}{S/\sqrt{n}} \stackrel{\text{approx}}{\sim} N(0, 1)$。
+\end{prf}
+
+%=============================================================================
+\section{母體變異數的信賴區間}
+%=============================================================================
+
+\begin{theorem}[$\sigma^2$ 的信賴區間]
+設 $X_1, \ldots, X_n \simark N(\mu, \sigma^2)$。則 $\sigma^2$ 的 $(1-\alpha) \times 100\%$ 信賴區間為：
+\[
+\left(\frac{(n-1)S^2}{\chi^2_{\alpha/2, n-1}}, \; \frac{(n-1)S^2}{\chi^2_{1-\alpha/2, n-1}}\right)
+\]
+其中 $\chi^2_{\alpha/2, n-1}$ 和 $\chi^2_{1-\alpha/2, n-1}$ 分別是 $\chi^2_{n-1}$ 分配的上 $\alpha/2$ 和上 $1-\alpha/2$ 分位數。
+\end{theorem}
+
+\begin{prf}
+樞紐量：$\chi^2 = \dfrac{(n-1)S^2}{\sigma^2} \sim \chi^2_{n-1}$
+
+\[
+P\left(\chi^2_{1-\alpha/2, n-1} \leqslant \frac{(n-1)S^2}{\sigma^2} \leqslant \chi^2_{\alpha/2, n-1}\right) = 1 - \alpha
+\]
+
+注意 $\chi^2$ 分配不對稱，故 $\chi^2_{1-\alpha/2} < \chi^2_{\alpha/2}$。
+
+改寫不等式（取倒數時不等號方向改變）：
+\[
+\frac{(n-1)S^2}{\chi^2_{\alpha/2, n-1}} \leqslant \sigma^2 \leqslant \frac{(n-1)S^2}{\chi^2_{1-\alpha/2, n-1}}
+\]
+\end{prf}
+
+\begin{example}
+設 $n = 20$，$s^2 = 25$。求 $\sigma^2$ 的 95\% 信賴區間。
+\end{example}
+
+\begin{solution}
+$n = 20$，$df = 19$，$\alpha = 0.05$
+
+查表：$\chi^2_{0.025, 19} = 32.85$，$\chi^2_{0.975, 19} = 8.91$
+
+95\% 信賴區間：
+\[
+\left(\frac{19 \times 25}{32.85}, \frac{19 \times 25}{8.91}\right) = \left(\frac{475}{32.85}, \frac{475}{8.91}\right) = (14.46, 53.31)
+\]
+
+$\sigma$ 的 95\% 信賴區間：$(\sqrt{14.46}, \sqrt{53.31}) = (3.80, 7.30)$
+\end{solution}
+
+%=============================================================================
+\section{母體比例的信賴區間}
+%=============================================================================
+
+\begin{theorem}[母體比例的信賴區間]
+設 $X$ 為 $n$ 次獨立伯努利試驗中成功的次數，$X \sim B(n, p)$。樣本比例 $\hat{p} = X/n$。當 $n$ 夠大（$n\hat{p} \geqslant 5$ 且 $n(1-\hat{p}) \geqslant 5$）時，$p$ 的 $(1-\alpha)$ 近似信賴區間為：
+\[
+\hat{p} \pm z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}
+\]
+\end{theorem}
+
+\begin{prf}
+由中央極限定理，當 $n$ 大時：
+\[
+\frac{\hat{p} - p}{\sqrt{p(1-p)/n}} \stackrel{\text{approx}}{\sim} N(0, 1)
+\]
+
+用 $\hat{p}$ 估計 $p$：
+\[
+\frac{\hat{p} - p}{\sqrt{\hat{p}(1-\hat{p})/n}} \stackrel{\text{approx}}{\sim} N(0, 1)
+\]
+
+故：
+\[
+P\left(-z_{\alpha/2} \leqslant \frac{\hat{p} - p}{\sqrt{\hat{p}(1-\hat{p})/n}} \leqslant z_{\alpha/2}\right) \approx 1 - \alpha
+\]
+
+改寫得信賴區間。
+\end{prf}
+
+\begin{example}
+某民調隨機抽取 400 位選民，其中 220 人支持某候選人。求支持率的 95\% 信賴區間。
+\end{example}
+
+\begin{solution}
+$n = 400$，$x = 220$，$\hat{p} = 220/400 = 0.55$
+
+檢驗條件：$n\hat{p} = 220 \geqslant 5$，$n(1-\hat{p}) = 180 \geqslant 5$ \checkmark
+
+標準誤：$\sqrt{\dfrac{0.55 \times 0.45}{400}} = \sqrt{\dfrac{0.2475}{400}} = 0.0249$
+
+95\% 信賴區間：$0.55 \pm 1.96 \times 0.0249 = 0.55 \pm 0.049$
+
+即 $(0.501, 0.599)$ 或約 $(50.1\%, 59.9\%)$
+\end{solution}
+
+%=============================================================================
+\section{兩母體的信賴區間}
+%=============================================================================
+
+\subsection{兩母體平均數差的信賴區間}
+
+\begin{theorem}[獨立樣本，$\sigma_1^2$、$\sigma_2^2$ 已知]
+設兩獨立樣本 $X_1, \ldots, X_{n_1} \simark N(\mu_1, \sigma_1^2)$，$Y_1, \ldots, Y_{n_2} \simark N(\mu_2, \sigma_2^2)$。則 $\mu_1 - \mu_2$ 的 $(1-\alpha)$ 信賴區間為：
+\[
+(\bar{X} - \bar{Y}) \pm z_{\alpha/2} \sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}
+\]
+\end{theorem}
+
+\begin{theorem}[獨立樣本，$\sigma_1^2 = \sigma_2^2 = \sigma^2$ 未知（合併變異數）]
+若假設 $\sigma_1^2 = \sigma_2^2 = \sigma^2$（未知），則使用\textbf{合併樣本變異數}：
+\[
+S_p^2 = \frac{(n_1-1)S_1^2 + (n_2-1)S_2^2}{n_1 + n_2 - 2}
+\]
+
+$\mu_1 - \mu_2$ 的 $(1-\alpha)$ 信賴區間為：
+\[
+(\bar{X} - \bar{Y}) \pm t_{\alpha/2, n_1+n_2-2} \cdot S_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}
+\]
+\end{theorem}
+
+\begin{prf}
+樞紐量：
+\[
+T = \frac{(\bar{X} - \bar{Y}) - (\mu_1 - \mu_2)}{S_p\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}} \sim t_{n_1+n_2-2}
+\]
+
+由此推導信賴區間。
+\end{prf}
+
+\begin{example}
+兩組獨立樣本：第一組 $n_1 = 10$，$\bar{x}_1 = 85$，$s_1^2 = 16$；第二組 $n_2 = 12$，$\bar{x}_2 = 78$，$s_2^2 = 20$。假設兩母體變異數相等，求 $\mu_1 - \mu_2$ 的 95\% 信賴區間。
+\end{example}
+
+\begin{solution}
+合併變異數：
+\[
+S_p^2 = \frac{(10-1)(16) + (12-1)(20)}{10 + 12 - 2} = \frac{144 + 220}{20} = \frac{364}{20} = 18.2
+\]
+
+$S_p = \sqrt{18.2} = 4.266$
+
+自由度 $df = 10 + 12 - 2 = 20$，$t_{0.025, 20} = 2.086$
+
+標準誤：$S_p\sqrt{\dfrac{1}{10} + \dfrac{1}{12}} = 4.266 \times \sqrt{0.1 + 0.0833} = 4.266 \times 0.428 = 1.826$
+
+95\% 信賴區間：
+\[
+(85 - 78) \pm 2.086 \times 1.826 = 7 \pm 3.81
+\]
+
+即 $(3.19, 10.81)$
+
+由於區間不包含 0，可認為兩母體平均數有顯著差異。
+\end{solution}
+
+\subsection{兩母體比例差的信賴區間}
+
+\begin{theorem}[兩母體比例差的信賴區間]
+設兩獨立樣本的樣本比例為 $\hat{p}_1$ 和 $\hat{p}_2$，樣本量分別為 $n_1$ 和 $n_2$。當樣本量夠大時，$p_1 - p_2$ 的 $(1-\alpha)$ 近似信賴區間為：
+\[
+(\hat{p}_1 - \hat{p}_2) \pm z_{\alpha/2} \sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1} + \frac{\hat{p}_2(1-\hat{p}_2)}{n_2}}
+\]
+\end{theorem}
+
+%=============================================================================
+\section{樣本大小的決定}
+%=============================================================================
+
+\subsection{估計平均數所需的樣本量}
+
+\begin{theorem}[估計 $\mu$ 所需的樣本量]
+若要使誤差界限不超過 $E$，即 $z_{\alpha/2} \cdot \dfrac{\sigma}{\sqrt{n}} \leqslant E$，則所需樣本量為：
+\[
+n \geqslant \left(\frac{z_{\alpha/2} \cdot \sigma}{E}\right)^2
+\]
+\end{theorem}
+
+\begin{prf}
+由 $z_{\alpha/2} \cdot \dfrac{\sigma}{\sqrt{n}} \leqslant E$：
+\[
+\sqrt{n} \geqslant \frac{z_{\alpha/2} \cdot \sigma}{E} \ie n \geqslant \left(\frac{z_{\alpha/2} \cdot \sigma}{E}\right)^2
+\]
+\end{prf}
+
+\begin{example}
+已知 $\sigma = 10$。若要以 95\% 信心水準估計 $\mu$，且誤差界限不超過 2，需要多少樣本？
+\end{example}
+
+\begin{solution}
+$z_{0.025} = 1.96$，$\sigma = 10$，$E = 2$
+
+\[
+n \geqslant \left(\frac{1.96 \times 10}{2}\right)^2 = (9.8)^2 = 96.04
+\]
+
+故至少需要 $n = 97$ 個樣本。
+\end{solution}
+
+\subsection{估計比例所需的樣本量}
+
+\begin{theorem}[估計 $p$ 所需的樣本量]
+若要使誤差界限不超過 $E$，則所需樣本量為：
+\[
+n \geqslant \left(\frac{z_{\alpha/2}}{E}\right)^2 p(1-p)
+\]
+
+若 $p$ 未知，使用\textbf{保守估計} $p = 0.5$（使 $p(1-p)$ 最大）：
+\[
+n \geqslant \frac{(z_{\alpha/2})^2}{4E^2}
+\]
+\end{theorem}
+
+\begin{prf}
+$p(1-p)$ 在 $p = 0.5$ 時達到最大值 $0.25$。使用此值可確保無論真實 $p$ 為何，所需樣本量都足夠。
+\end{prf}
+
+\begin{example}
+某金融公司想調查顧客對新產品的偏好比例。若要以 95\% 信心水準，使誤差界限不超過 3\%，需要多少樣本？
+\end{example}
+
+\begin{solution}
+$z_{0.025} = 1.96$，$E = 0.03$
+
+使用保守估計 $p = 0.5$：
+\[
+n \geqslant \frac{(1.96)^2}{4 \times (0.03)^2} = \frac{3.8416}{0.0036} = 1067.1
+\]
+
+故至少需要 $n = 1068$ 個樣本。
+
+\textbf{若有先驗資訊}：若預估 $p \approx 0.3$，則：
+\[
+n \geqslant \frac{(1.96)^2 \times 0.3 \times 0.7}{(0.03)^2} = \frac{3.8416 \times 0.21}{0.0009} = 896.4
+\]
+
+需要 897 個樣本（較少）。
+\end{solution}
+
+%=============================================================================
+\section{本章習題}
+%=============================================================================
+
+\begin{exercise}
+設 $X_1, \ldots, X_n \simark \text{Uniform}(0, \theta)$，PDF 為 $f(x; \theta) = 1/\theta$，$0 < x < \theta$。求 $\theta$ 的 MLE。
+\end{exercise}
+
+\begin{solution}
+概似函數：
+\[
+L(\theta) = \prod_{i=1}^{n} \frac{1}{\theta} \cdot \mathbf{1}_{(0 < x_i < \theta)} = \frac{1}{\theta^n} \cdot \mathbf{1}_{(\theta > \max_i x_i)}
+\]
+
+對於 $\theta \geqslant \max_i x_i$，$L(\theta) = 1/\theta^n$ 是 $\theta$ 的遞減函數。
+
+因此 $L(\theta)$ 在 $\theta = \max_i x_i$ 時達到最大。
+
+$\hat{\theta}_{\text{MLE}} = X_{(n)} = \max\{X_1, \ldots, X_n\}$
+\end{solution}
+
+\begin{exercise}
+設 $X_1, \ldots, X_n \simark N(\mu, \sigma^2)$。考慮 $\sigma^2$ 的兩個估計量：
+\begin{itemize}
+    \item $\hat{\sigma}_1^2 = S^2 = \dfrac{1}{n-1}\sum(X_i - \bar{X})^2$
+    \item $\hat{\sigma}_2^2 = \dfrac{1}{n}\sum(X_i - \bar{X})^2$
+\end{itemize}
+\begin{enumerate}[label=(\alph*)]
+    \item 證明 $\hat{\sigma}_1^2$ 是不偏的，$\hat{\sigma}_2^2$ 是有偏的
+    \item 求 $\hat{\sigma}_2^2$ 的偏誤
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[label=(\alph*)]
+    \item 由第三部分已證 $\expc[S^2] = \sigma^2$，故 $\hat{\sigma}_1^2$ 不偏。
+    
+    $\hat{\sigma}_2^2 = \dfrac{n-1}{n} S^2$，故：
+    \[
+    \expc[\hat{\sigma}_2^2] = \frac{n-1}{n} \expc[S^2] = \frac{n-1}{n} \sigma^2 \neq \sigma^2
+    \]
+    
+    故 $\hat{\sigma}_2^2$ 有偏。
+    
+    \item $\text{Bias}(\hat{\sigma}_2^2) = \expc[\hat{\sigma}_2^2] - \sigma^2 = \dfrac{n-1}{n}\sigma^2 - \sigma^2 = -\dfrac{\sigma^2}{n}$
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+某廠商宣稱其產品平均重量為 500 克。品管人員隨機抽取 25 件產品，測得平均重量 496 克，樣本標準差 10 克。假設重量服從常態分配。
+\begin{enumerate}[label=(\alph*)]
+    \item 求母體平均重量的 95\% 信賴區間
+    \item 根據信賴區間，廠商的宣稱是否可信？
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+$n = 25$，$\bar{x} = 496$，$s = 10$
+
+\begin{enumerate}[label=(\alph*)]
+    \item $\sigma$ 未知，使用 t 分配。$df = 24$，$t_{0.025, 24} = 2.064$
+    
+    95\% 信賴區間：
+    \[
+    496 \pm 2.064 \times \frac{10}{\sqrt{25}} = 496 \pm 2.064 \times 2 = 496 \pm 4.13
+    \]
+    
+    即 $(491.87, 500.13)$
+    
+    \item 500 落在信賴區間內，故在 95\% 信心水準下，廠商的宣稱可信。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+比較兩種教學法的效果。A 法：$n_1 = 15$，$\bar{x}_1 = 78$，$s_1 = 8$；B 法：$n_2 = 18$，$\bar{x}_2 = 72$，$s_2 = 10$。假設成績服從常態分配且變異數相等。求 $\mu_A - \mu_B$ 的 95\% 信賴區間。
+\end{exercise}
+
+\begin{solution}
+合併變異數：
+\[
+S_p^2 = \frac{14 \times 64 + 17 \times 100}{15 + 18 - 2} = \frac{896 + 1700}{31} = \frac{2596}{31} = 83.74
+\]
+
+$S_p = 9.15$
+
+$df = 31$，$t_{0.025, 31} \approx 2.04$
+
+標準誤：$9.15 \times \sqrt{\dfrac{1}{15} + \dfrac{1}{18}} = 9.15 \times \sqrt{0.1222} = 9.15 \times 0.350 = 3.20$
+
+95\% 信賴區間：
+\[
+(78 - 72) \pm 2.04 \times 3.20 = 6 \pm 6.53
+\]
+
+即 $(-0.53, 12.53)$
+
+區間包含 0，故在 95\% 信心水準下，無法斷定兩種教學法有顯著差異。
+\end{solution}
+
+\begin{exercise}
+某研究者想估計大學生每天使用手機的平均時間。預估標準差約為 1.5 小時。若要以 99\% 信心水準，使誤差界限不超過 0.5 小時，需要多少樣本？
+\end{exercise}
+
+\begin{solution}
+$z_{0.005} = 2.576$，$\sigma = 1.5$，$E = 0.5$
+
+\[
+n \geqslant \left(\frac{2.576 \times 1.5}{0.5}\right)^2 = \left(\frac{3.864}{0.5}\right)^2 = (7.728)^2 = 59.72
+\]
+
+故至少需要 60 個樣本。
+\end{solution}
+
+%=============================================================================
+%% \section*{本章重點整理}
+%=============================================================================
+
+% \begin{enumerate}
+%     \item \textbf{點估計的性質}：
+%     \begin{itemize}
+%         \item 不偏性：$\expc[\hat{\theta}] = \theta$
+%         \item 有效性：變異數最小
+%         \item 一致性：$\hat{\theta}_n \pmark \theta$
+%         \item MSE 分解：$\MSE = \var + \text{Bias}^2$
+%     \end{itemize}
+    
+%     \item \textbf{最大概似估計法}：
+%     \begin{itemize}
+%         \item 概似函數：$L(\theta) = \prod f(x_i; \theta)$
+%         \item 求法：令 $\dfrac{d\ell}{d\theta} = 0$
+%         \item 常見 MLE：常態 $\to \bar{X}$，指數 $\to 1/\bar{X}$，Poisson $\to \bar{X}$，Bernoulli $\to \hat{p}$
+%     \end{itemize}
+    
+%     \item \textbf{母體平均數 $\mu$ 的信賴區間}：
+%     \begin{itemize}
+%         \item $\sigma$ 已知：$\bar{X} \pm z_{\alpha/2} \cdot \sigma/\sqrt{n}$
+%         \item $\sigma$ 未知：$\bar{X} \pm t_{\alpha/2, n-1} \cdot S/\sqrt{n}$
+%     \end{itemize}
+    
+%     \item \textbf{母體變異數 $\sigma^2$ 的信賴區間}：
+%     \[
+%     \left(\frac{(n-1)S^2}{\chi^2_{\alpha/2}}, \frac{(n-1)S^2}{\chi^2_{1-\alpha/2}}\right)
+%     \]
+    
+%     \item \textbf{母體比例 $p$ 的信賴區間}：
+%     \[
+%     \hat{p} \pm z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}
+%     \]
+    
+%     \item \textbf{樣本量決定}：
+%     \begin{itemize}
+%         \item 估計 $\mu$：$n \geqslant (z_{\alpha/2} \cdot \sigma / E)^2$
+%         \item 估計 $p$（保守）：$n \geqslant (z_{\alpha/2})^2 / (4E^2)$
+%     \end{itemize}
+% \end{enumerate}
+
+\end{document}

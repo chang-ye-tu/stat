@@ -1,0 +1,674 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[left=1cm,right=1cm,bottom=15mm,top=20mm]{geometry}
+\usepackage[AutoFakeBold,AutoFakeSlant]{xeCJK}
+\setCJKmainfont[AutoFakeSlant=.1,AutoFakeBold=2]{Noto Serif CJK TC}
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{graphicx,xcolor,float}
+\usepackage{booktabs,tabularx,multirow,array}
+\usepackage{parskip}
+\usepackage{enumitem}
+\setlist{itemsep=0pt,parsep=0pt}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    urlcolor=blue!80!black
+}
+
+% 機率與統計符號
+\newcommand\expc{\mathsf{E}}
+\newcommand\prb{\mathsf{P}}
+\DeclareMathOperator\var{var}
+\DeclareMathOperator\cov{cov}
+\DeclareMathOperator\corr{corr}
+
+% 中文化
+\renewcommand{\figurename}{圖}
+\renewcommand{\tablename}{表}
+
+% 定理環境
+\theoremstyle{definition}
+\newtheorem{definition}{定義}[section]
+\newtheorem{example}{例題}[section]
+\newtheorem{exercise}{習題}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+\newtheorem{corollary}{推論}[section]
+\newtheorem{proposition}{命題}[section]
+\newtheorem{property}{性質}[section]
+\newtheorem*{remark}{註}
+\newtheorem*{solution}{解答}
+\newtheorem*{note}{說明}
+\newtheorem*{prf}{證明}
+
+% 常用指令
+\newcommand{\ds}{\displaystyle}
+\newcommand{\ie}{\;\Longrightarrow\;}
+\newcommand{\ifff}{\;\Longleftrightarrow\;}
+\newcommand{\mi}{\mathrm{i}}
+\newcommand{\diff}[2]{\frac{\mathrm{d} #1}{\mathrm{d} #2}}
+\newcommand{\pdiff}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\ddiff}[2]{\frac{\mathrm{d}^2 #1}{\mathrm{d} #2^2}}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
+\newcommand{\ceil}[1]{\lceil #1 \rceil}
+\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vu}{\mathbf{u}}
+\newcommand{\vv}{\mathbf{v}}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\ran}{ran}
+
+% 頁面設定
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{統計學講義}
+\fancyhead[R]{第零部分：預備微積分知識}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\title{\vspace{-2cm}\textbf{統計學講義}\\[3mm] \Large 第零部分：預備微積分知識}
+\author{}
+\date{\vspace{-25mm}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+%\tableofcontents
+
+%=============================================================================
+\section{極限與連續性}
+%=============================================================================
+
+\subsection{極限的直觀概念}
+
+\begin{definition}[極限]
+若當 $x$ 趨近於 $a$（但 $x \neq a$）時，$f(x)$ 趨近於某定值 $L$，則稱 $L$ 為 $f(x)$ 在 $x \to a$ 的\textbf{極限}，記為
+\[
+\lim_{x \to a} f(x) = L
+\]
+\end{definition}
+
+\begin{example}
+\begin{itemize}
+  \item[]
+\item $\ds\lim_{x\to 2}x^2 = 4$
+\item $\ds\lim_{x\to 2}\frac{x - 2}{x^2 + x - 6} = \lim_{x\to 2}\frac{x - 2}{(x - 2)(x + 3)} = \lim_{x\to2}\frac{1}{x + 3} = \frac{1}{5}$
+\end{itemize}
+\end{example}
+
+\subsection{單側極限與無窮極限}
+
+\begin{definition}[單側極限]
+  \begin{itemize}\item[]
+\item \textbf{左極限}：$\ds\lim_{x\to a^-} f(x)$，$x$ 從 $a$ 的左邊趨近
+\item \textbf{右極限}：$\ds\lim_{x\to a^+} f(x)$，$x$ 從 $a$ 的右邊趨近
+\end{itemize}
+\end{definition}
+
+\begin{theorem}
+若 $L \in \mathbb{R}$，則 $\ds\lim_{x\to a}f(x) = L$ $\ifff$ $\ds\lim_{x\to a^-} f(x) = \ds\lim_{x\to a^+} f(x) = L$。
+\end{theorem}
+
+\begin{example}
+\begin{itemize}
+  \item[]
+\item $\ds\lim_{x\to0}|x| = 0$
+\item $\ds\lim_{x\to0}\frac{|x|}{x} = \text{不存在}$（左極限為 $-1$，右極限為 $1$）
+\item $\ds\lim_{x\to3^+}\floor{x} = 3$，$\ds\lim_{x\to3^-}\floor{x} = 2$
+\end{itemize}
+\end{example}
+
+\subsection{極限運算法則}
+
+\begin{theorem}[極限的四則運算]
+設 $\ds\lim_{x\to a}f(x) = F$，$\ds\lim_{x\to a}g(x) = G$，且 $F$, $G$ 存在（非無窮），則：
+\begin{itemize}
+\item $\ds\lim_{x\to a} \big(f(x) \pm g(x)\big) = F \pm G$
+\item $\ds\lim_{x\to a} f(x)\cdot g(x) = F\cdot G$
+\item $\ds\lim_{x\to a} \frac{f(x)}{g(x)} = \frac{F}{G}$，若 $G\ne 0$
+\item $\ds\lim_{x\to a} \big(f(x)\big)^\alpha = F^\alpha$，若 $\alpha\in\mathbb{Q}$ 且 $F > 0$
+\end{itemize}
+\end{theorem}
+
+\begin{example}
+\begin{itemize}
+  \item[]
+\item $\ds\lim_{x\to-1}\frac{\sqrt{x^2 + 8} - 3}{x + 1} = \lim_{x\to-1}\frac{x^2 - 1}{(x + 1)(\sqrt{x^2 + 8} + 3)} = \lim_{x\to-1}\frac{x - 1}{\sqrt{x^2 + 8} + 3} = -\frac{1}{3}$
+\item $\ds\lim_{x\to\infty}\frac{5x^2 + 8x - 3}{3x^2 + 2} = \lim_{x\to\infty}\frac{5 + \frac{8}{x} - \frac{3}{x^2}}{3 + \frac{2}{x^2}} = \frac{5}{3}$
+\end{itemize}
+\end{example}
+
+\begin{theorem}[夾擠定理]
+若 $g(x)\leqslant f(x)\leqslant h(x)$ 對所有 $x\in[a, b]$，$c\in[a, b]$ 且 $\ds\lim_{x\to c}g(x) = \lim_{x\to c}h(x) = L$，則 $\ds\lim_{x\to c} f(x) = L$。
+\end{theorem}
+
+\subsection{連續性}
+
+\begin{definition}[連續]
+給定 $f$，$a\in\dom f$。
+\begin{itemize}
+\item 若 $\ds\lim_{x\to a} f(x)$ 存在且 $\ds f(a)=\lim_{x\to a}f(x)$，則稱 $f$ 在 $a$ \textbf{連續}。
+\item 若 $f$ 在區間 $I$ 之每一點均連續，則稱 $f$ 在 $I$ 連續。
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[中間值定理]
+若 $f$ 在 $[a, b]$ 連續，則對任意介於 $f(a)$ 與 $f(b)$ 之間的數 $d$，存在 $c\in[a, b]$ 使得 $f(c) = d$。
+\end{theorem}
+
+\begin{theorem}[Bolzano 定理]
+若 $f$ 在 $[a, b]$ 連續且 $f(a)\cdot f(b) < 0$，則存在 $c\in(a, b)$ 使得 $f(c) = 0$。
+\end{theorem}
+
+%=============================================================================
+\section{微分}
+%=============================================================================
+
+\subsection{導數的定義}
+
+\begin{definition}[導數]
+函數 $f$ 在 $a$ 的\textbf{導數}定義為：
+\[
+f'(a) = \lim_{h\to 0}\frac{f(a + h) - f(a)}{h} = \lim_{x\to a}\frac{f(x) - f(a)}{x - a}
+\]
+若此極限存在，則稱 $f$ 在 $a$ \textbf{可微分}。
+\end{definition}
+
+\begin{theorem}[可微分 $\Rightarrow$ 連續]
+若 $f$ 在 $a$ 可微分，則 $f$ 在 $a$ 連續。
+\end{theorem}
+
+\subsection{微分規則}
+
+\begin{theorem}[基本微分公式]
+\begin{itemize}
+  \item[]
+\item $(x^n)' = nx^{n-1}$
+\item $(e^x)' = e^x$，$(a^x)' = a^x \ln a$
+\item $(\ln x)' = \dfrac{1}{x}$，$(\log_a x)' = \dfrac{1}{x\ln a}$
+\end{itemize}
+\end{theorem}
+
+\begin{theorem}[微分運算法則]
+設 $f$, $g$ 可微分，$c$ 為常數：
+\begin{itemize}
+\item \textbf{線性}：$(cf + g)' = cf' + g'$
+\item \textbf{乘法}：$(fg)' = f'g + fg'$
+\item \textbf{除法}：$\ds\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}$，若 $g \neq 0$
+\item \textbf{連鎖律}：$(f\circ g)'(x) = f'(g(x))\cdot g'(x)$
+\end{itemize}
+\end{theorem}
+
+\begin{note}[連鎖律的意義]
+連鎖律（chain rule）是複合函數的微分法則。若 $y = f(u)$，$u = g(x)$，則
+\[
+\diff{y}{x} = \diff{y}{u} \cdot \diff{u}{x}
+\]
+這可以推廣到多層複合：若 $y = f(u)$，$u = g(v)$，$v = h(x)$，則
+\[
+\diff{y}{x} = \diff{y}{u} \cdot \diff{u}{v} \cdot \diff{v}{x}
+\]
+\end{note}
+
+\begin{example}
+求 $\ds f(x) = e^{x^2 + 3x}$ 的導數。
+\end{example}
+
+\begin{solution}
+令 $u = x^2 + 3x$，則 $f(x) = e^u$。
+\[
+f'(x) = \diff{}{x}(e^u) = e^u \cdot \diff{u}{x} = e^{x^2 + 3x} \cdot (2x + 3)
+\]
+\end{solution}
+
+\begin{example}
+求 $\ds f(x) = \ln(e^x + e^{-x})$ 的導數。
+\end{example}
+
+\begin{solution}
+令 $u = e^x + e^{-x}$，則
+\[
+f'(x) = \frac{1}{u} \cdot \diff{u}{x} = \frac{e^x - e^{-x}}{e^x + e^{-x}}
+\]
+\end{solution}
+
+%=============================================================================
+\section{L'Hôpital 法則}
+%=============================================================================
+
+\begin{theorem}[L'Hôpital 法則]
+若 $\ds\lim_{x\to a}\frac{f(x)}{g(x)}$ 為 $\frac{0}{0}$ 或 $\frac{\infty}{\infty}$ 型不定式，且 $\ds\lim_{x\to a}\frac{f'(x)}{g'(x)}$ 存在，則
+\[
+\lim_{x\to a}\frac{f(x)}{g(x)} = \lim_{x\to a}\frac{f'(x)}{g'(x)}
+\]
+\end{theorem}
+
+\begin{example}
+\begin{itemize}
+  \item[]
+\item $\ds\lim_{x\to 0}\frac{\sin x}{x} = \lim_{x\to 0}\frac{\cos x}{1} = 1$
+\item $\ds\lim_{x\to 0}\frac{e^x - 1}{x} = \lim_{x\to 0}\frac{e^x}{1} = 1$
+\item $\ds\lim_{x\to\infty}\frac{\ln x}{x} = \lim_{x\to\infty}\frac{1/x}{1} = 0$
+\item $\ds\lim_{x\to 0^+}x\ln x = \lim_{x\to 0^+}\frac{\ln x}{1/x} = \lim_{x\to 0^+}\frac{1/x}{-1/x^2} = \lim_{x\to 0^+}(-x) = 0$
+\end{itemize}
+\end{example}
+
+%=============================================================================
+\section{積分}
+%=============================================================================
+
+\subsection{不定積分}
+
+\begin{definition}[反導數]
+若 $F'(x) = f(x)$，則 $F(x)$ 為 $f(x)$ 的一個\textbf{反導數}（antiderivative）。$f(x)$ 的所有反導數形成\textbf{不定積分}：
+\[
+\int f(x)\,\mathrm{d}x = F(x) + C
+\]
+\end{definition}
+
+\begin{theorem}[基本積分公式]
+\begin{itemize}
+  \item[]
+\item $\ds\int x^n\,\mathrm{d}x = \frac{x^{n+1}}{n+1} + C$（$n \neq -1$）
+\item $\ds\int \frac{1}{x}\,\mathrm{d}x = \ln|x| + C$
+\item $\ds\int e^x\,\mathrm{d}x = e^x + C$
+\item $\ds\int \frac{1}{1+x^2}\,\mathrm{d}x = \tan^{-1}x + C$
+\end{itemize}
+\end{theorem}
+
+\subsection{變數變換法}
+
+\begin{theorem}[變數變換（代換法）]
+若 $u = g(x)$，則
+\[
+\int f(g(x))\cdot g'(x)\,\mathrm{d}x = \int f(u)\,\mathrm{d}u
+\]
+\end{theorem}
+
+\begin{example}
+\begin{itemize}
+  \item[]
+\item $\ds\int 2x e^{x^2}\,\mathrm{d}x$：令 $u = x^2$，$\mathrm{d}u = 2x\,\mathrm{d}x$，則 $\ds\int e^u\,\mathrm{d}u = e^u + C = e^{x^2} + C$
+\item $\ds\int \frac{x}{1+x^2}\,\mathrm{d}x$：令 $u = 1+x^2$，則 $\ds\frac{1}{2}\int \frac{1}{u}\,\mathrm{d}u = \frac{1}{2}\ln|u| + C = \frac{1}{2}\ln(1+x^2) + C$
+\end{itemize}
+\end{example}
+
+\subsection{部分積分法}
+
+\begin{theorem}[部分積分]
+\[
+\int u\,\mathrm{d}v = uv - \int v\,\mathrm{d}u
+\]
+\end{theorem}
+
+\begin{example}
+$\ds\int x e^x\,\mathrm{d}x$：令 $u = x$，$\mathrm{d}v = e^x\mathrm{d}x$，則 $\mathrm{d}u = \mathrm{d}x$，$v = e^x$。
+\[
+\int x e^x\,\mathrm{d}x = xe^x - \int e^x\,\mathrm{d}x = xe^x - e^x + C = (x-1)e^x + C
+\]
+\end{example}
+
+\subsection{定積分}
+
+\begin{theorem}[微積分基本定理]
+若 $f$ 在 $[a, b]$ 連續，$F$ 為 $f$ 的反導數，則
+\[
+\int_a^b f(x)\,\mathrm{d}x = F(b) - F(a)
+\]
+\end{theorem}
+
+\begin{theorem}[Leibniz 積分法則]
+若 $\ds F(t) = \int_{a(t)}^{b(t)} f(x, t)\,\mathrm{d}x$，則
+\[
+\diff{F}{t} = f(b(t), t)\cdot b'(t) - f(a(t), t)\cdot a'(t) + \int_{a(t)}^{b(t)} \pdiff{f}{t}(x, t)\,\mathrm{d}x
+\]
+\end{theorem}
+
+%=============================================================================
+\section{多變數微分}
+%=============================================================================
+
+\subsection{偏導數}
+
+\begin{definition}[偏導數]
+函數 $f(x, y)$ 對 $x$ 的\textbf{偏導數}：
+\[
+\pdiff{f}{x} = f_x = \lim_{h\to 0}\frac{f(x+h, y) - f(x, y)}{h}
+\]
+類似地定義 $\pdiff{f}{y} = f_y$。
+\end{definition}
+
+\begin{example}
+若 $f(x, y) = x^2 y + e^{xy}$，則
+\begin{itemize}
+\item $f_x = 2xy + ye^{xy}$
+\item $f_y = x^2 + xe^{xy}$
+\item $f_{xy} = 2x + e^{xy} + xye^{xy}$
+\end{itemize}
+\end{example}
+
+\subsection{連鎖律}
+
+\begin{theorem}[多變數連鎖律]
+若 $z = f(x, y)$，$x = x(t)$，$y = y(t)$，則
+\[
+\diff{z}{t} = \pdiff{f}{x}\diff{x}{t} + \pdiff{f}{y}\diff{y}{t}
+\]
+
+更一般地，若 $z = f(x, y)$，$x = x(s, t)$，$y = y(s, t)$，則
+\[
+\pdiff{z}{s} = \pdiff{f}{x}\pdiff{x}{s} + \pdiff{f}{y}\pdiff{y}{s}, \quad
+\pdiff{z}{t} = \pdiff{f}{x}\pdiff{x}{t} + \pdiff{f}{y}\pdiff{y}{t}
+\]
+\end{theorem}
+
+\begin{example}
+若 $x$, $y$, $z$ 滿足方程式 $x^2 + y^2 + z^2 = 1$（$z$ 視為 $x$, $y$ 的函數），求 $\pdiff{z}{x}$。
+\end{example}
+
+\begin{solution}
+將方程式對 $x$ 偏微分（$y$ 視為常數）：
+\[
+2x + 2z\,\pdiff{z}{x} = 0 \ie \pdiff{z}{x} = -\frac{x}{z}
+\]
+\end{solution}
+
+\begin{example}
+若 $z^5 + y^2 e^z + e^{2x} = 0$，求 $\pdiff{z}{x}(0, 0)$。
+\end{example}
+
+\begin{solution}
+當 $x = y = 0$：$z^5 + 0 + 1 = 0 \ie z(0, 0) = -1$
+
+對 $x$ 偏微分：$5z^4\pdiff{z}{x} + y^2 e^z\pdiff{z}{x} + 2e^{2x} = 0$
+
+代入 $(x, y) = (0, 0)$：$5 \cdot 1 \cdot \pdiff{z}{x}(0, 0) + 0 + 2 = 0 \ie \pdiff{z}{x}(0, 0) = -\frac{2}{5}$
+\end{solution}
+
+\subsection{梯度與方向導數}
+
+\begin{definition}[梯度]
+函數 $f(x, y)$ 的\textbf{梯度}為
+\[
+\nabla f = \left(\pdiff{f}{x}, \pdiff{f}{y}\right) = f_x\,\mathbf{i} + f_y\,\mathbf{j}
+\]
+\end{definition}
+
+\begin{definition}[方向導數]
+$f$ 在點 $(a, b)$ 沿單位向量 $\mathbf{u} = (u_1, u_2)$ 的\textbf{方向導數}為
+\[
+D_{\mathbf{u}}f(a, b) = \nabla f(a, b) \cdot \mathbf{u} = f_x(a,b)u_1 + f_y(a,b)u_2
+\]
+\end{definition}
+
+\subsection{極值問題}
+
+\begin{theorem}[極值的必要條件]
+若 $f(x, y)$ 在 $(a, b)$ 有局部極值且 $f$ 在該點可微分，則
+\[
+f_x(a, b) = 0 \quad \text{且} \quad f_y(a, b) = 0
+\]
+滿足此條件的點稱為\textbf{臨界點}（critical point）。
+\end{theorem}
+
+\begin{theorem}[二階判別法]
+設 $(a, b)$ 為 $f$ 的臨界點，令
+\[
+D = f_{xx}(a,b)f_{yy}(a,b) - [f_{xy}(a,b)]^2
+\]
+\begin{itemize}
+\item 若 $D > 0$ 且 $f_{xx}(a,b) > 0$，則 $(a,b)$ 為局部極小
+\item 若 $D > 0$ 且 $f_{xx}(a,b) < 0$，則 $(a,b)$ 為局部極大
+\item 若 $D < 0$，則 $(a,b)$ 為鞍點
+\item 若 $D = 0$，則無法判定
+\end{itemize}
+\end{theorem}
+
+%=============================================================================
+\section{Lagrange 乘數法}
+%=============================================================================
+
+\begin{theorem}[Lagrange 乘數法]
+給定開集 $S\subseteq\mathbb{R}^n$，可微函數 $f:S\to\mathbb{R}$ 與 $g_j:S\to\mathbb{R}$，$j=1,\,2,\,\ldots,\,m$，$m < n$，及約束集合
+\[
+X_0 = \big\{\vx\in S\;|\;g_j(\vx) = 0,\,j=1,\,2,\,\ldots,\,m\big\}
+\]
+若 $f$ 在 $\vx_0\in S\cap X_0$ 有極值，則存在 $\lambda_1,\,\lambda_2,\,\ldots,\,\lambda_m$ 使得
+\[
+\nabla f(\vx_0) + \sum_{j = 1}^m\lambda_j \nabla g_j(\vx_0) = \mathbf{0}
+\]
+\end{theorem}
+
+\begin{remark}
+令 $\ds\mathcal{L}\equiv f + \sum_{j = 1}^m \lambda_j\,g_j$（Lagrangian），上述條件可寫作
+\[
+\nabla_{\vx}\mathcal{L}(\vx_0) = \mathbf{0}, \quad g_j(\vx_0) = 0,\;j=1,\,2,\,\ldots,\,m
+\]
+\end{remark}
+
+\begin{example}
+求 $x^2 - 10 x - y^2$ 在 $x^2 + 4 y^2 = 16$ 上的最大值與最小值。
+\end{example}
+
+\begin{solution}
+令 $\mathcal{L} = x^2 - 10 x - y^2 + \lambda\,(x^2 + 4 y^2 - 16)$，則
+\begin{align*}
+\pdiff{\mathcal{L}}{x} &= 2 x - 10 + 2\lambda x = 0 \ie (1 + \lambda) x = 5 \\
+\pdiff{\mathcal{L}}{y} &= -2y + 8\lambda y = 0 \ie (4\lambda - 1) y = 0
+\end{align*}
+由第二式，$y = 0$ 或 $\lambda = \frac{1}{4}$。
+
+若 $y = 0$，由約束條件 $x = \pm 4$。
+
+若 $\lambda = \frac{1}{4}$，由第一式 $x = 4$，代入約束條件得 $y = 0$。
+
+故極值點為 $(4, 0)$ 與 $(-4, 0)$。
+
+$f(4, 0) = 16 - 40 = -24$（最小值），$f(-4, 0) = 16 + 40 = 56$（最大值）。
+\end{solution}
+
+\begin{example}[Cauchy 不等式的證明]
+求 $\ds\sum_{k = 1}^n x_k\,y_k$ 在 $\ds\sum_{k = 1}^n x_k^2 = 1$ 與 $\ds\sum_{k = 1}^n y_k^2 = 1$ 下之最大值。
+\end{example}
+
+\begin{solution}
+令 $\ds\mathcal{L} = \sum_{k = 1}^n x_k\,y_k + \lambda_1\,\Big(\sum_{k = 1}^n x_k^2 - 1\Big) + \lambda_2\,\Big(\sum_{k = 1}^n y_k^2 - 1\Big)$
+
+對任意 $i = 1,\,2,\,\ldots,\,n$：
+\[
+\pdiff{\mathcal{L}}{x_i} = y_i + 2\lambda_1 x_i = 0, \quad
+\pdiff{\mathcal{L}}{y_i} = x_i + 2\lambda_2 y_i = 0
+\]
+
+由此得 $\lambda_1 = \lambda_2 = \pm\frac{1}{2}$，故 $x_i = \pm y_i$。
+
+最大值為 $\ds\sum_{k = 1}^n x_k^2 = 1$（當 $x_i = y_i$）。
+
+\textbf{推論（Cauchy 不等式）}：$\ds\sum_{k = 1}^n a_k b_k \leqslant \Big(\sum_{k = 1}^n a_k^2\Big)^{1/2}\Big(\sum_{k = 1}^n b_k^2\Big)^{1/2}$
+\end{solution}
+
+%=============================================================================
+\section{多重積分}
+%=============================================================================
+
+\subsection{二重積分}
+
+\begin{definition}[二重積分]
+函數 $f(x, y)$ 在區域 $\Omega$ 上的\textbf{二重積分}：
+\[
+\iint_\Omega f(x, y)\,\mathrm{d}A = \iint_\Omega f(x, y)\,\mathrm{d}x\,\mathrm{d}y
+\]
+\end{definition}
+
+\begin{theorem}[Fubini 定理——逐次積分]
+若 $f$ 在矩形區域 $[a, b] \times [c, d]$ 連續，則
+\[
+\iint_\Omega f(x, y)\,\mathrm{d}A = \int_a^b\!\int_c^d f(x, y)\,\mathrm{d}y\,\mathrm{d}x = \int_c^d\!\int_a^b f(x, y)\,\mathrm{d}x\,\mathrm{d}y
+\]
+\end{theorem}
+
+\subsection{積分順序交換}
+
+\begin{theorem}[積分順序交換]
+對於一般區域：
+\[
+\int_a^b\!\int_{g_1(x)}^{g_2(x)} f(x, y)\,\mathrm{d}y\,\mathrm{d}x = \int_c^d\!\int_{h_1(y)}^{h_2(y)} f(x, y)\,\mathrm{d}x\,\mathrm{d}y
+\]
+前提是兩積分描述相同區域。
+\end{theorem}
+
+\begin{example}
+計算 $\ds\int_0^1\!\int_x^1 e^{y^2}\,\mathrm{d}y\,\mathrm{d}x$。
+\end{example}
+
+\begin{solution}
+原積分無法直接計算（$e^{y^2}$ 無初等反導數）。交換積分順序：
+
+原區域：$0 \leqslant x \leqslant 1$，$x \leqslant y \leqslant 1$
+
+交換後：$0 \leqslant y \leqslant 1$，$0 \leqslant x \leqslant y$
+
+\begin{align*}
+\int_0^1\!\int_x^1 e^{y^2}\,\mathrm{d}y\,\mathrm{d}x &= \int_0^1\!\int_0^y e^{y^2}\,\mathrm{d}x\,\mathrm{d}y\\
+&= \int_0^1 y\,e^{y^2}\,\mathrm{d}y = \frac{1}{2}e^{y^2}\Big|_0^1 = \frac{e - 1}{2}
+\end{align*}
+\end{solution}
+
+\begin{example}
+計算 $\ds\int_0^4\!\int_{\sqrt{y}}^2 \sqrt{x^3 + 1}\,\mathrm{d}x\,\mathrm{d}y$。
+\end{example}
+
+\begin{solution}
+原區域：$0 \leqslant y \leqslant 4$，$\sqrt{y} \leqslant x \leqslant 2$
+
+交換後：$0 \leqslant x \leqslant 2$，$0 \leqslant y \leqslant x^2$
+
+\begin{align*}
+\int_0^4\!\int_{\sqrt{y}}^2 \sqrt{x^3 + 1}\,\mathrm{d}x\,\mathrm{d}y &= \int_0^2\!\int_0^{x^2} \sqrt{x^3 + 1}\,\mathrm{d}y\,\mathrm{d}x\\
+&= \int_0^2 x^2\sqrt{x^3 + 1}\,\mathrm{d}x = \frac{2}{9}(x^3 + 1)^{3/2}\Big|_0^2 = \frac{2(27 - 1)}{9} = \frac{52}{9}
+\end{align*}
+\end{solution}
+
+\subsection{變數變換與 Jacobian}
+
+\begin{theorem}[重積分變數變換]
+給定 $\Omega_{\vx},\,\Omega_{\vu}\subseteq\mathbb{R}^n$，$\vx = \vx(\vu):\,\Omega_{\vu}\to\Omega_{\vx}$ 為嵌射（一對一且映成），各分量函數連續可偏微分，且 Jacobian
+\[
+J_{\vx}(\vu) = \frac{\partial\vx}{\partial\vu} = \begin{vmatrix}
+\dfrac{\partial x_1}{\partial u_1} & \cdots & \dfrac{\partial x_1}{\partial u_n} \\
+\vdots & \ddots & \vdots \\
+\dfrac{\partial x_n}{\partial u_1} & \cdots & \dfrac{\partial x_n}{\partial u_n}
+\end{vmatrix} \neq 0
+\]
+則
+\[
+\int_{\Omega_{\vx}} f(\vx)\,\mathrm{d}\vx = \int_{\Omega_{\vu}} f(\vx(\vu))\,|J_{\vx}(\vu)|\,\mathrm{d}\vu
+\]
+\end{theorem}
+
+\begin{example}[極座標]
+令 $x = r\cos\theta$，$y = r\sin\theta$，則
+\[
+J = \begin{vmatrix} \cos\theta & -r\sin\theta \\ \sin\theta & r\cos\theta \end{vmatrix} = r
+\]
+故 $\mathrm{d}x\,\mathrm{d}y = r\,\mathrm{d}r\,\mathrm{d}\theta$。
+\end{example}
+
+\begin{example}
+計算 $\ds\iint_\Omega e^{-x^2-y^2}\,\mathrm{d}A$，其中 $\Omega$ 為單位圓盤 $x^2 + y^2 \leqslant 1$。
+\end{example}
+
+\begin{solution}
+使用極座標：
+\begin{align*}
+\iint_\Omega e^{-x^2-y^2}\,\mathrm{d}A &= \int_0^{2\pi}\!\int_0^1 e^{-r^2}\cdot r\,\mathrm{d}r\,\mathrm{d}\theta\\
+&= 2\pi \cdot \left[-\frac{1}{2}e^{-r^2}\right]_0^1 = \pi(1 - e^{-1})
+\end{align*}
+\end{solution}
+
+\begin{example}[統計學重要應用：Gaussian 積分]
+計算 $\ds I = \int_{-\infty}^{\infty} e^{-x^2}\,\mathrm{d}x$。
+\end{example}
+
+\begin{solution}
+考慮 $I^2$：
+\begin{align*}
+I^2 &= \int_{-\infty}^{\infty} e^{-x^2}\,\mathrm{d}x \cdot \int_{-\infty}^{\infty} e^{-y^2}\,\mathrm{d}y = \iint_{\mathbb{R}^2} e^{-(x^2+y^2)}\,\mathrm{d}x\,\mathrm{d}y
+\end{align*}
+使用極座標：
+\begin{align*}
+I^2 &= \int_0^{2\pi}\!\int_0^{\infty} e^{-r^2}\cdot r\,\mathrm{d}r\,\mathrm{d}\theta = 2\pi \cdot \left[-\frac{1}{2}e^{-r^2}\right]_0^{\infty} = \pi
+\end{align*}
+故 $I = \sqrt{\pi}$。
+
+\textbf{推論}：$\ds\int_{-\infty}^{\infty} e^{-\frac{x^2}{2}}\,\mathrm{d}x = \sqrt{2\pi}$（標準常態分配的正規化常數）
+\end{solution}
+
+\begin{example}[一般線性變換]
+求 $\ds\iint_\Omega (x + y)^2\,\mathrm{d}A$，$\Omega$ 為 $x + y = 0$，$x + y = 1$，$2x - y = 0$，$2x - y = 3$ 所圍之平行四邊形。
+\end{example}
+
+\begin{solution}
+令 $u = x + y$，$v = 2x - y$，則 $x = \frac{1}{3}(u + v)$，$y = \frac{1}{3}(2u - v)$。
+
+Jacobian：
+\[
+J = \begin{vmatrix} \dfrac{\partial x}{\partial u} & \dfrac{\partial x}{\partial v} \\[2mm] \dfrac{\partial y}{\partial u} & \dfrac{\partial y}{\partial v} \end{vmatrix} = \begin{vmatrix} \frac{1}{3} & \frac{1}{3} \\[2mm] \frac{2}{3} & -\frac{1}{3} \end{vmatrix} = -\frac{1}{3}
+\]
+
+變換後 $\Omega = \{0 \leqslant u \leqslant 1,\; 0 \leqslant v \leqslant 3\}$。
+
+\[
+\iint_\Omega (x + y)^2\,\mathrm{d}A = \int_0^3\!\int_0^1 u^2 \cdot \left|-\frac{1}{3}\right|\,\mathrm{d}u\,\mathrm{d}v = \frac{1}{3} \cdot 3 \cdot \frac{1}{3} = \frac{1}{3}
+\]
+\end{solution}
+
+%=============================================================================
+\section{統計學相關的重要積分}
+%=============================================================================
+
+\subsection{Gamma 函數}
+
+\begin{definition}[Gamma 函數]
+\[
+\Gamma(\alpha) = \int_0^{\infty} x^{\alpha-1}e^{-x}\,\mathrm{d}x, \quad \alpha > 0
+\]
+\end{definition}
+
+\begin{theorem}[Gamma 函數的性質]
+\begin{itemize}
+\item $\Gamma(\alpha + 1) = \alpha\,\Gamma(\alpha)$
+\item $\Gamma(n + 1) = n!$，對正整數 $n$
+\item $\Gamma(1) = 1$，$\Gamma\left(\frac{1}{2}\right) = \sqrt{\pi}$
+\end{itemize}
+\end{theorem}
+
+\begin{prf}[$\Gamma(\alpha + 1) = \alpha\,\Gamma(\alpha)$ 的證明]
+使用部分積分，令 $u = x^\alpha$，$\mathrm{d}v = e^{-x}\mathrm{d}x$：
+\begin{align*}
+\Gamma(\alpha + 1) &= \int_0^{\infty} x^{\alpha}e^{-x}\,\mathrm{d}x = \left[-x^\alpha e^{-x}\right]_0^{\infty} + \alpha\int_0^{\infty} x^{\alpha-1}e^{-x}\,\mathrm{d}x\\
+&= 0 + \alpha\,\Gamma(\alpha) = \alpha\,\Gamma(\alpha)
+\end{align*}
+\end{prf}
+
+\subsection{Beta 函數}
+
+\begin{definition}[Beta 函數]
+\[
+B(\alpha, \beta) = \int_0^1 x^{\alpha-1}(1-x)^{\beta-1}\,\mathrm{d}x, \quad \alpha, \beta > 0
+\]
+\end{definition}
+
+\begin{theorem}[Beta 與 Gamma 的關係]
+\[
+B(\alpha, \beta) = \frac{\Gamma(\alpha)\Gamma(\beta)}{\Gamma(\alpha + \beta)}
+\]
+\end{theorem}
+
+\begin{prf}[概要]
+利用變數變換 $x = \frac{u}{u+v}$, $y = u + v$ 及二重積分技巧可證。
+\end{prf}
+
+\end{document}
