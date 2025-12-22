@@ -335,14 +335,42 @@ $\bH$ 將任意向量投影到 $\bX$ 的行空間（維度 $k+1$），故 $\rank
 \]
 \end{proof}
 
+\begin{remark}[誤差與殘差的區別]
+\textbf{誤差}（error）$\boldsymbol{\varepsilon}$ 與\textbf{殘差}（residual）$\mathbf{e}$ 是不同的概念：
+\begin{itemize}
+\item \textbf{誤差} $\varepsilon_i = Y_i - \bx_i^\top\bb$：真實模型中 $Y_i$ 與其期望值的偏離，\textbf{不可觀測}（因為真實參數 $\bb$ 未知）
+\item \textbf{殘差} $e_i = Y_i - \bx_i^\top\hat{\bb} = Y_i - \hat{Y}_i$：觀測值與擬合值的偏離，\textbf{可觀測}
+\end{itemize}
+兩者的關係：由 $\mathbf{e} = \bM\bY = \bM(\bX\bb + \be) = \bM\be$（因為 $\bM\bX = \mathbf{0}$），殘差是誤差經過矩陣 $\bM$ 變換後的結果。
+\end{remark}
+
 \begin{property}[正規方程式的意涵]\label{prop:normal-eq}
 OLS 殘差滿足：
 \begin{enumerate}[label=(\roman*)]
 \item $\bX^\top\mathbf{e} = \mathbf{0}$（殘差與所有自變數正交）
-\item $\sum_{i=1}^{n} e_i = 0$（殘差和為零，因為 $\bX$ 包含截距項）
+\item $\sum_{i=1}^{n} e_i = 0$（殘差和為零）
 \item $\hat{\bY}^\top\mathbf{e} = 0$（殘差與擬合值正交）
 \end{enumerate}
 \end{property}
+
+\begin{proof}
+(i) 由正規方程式 $\bX^\top\bX\hat{\bb} = \bX^\top\bY$，移項得：
+\[
+\bX^\top\bY - \bX^\top\bX\hat{\bb} = \mathbf{0} \ie \bX^\top(\bY - \bX\hat{\bb}) = \mathbf{0} \ie \bX^\top\mathbf{e} = \mathbf{0}
+\]
+
+(ii) 設計矩陣 $\bX$ 的第一行為全 1 向量 $\bone = (1, 1, \ldots, 1)^\top$。由 (i)，$\bX^\top\mathbf{e} = \mathbf{0}$ 的第一個分量為：
+\[
+\bone^\top\mathbf{e} = \sum_{i=1}^{n} e_i = 0
+\]
+\textbf{注意}：此性質僅在模型包含截距項時成立。
+
+(iii) 由 $\hat{\bY} = \bX\hat{\bb}$：
+\[
+\hat{\bY}^\top\mathbf{e} = (\bX\hat{\bb})^\top\mathbf{e} = \hat{\bb}^\top\bX^\top\mathbf{e} = \hat{\bb}^\top \cdot \mathbf{0} = 0
+\]
+此性質說明擬合值與殘差在 $n$ 維空間中正交，這正是 OLS 的幾何意義：$\hat{\bY}$ 是 $\bY$ 在 $\bX$ 行空間上的正交投影。
+\end{proof}
 
 \subsection{OLS 估計量的統計性質}
 
