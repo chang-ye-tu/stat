@@ -6,15 +6,12 @@
 
 ## 參考書
 
+- [Evans, M. J., Rosenthal, J. S., 2023. Probability and Statistics: The Science of Uncertainty. 2nd ed., W. H. Freeman and Company, New York.](https://www.utstat.toronto.edu/mikevans/jeffrosenthal/)
 - Casella, G., Berger, R. L., 2024. Statistical Inference. 2nd ed., Chapman & Hall/CRC, Boca Raton, FL.
-- Hogg, R. V., Tanis, E., Zimmerman, D., 2018. Probability and Statistical Inference. 10th ed, Pearson, Boston.
-- Hogg, R. V., McKean, J. W., Craig, A. T., 2019. Introduction to Mathematical Statistics. 8th ed, Pearson, Boston.
-
-## 其他資源
-
-- [Watkins, J. C. An Introduction to the Science of Statistics.](https://www.math.arizona.edu/~jwatkins/statbook.pdf)
 
 <!--
+## 其他資源
+- [Watkins, J. C. An Introduction to the Science of Statistics.](https://www.math.arizona.edu/~jwatkins/statbook.pdf)
 - Abadir, K. M., Heijmans, R., Magnus, J. R., 2019. Statistics, Cambridge University Press, Cambridge.
 - Ross, S. M., 2020. A First Course in Probability. 10th ed., Pearson, Boston.
 - Ross, S. M., 2019. Introduction to Probability Models. 12th ed., Academic Press, London.
@@ -24,9 +21,10 @@
 - Suhov, Y., Kelbert, M., 2014. Probability and Statistics by Example: I Basic Probability and Statistics. 2nd ed., Cambridge University Press, Cambridge.
 - Suhov, Y., Kelbert, M., 2008. Probability and Statistics by Example: II Markov Chains: a Primer in Random Processes and their Applications, Cambridge University Press, Cambridge.
 - Kelbert, M., Suhov, Y., 2013. Information Theory and Coding by Example, Cambridge University Press, Cambridge.
+- Hogg, R. V., Tanis, E., Zimmerman, D., 2018. Probability and Statistical Inference. 10th ed, Pearson, Boston.
+- Hogg, R. V., McKean, J. W., Craig, A. T., 2019. Introduction to Mathematical Statistics. 8th ed, Pearson, Boston.
 - [黃文璋，數理統計。](https://www.stat.nuk.edu.tw/cbme/math/staindexpdf.asp) 
 - [Schwarz, W., 2008. 40 Puzzles and Problems in Probability and Mathematical Statistics. Springer, NY.](https://link.springer.com/book/10.1007/978-0-387-73512-2)
-- [Evans, M. J., Rosenthal, J. S., 2023. Probability and Statistics: The Science of Uncertainty. 2nd ed., W. H. Freeman and Company, New York.](https://www.utstat.toronto.edu/mikevans/jeffrosenthal/)
 - [Hanada, M., Matsuura, S., 2022. MCMC from Scratch: A Practical Introduction to Markov Chain Monte Carlo. Springer Nature.](https://link.springer.com/book/10.1007/978-981-19-2715-7)
 
 https://en.wikipedia.org/wiki/German_tank_problem
@@ -34,7 +32,6 @@ Datasaurus dozen
 Some good elementary probability problems
   https://www.quantguide.io/
 
--->
 
 ## 評分標準
 
@@ -65,3 +62,5 @@ Some good elementary probability problems
 ## 授課教師
 
 杜昌燁 cwtu320313 @ googlemail.com
+
+-->

@@ -79,8 +79,6 @@ Chapter 2: Probability\\[2mm]
 \section{機率公理與基本定義}
 %=============================================================================
 
-機率論是統計學的數學基礎。本節介紹機率的嚴格數學定義與基本性質。
-
 \subsection{樣本空間與事件}
 
 \begin{definition}[樣本空間]
@@ -129,7 +127,7 @@ Chapter 2: Probability\\[2mm]
 \subsection{機率公理}
 
 \begin{definition}[Kolmogorov 機率公理]
-\textbf{機率}是一個從事件到實數的函數 $P$，滿足以下三條公理：
+  \textbf{機率}是一個從事件到實數的函數 $\prb(\cdot)$，滿足以下三條公理：
 \begin{enumerate}[label=(\roman*)]
     \item \textbf{非負性}：對任意事件 $A$，$\prb(A) \geqslant 0$
     \item \textbf{規範性}：$\prb(\Omega) = 1$
@@ -139,14 +137,6 @@ Chapter 2: Probability\\[2mm]
     \]
 \end{enumerate}
 \end{definition}
-
-\begin{remark}
-這三條公理是機率論的基石。所有機率的性質都可由這三條公理推導出來。
-\end{remark}
-
-\subsection{機率的基本性質}
-
-由機率公理可推導出以下基本性質：
 
 \begin{theorem}[機率的基本性質]\label{thm:prob-properties}
 設 $A$ 和 $B$ 為任意事件，則：
