@@ -14,9 +14,9 @@
 % 機率與統計符號
 \newcommand\expc{\mathsf{E}}
 \newcommand\prb{\mathsf{P}}
-\DeclareMathOperator\var{Var}
-\DeclareMathOperator\cov{Cov}
-\DeclareMathOperator\corr{Corr}
+\DeclareMathOperator\var{var}
+\DeclareMathOperator\cov{cov}
+\DeclareMathOperator\corr{corr}
 \DeclareMathOperator\plim{plim}
 \DeclareMathOperator\tr{tr}
 \DeclareMathOperator\rank{rank}
@@ -394,7 +394,7 @@ $(\bX^\top\bX)^{-1}$ 的對角元素乘以 $\sigma^2$ 給出各 $\hat{\beta}_j$ 
 
 即：對於任意線性不偏估計量 $\tilde{\bb} = \mathbf{C}\bY$（其中 $\mathbf{C}$ 為常數矩陣），有
 \[
-\var(\tilde{\beta}_j) \geq \var(\hat{\beta}_j), \quad \forall j
+\var(\tilde{\beta}_j) \geqslant \var(\hat{\beta}_j), \quad \forall j
 \]
 或更一般地，$\var(\tilde{\bb}) - \var(\hat{\bb})$ 為半正定矩陣。
 \end{theorem}
@@ -600,7 +600,7 @@ $\bY - \bar{Y}\bone = (\bY - \hat{\bY}) + (\hat{\bY} - \bar{Y}\bone) = \mathbf{e
 \[
 \boxed{R^2 = \frac{\SSR}{\SST} = 1 - \frac{\SSE}{\SST}}
 \]
-$R^2$ 表示自變數能解釋依變數總變異的比例，$0 \leq R^2 \leq 1$。
+$R^2$ 表示自變數能解釋依變數總變異的比例，$0 \leqslant R^2 \leqslant 1$。
 \end{definition}
 
 \begin{definition}[調整後判定係數]\label{def:adj-R2}
