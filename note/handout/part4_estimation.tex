@@ -807,6 +807,30 @@ n \geqslant \frac{(1.96)^2 \times 0.3 \times 0.7}{(0.03)^2} = \frac{3.8416 \time
 %=============================================================================
 
 \begin{exercise}
+設 $Y_1, \ldots, Y_T$ 為 i.i.d. 樣本，$\expc[Y_i] = \mu$，$\var(Y_i) = \sigma^2$。令 $m = \frac{\sum g(i) Y_i}{\sum g(i)}$，其中 $g(i) = 1 + (i \mod 5)$，$T$ 為 5 的倍數。
+
+(a) 證明 $m$ 為 $\mu$ 的不偏估計量。
+
+(b) 求 $\var(m)$ 並與 $\var(\bar{Y})$ 比較。
+\end{exercise}
+
+\begin{solution}
+\textbf{(a)} $g(i)$ 以週期 5 循環，取值 $\{2, 3, 4, 5, 1\}$，每週期和為 15。設 $T = 5N$，則 $\sum g(i) = 15N = 3T$。
+
+$\expc[m] = \frac{1}{3T}\sum g(i)\expc[Y_i] = \frac{\mu}{3T} \cdot 3T = \mu$ $\checkmark$
+
+\textbf{(b)} 每週期平方和 $= 4 + 9 + 16 + 25 + 1 = 55$，$\sum[g(i)]^2 = 55N = 11T$。
+
+$\var(m) = \frac{\sigma^2}{9T^2} \cdot 11T = \frac{11\sigma^2}{9T}$
+
+$\var(\bar{Y}) = \sigma^2/T$
+
+$\var(m)/\var(\bar{Y}) = 11/9 \approx 1.22 > 1$
+
+$m$ 效率較低，因為非等權重平均。
+\end{solution}
+
+\begin{exercise}
 設 $X_1, \ldots, X_n \simark \text{Uniform}(0, \theta)$，PDF 為 $f(x; \theta) = 1/\theta$，$0 < x < \theta$。求 $\theta$ 的 MLE。
 \end{exercise}
 

@@ -9,23 +9,30 @@
 \usepackage{enumitem}
 \setlist{itemsep=0pt,parsep=0pt}
 \usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue!70!black,
-    urlcolor=blue!80!black
-}
+\hypersetup{colorlinks=true, linkcolor=blue!70!black, urlcolor=blue!80!black}
 
 % 機率與統計符號
 \newcommand\expc{\mathsf{E}}
 \newcommand\prb{\mathsf{P}}
-\DeclareMathOperator\var{var}
-\DeclareMathOperator\cov{cov}
-\DeclareMathOperator\corr{corr}
+\DeclareMathOperator\var{Var}
+\DeclareMathOperator\cov{Cov}
+\DeclareMathOperator\corr{Corr}
+\DeclareMathOperator\plim{plim}
+\DeclareMathOperator\tr{tr}
+\DeclareMathOperator\rank{rank}
 
 % 中文化
 \renewcommand{\figurename}{圖}
 \renewcommand{\tablename}{表}
-\renewcommand{\proofname}{\textbf{證明}}
+
+% proof 環境
+\let\proof\relax
+\let\endproof\relax
+\newenvironment{proof}[1][證明]{%
+  \par\noindent\textbf{#1}\quad
+}{%
+  \hfill$\square$\par\medskip
+}
 
 % 定理環境
 \theoremstyle{definition}
@@ -40,7 +47,6 @@
 \newtheorem*{remark}{註}
 \newtheorem*{solution}{解答}
 \newtheorem*{note}{說明}
-\newtheorem*{prf}{證明}
 
 % 常用指令
 \newcommand{\ds}{\displaystyle}
@@ -51,6 +57,16 @@
 \newcommand{\MSR}{\mathrm{MSR}}
 \newcommand{\MSE}{\mathrm{MSE}}
 \newcommand{\SE}{\mathrm{SE}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bb}{\boldsymbol{\beta}}
+\newcommand{\be}{\boldsymbol{\varepsilon}}
+\newcommand{\bI}{\mathbf{I}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\bM}{\mathbf{M}}
+\newcommand{\bone}{\mathbf{1}}
 
 % 頁面設定
 \usepackage{fancyhdr}
@@ -71,466 +87,833 @@
 \thispagestyle{fancy}
 
 %=============================================================================
-\section{簡單線性迴歸}
+\section{多元線性迴歸模型}
 %=============================================================================
 
-\subsection{模型與估計}
+\subsection{模型設定}
 
-\begin{definition}[簡單線性迴歸模型]
+\begin{definition}[多元線性迴歸模型]
+設有 $n$ 個觀測值，每個觀測包含一個依變數 $Y_i$ 和 $k$ 個自變數 $X_{i1}, \ldots, X_{ik}$。\textbf{多元線性迴歸模型}假設：
 \[
-Y_i = \beta_0 + \beta_1 X_i + \varepsilon_i, \quad i = 1, \ldots, n
+Y_i = \beta_0 + \beta_1 X_{i1} + \beta_2 X_{i2} + \cdots + \beta_k X_{ik} + \varepsilon_i, \quad i = 1, \ldots, n
 \]
-其中 $\beta_0$ 為截距，$\beta_1$ 為斜率，$\varepsilon_i \sim N(0, \sigma^2)$ i.i.d.
+其中 $\beta_0$ 為截距，$\beta_1, \ldots, \beta_k$ 為斜率係數，$\varepsilon_i$ 為誤差項。
 \end{definition}
 
-\begin{theorem}[OLS 估計量]\label{thm:ols}
-最小平方法（OLS）估計量為：
+\begin{definition}[矩陣表示法]
+將模型寫成矩陣形式：
 \[
-\boxed{\hat{\beta}_1 = \frac{\sum_{i=1}^{n}(X_i - \bar{X})(Y_i - \bar{Y})}{\sum_{i=1}^{n}(X_i - \bar{X})^2} = \frac{S_{XY}}{S_{XX}}}
+\boxed{\bY = \bX\bb + \be}
+\]
+其中：
+\[
+\bY = \begin{pmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{pmatrix}_{n \times 1}, \quad
+\bX = \begin{pmatrix} 1 & X_{11} & \cdots & X_{1k} \\ 1 & X_{21} & \cdots & X_{2k} \\ \vdots & \vdots & \ddots & \vdots \\ 1 & X_{n1} & \cdots & X_{nk} \end{pmatrix}_{n \times (k+1)}, \quad
+\bb = \begin{pmatrix} \beta_0 \\ \beta_1 \\ \vdots \\ \beta_k \end{pmatrix}_{(k+1) \times 1}, \quad
+\be = \begin{pmatrix} \varepsilon_1 \\ \varepsilon_2 \\ \vdots \\ \varepsilon_n \end{pmatrix}_{n \times 1}
+\]
+$\bX$ 稱為\textbf{設計矩陣}（design matrix），第一行全為 1 對應截距項。
+\end{definition}
+
+\begin{property}[古典假設]\label{prop:assumptions}
+\begin{enumerate}[label=(A\arabic*)]
+\item \textbf{線性關係}：$\expc[\bY | \bX] = \bX\bb$
+\item \textbf{誤差期望為零}：$\expc[\be | \bX] = \mathbf{0}$
+\item \textbf{球面誤差}（spherical errors）：$\var(\be | \bX) = \sigma^2 \bI_n$
+\begin{itemize}
+    \item 同質變異數（homoscedasticity）：$\var(\varepsilon_i) = \sigma^2$（常數）
+    \item 誤差不相關：$\cov(\varepsilon_i, \varepsilon_j) = 0$ 對 $i \neq j$
+\end{itemize}
+\item \textbf{滿秩假設}：$\rank(\bX) = k + 1$（$\bX$ 的行向量線性獨立）
+\item \textbf{常態假設}（用於精確推論）：$\be | \bX \sim N(\mathbf{0}, \sigma^2 \bI_n)$
+\end{enumerate}
+\end{property}
+
+\begin{remark}
+假設 (A1)--(A4) 稱為 \textbf{Gauss-Markov 假設}，保證 OLS 為 BLUE：
+\begin{itemize}
+\item \textbf{OLS}：Ordinary Least Squares，普通最小平方法
+\item \textbf{BLUE}：Best Linear Unbiased Estimator，最佳線性不偏估計量
+\end{itemize}
+假設 (A5) 用於有限樣本下的精確 $t$ 和 $F$ 檢定。
+\end{remark}
+
+%=============================================================================
+\section{最小平方法}
+%=============================================================================
+
+\subsection{OLS 估計量}
+
+\begin{definition}[最小平方法]
+\textbf{普通最小平方法}（Ordinary Least Squares, OLS）選擇 $\hat{\bb}$ 以最小化殘差平方和：
+\[
+\SSE(\bb) = \sum_{i=1}^{n} (Y_i - \bx_i^\top\bb)^2 = (\bY - \bX\bb)^\top(\bY - \bX\bb) = \|\bY - \bX\bb\|^2
+\]
+\end{definition}
+
+\begin{lemma}[矩陣微分公式]\label{lem:matrix-diff}
+設 $\bb$ 為 $p \times 1$ 向量，$\mathbf{a}$ 為 $p \times 1$ 常數向量，$\mathbf{A}$ 為 $p \times p$ 常數矩陣。則：
+\begin{enumerate}[label=(\roman*)]
+  \item[]
+\item $\dfrac{\partial}{\partial \bb}(\mathbf{a}^\top\bb) = \dfrac{\partial}{\partial \bb}(\bb^\top\mathbf{a}) = \mathbf{a}$
+\item $\dfrac{\partial}{\partial \bb}(\bb^\top\mathbf{A}\bb) = (\mathbf{A} + \mathbf{A}^\top)\bb$
+
+當 $\mathbf{A}$ 為對稱矩陣（$\mathbf{A} = \mathbf{A}^\top$）時，簡化為 $2\mathbf{A}\bb$。
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(i) 設 $\mathbf{a} = (a_1, \ldots, a_p)^\top$，則 $\mathbf{a}^\top\bb = \sum_{j=1}^{p} a_j \beta_j$。對 $\beta_i$ 微分：$\frac{\partial}{\partial \beta_i}(\mathbf{a}^\top\bb) = a_i$。故 $\frac{\partial}{\partial \bb}(\mathbf{a}^\top\bb) = \mathbf{a}$。
+
+(ii) 設 $\mathbf{A} = (a_{ij})$，則 $\bb^\top\mathbf{A}\bb = \sum_{i=1}^{p}\sum_{j=1}^{p} a_{ij}\beta_i\beta_j$。對 $\beta_\ell$ 微分：
+\begin{align*}
+\frac{\partial}{\partial \beta_\ell}(\bb^\top\mathbf{A}\bb) &= \sum_{j=1}^{p} a_{\ell j}\beta_j + \sum_{i=1}^{p} a_{i\ell}\beta_i = (\mathbf{A}\bb)_\ell + (\mathbf{A}^\top\bb)_\ell
+\end{align*}
+故 $\frac{\partial}{\partial \bb}(\bb^\top\mathbf{A}\bb) = \mathbf{A}\bb + \mathbf{A}^\top\bb = (\mathbf{A} + \mathbf{A}^\top)\bb$。
+
+當 $\mathbf{A} = \mathbf{A}^\top$ 時，$(\mathbf{A} + \mathbf{A}^\top)\bb = 2\mathbf{A}\bb$。
+\end{proof}
+
+\begin{theorem}[OLS 估計量]\label{thm:ols}
+在假設 (A4) 下，OLS 估計量為：
+\[
+\boxed{\hat{\bb} = (\bX^\top\bX)^{-1}\bX^\top\bY}
+\]
+\end{theorem}
+
+\begin{proof}
+\textbf{方法一：微分法}
+
+展開 $\SSE$：
+\begin{align*}
+\SSE(\bb) &= (\bY - \bX\bb)^\top(\bY - \bX\bb)\\
+&= \bY^\top\bY - \bY^\top\bX\bb - \bb^\top\bX^\top\bY + \bb^\top\bX^\top\bX\bb\\
+&= \bY^\top\bY - 2\bb^\top\bX^\top\bY + \bb^\top\bX^\top\bX\bb
+\end{align*}
+（第二步利用 $\bY^\top\bX\bb$ 為純量，故等於其轉置 $\bb^\top\bX^\top\bY$。）
+
+對 $\bb$ 微分。由引理~\ref{lem:matrix-diff}，$\bX^\top\bX$ 為對稱矩陣，故：
+\[
+\frac{\partial \SSE}{\partial \bb} = -2\bX^\top\bY + 2\bX^\top\bX\bb = \mathbf{0}
+\]
+
+這給出\textbf{正規方程式}（normal equations）：
+\[
+\bX^\top\bX\hat{\bb} = \bX^\top\bY
+\]
+
+由假設 (A4)，$\bX^\top\bX$ 可逆，故：
+\[
+\hat{\bb} = (\bX^\top\bX)^{-1}\bX^\top\bY
+\]
+
+\textbf{二階條件}：Hessian 矩陣 $\frac{\partial^2 \SSE}{\partial \bb \partial \bb^\top} = 2\bX^\top\bX$ 為正定（當 $\rank(\bX) = k+1$ 時），確認為最小值。
+
+\textbf{方法二：投影法}
+
+$\hat{\bY} = \bX\hat{\bb}$ 是 $\bY$ 在 $\bX$ 的行空間（column space）上的正交投影。正交條件要求殘差 $\mathbf{e} = \bY - \hat{\bY}$ 與 $\bX$ 的每一行正交：
+\[
+\bX^\top(\bY - \bX\hat{\bb}) = \mathbf{0} \ie \bX^\top\bY = \bX^\top\bX\hat{\bb} \ie \hat{\bb} = (\bX^\top\bX)^{-1}\bX^\top\bY
+\]
+\end{proof}
+
+\begin{definition}[帽子矩陣與殘差製造矩陣]
+定義\textbf{帽子矩陣}（hat matrix）：
+\[
+\bH = \bX(\bX^\top\bX)^{-1}\bX^\top
+\]
+則擬合值為 $\hat{\bY} = \bH\bY$，殘差為 $\mathbf{e} = \bY - \hat{\bY} = (\bI - \bH)\bY = \bM\bY$，其中 $\bM = \bI - \bH$ 為\textbf{殘差製造矩陣}（residual maker matrix）。
+\end{definition}
+
+\begin{definition}[冪等矩陣]
+矩陣 $\mathbf{A}$ 稱為\textbf{冪等矩陣}（idempotent matrix），若 $\mathbf{A}^2 = \mathbf{A}$。
+\end{definition}
+
+\begin{lemma}[冪等矩陣的跡與秩]\label{lem:idempotent}
+設 $\mathbf{A}$ 為 $n \times n$ 冪等矩陣，則 $\tr(\mathbf{A}) = \rank(\mathbf{A})$。
+\end{lemma}
+
+\begin{proof}
+由於 $\mathbf{A}^2 = \mathbf{A}$，$\mathbf{A}$ 的特徵值 $\lambda$ 滿足 $\lambda^2 = \lambda$，即 $\lambda(\lambda - 1) = 0$，故 $\lambda \in \{0, 1\}$。
+
+設 $\mathbf{A}$ 有 $r$ 個特徵值為 1，其餘 $n - r$ 個為 0。則：
+\begin{itemize}
+\item $\tr(\mathbf{A}) = r \cdot 1 + (n-r) \cdot 0 = r$
+\item $\rank(\mathbf{A}) = r$（等於非零特徵值個數）
+\end{itemize}
+故 $\tr(\mathbf{A}) = \rank(\mathbf{A})$。
+\end{proof}
+
+\begin{theorem}[標準常態向量的二次型分配]\label{thm:quadratic-chisq}
+設 $\mathbf{z} \sim N(\mathbf{0}, \bI_n)$，$\mathbf{A}$ 為 $n \times n$ 對稱冪等矩陣（$\mathbf{A}^\top = \mathbf{A}$，$\mathbf{A}^2 = \mathbf{A}$）。則：
+\[
+\mathbf{z}^\top\mathbf{A}\mathbf{z} \sim \chi^2_r, \quad \text{其中 } r = \rank(\mathbf{A}) = \tr(\mathbf{A})
+\]
+\end{theorem}
+
+\begin{proof}
+\textbf{步驟一：對稱冪等矩陣的譜分解}
+
+由於 $\mathbf{A}$ 對稱，存在正交矩陣 $\mathbf{P}$（$\mathbf{P}^\top\mathbf{P} = \mathbf{P}\mathbf{P}^\top = \bI$）使得：
+\[
+\mathbf{A} = \mathbf{P}\boldsymbol{\Lambda}\mathbf{P}^\top
+\]
+其中 $\boldsymbol{\Lambda} = \text{diag}(\lambda_1, \ldots, \lambda_n)$ 為特徵值對角矩陣。
+
+由引理~\ref{lem:idempotent}，$\mathbf{A}$ 的特徵值只能是 0 或 1。設有 $r$ 個特徵值為 1，不失一般性令：
+\[
+\boldsymbol{\Lambda} = \text{diag}(\underbrace{1, \ldots, 1}_{r \text{ 個}}, \underbrace{0, \ldots, 0}_{n-r \text{ 個}})
+\]
+
+\textbf{步驟二：正交變換保持標準常態性}
+
+令 $\mathbf{w} = \mathbf{P}^\top\mathbf{z}$。由於 $\mathbf{z} \sim N(\mathbf{0}, \bI_n)$：
+\begin{itemize}
+\item $\expc[\mathbf{w}] = \mathbf{P}^\top\expc[\mathbf{z}] = \mathbf{0}$
+\item $\var(\mathbf{w}) = \mathbf{P}^\top\var(\mathbf{z})\mathbf{P} = \mathbf{P}^\top\bI\mathbf{P} = \bI_n$
+\end{itemize}
+故 $\mathbf{w} \sim N(\mathbf{0}, \bI_n)$，即 $w_1, \ldots, w_n$ 為獨立標準常態變數。
+
+\textbf{步驟三：計算二次型}
+
+\begin{align*}
+\mathbf{z}^\top\mathbf{A}\mathbf{z} &= \mathbf{z}^\top\mathbf{P}\boldsymbol{\Lambda}\mathbf{P}^\top\mathbf{z}\\
+&= (\mathbf{P}^\top\mathbf{z})^\top\boldsymbol{\Lambda}(\mathbf{P}^\top\mathbf{z})\\
+&= \mathbf{w}^\top\boldsymbol{\Lambda}\mathbf{w}\\
+&= \sum_{i=1}^{n} \lambda_i w_i^2\\
+&= \sum_{i=1}^{r} 1 \cdot w_i^2 + \sum_{i=r+1}^{n} 0 \cdot w_i^2\\
+&= \sum_{i=1}^{r} w_i^2
+\end{align*}
+
+\textbf{步驟四：結論}
+
+由於 $w_1, \ldots, w_r$ 為獨立標準常態變數，$\sum_{i=1}^{r} w_i^2 \sim \chi^2_r$。
+\end{proof}
+
+\begin{property}[$\bH$ 和 $\bM$ 的性質]\label{prop:HM}
+\begin{enumerate}[label=(\roman*)]
+  \item[]
+\item $\bH$ 和 $\bM$ 皆為\textbf{對稱冪等矩陣}（symmetric idempotent）：$\bH^\top = \bH$，$\bH^2 = \bH$；$\bM^\top = \bM$，$\bM^2 = \bM$
+\item $\bH\bX = \bX$，$\bM\bX = \mathbf{0}$
+\item $\bH\bM = \bM\bH = \mathbf{0}$
+\item $\tr(\bH) = k + 1$，$\tr(\bM) = n - k - 1$
+\end{enumerate}
+\end{property}
+
+\begin{proof}
+(i) \textbf{$\bH$ 的對稱性}：
+\[
+\bH^\top = [\bX(\bX^\top\bX)^{-1}\bX^\top]^\top = \bX[(\bX^\top\bX)^{-1}]^\top\bX^\top = \bX(\bX^\top\bX)^{-1}\bX^\top = \bH
+\]
+（利用 $(\bX^\top\bX)^{-1}$ 對稱，因為 $\bX^\top\bX$ 對稱。）
+
+\textbf{$\bH$ 的冪等性}：
+\[
+\bH^2 = \bX(\bX^\top\bX)^{-1}\bX^\top \cdot \bX(\bX^\top\bX)^{-1}\bX^\top = \bX(\bX^\top\bX)^{-1}\bX^\top = \bH
+\]
+
+$\bM = \bI - \bH$ 的對稱性和冪等性由 $\bH$ 直接推得。
+
+(ii) $\bH\bX = \bX(\bX^\top\bX)^{-1}\bX^\top\bX = \bX\bI = \bX$
+
+$\bM\bX = (\bI - \bH)\bX = \bX - \bX = \mathbf{0}$
+
+(iii) $\bH\bM = \bH(\bI - \bH) = \bH - \bH^2 = \bH - \bH = \mathbf{0}$
+
+(iv) \textbf{$\tr(\bH)$ 的計算}：
+
+由引理~\ref{lem:idempotent}，$\tr(\bH) = \rank(\bH)$。
+
+$\bH$ 將任意向量投影到 $\bX$ 的行空間（維度 $k+1$），故 $\rank(\bH) = k + 1$。
+
+因此 $\tr(\bH) = k + 1$。
+
+\textbf{$\tr(\bM)$ 的計算}：
+\[
+\tr(\bM) = \tr(\bI - \bH) = \tr(\bI) - \tr(\bH) = n - (k+1) = n - k - 1
+\]
+\end{proof}
+
+\begin{property}[正規方程式的意涵]\label{prop:normal-eq}
+OLS 殘差滿足：
+\begin{enumerate}[label=(\roman*)]
+\item $\bX^\top\mathbf{e} = \mathbf{0}$（殘差與所有自變數正交）
+\item $\sum_{i=1}^{n} e_i = 0$（殘差和為零，因為 $\bX$ 包含截距項）
+\item $\hat{\bY}^\top\mathbf{e} = 0$（殘差與擬合值正交）
+\end{enumerate}
+\end{property}
+
+\subsection{OLS 估計量的統計性質}
+
+\begin{theorem}[不偏性]\label{thm:unbiased}
+在假設 (A1)--(A2) 下：
+\[
+\boxed{\expc[\hat{\bb} | \bX] = \bb}
+\]
+\end{theorem}
+
+\begin{proof}
+將 $\bY = \bX\bb + \be$ 代入 $\hat{\bb} = (\bX^\top\bX)^{-1}\bX^\top\bY$：
+\begin{align*}
+\hat{\bb} &= (\bX^\top\bX)^{-1}\bX^\top(\bX\bb + \be)\\
+&= (\bX^\top\bX)^{-1}\bX^\top\bX\bb + (\bX^\top\bX)^{-1}\bX^\top\be\\
+&= \bb + (\bX^\top\bX)^{-1}\bX^\top\be
+\end{align*}
+
+取條件期望：
+\[
+\expc[\hat{\bb} | \bX] = \bb + (\bX^\top\bX)^{-1}\bX^\top\expc[\be | \bX] = \bb + (\bX^\top\bX)^{-1}\bX^\top \cdot \mathbf{0} = \bb
+\]
+\end{proof}
+
+\begin{theorem}[變異數-共變異數矩陣]\label{thm:var-beta}
+在假設 (A1)--(A4) 下：
+\[
+\boxed{\var(\hat{\bb} | \bX) = \sigma^2 (\bX^\top\bX)^{-1}}
+\]
+\end{theorem}
+
+\begin{proof}
+由 $\hat{\bb} - \bb = (\bX^\top\bX)^{-1}\bX^\top\be$：
+\begin{align*}
+\var(\hat{\bb} | \bX) &= \expc[(\hat{\bb} - \bb)(\hat{\bb} - \bb)^\top | \bX]\\
+&= \expc\left[(\bX^\top\bX)^{-1}\bX^\top\be\be^\top\bX(\bX^\top\bX)^{-1} | \bX\right]\\
+&= (\bX^\top\bX)^{-1}\bX^\top \expc[\be\be^\top | \bX] \bX(\bX^\top\bX)^{-1}\\
+&= (\bX^\top\bX)^{-1}\bX^\top (\sigma^2\bI) \bX(\bX^\top\bX)^{-1} \quad \text{（由假設 A3）}\\
+&= \sigma^2 (\bX^\top\bX)^{-1}\bX^\top\bX(\bX^\top\bX)^{-1}\\
+&= \sigma^2 (\bX^\top\bX)^{-1}
+\end{align*}
+\end{proof}
+
+\begin{remark}
+$(\bX^\top\bX)^{-1}$ 的對角元素乘以 $\sigma^2$ 給出各 $\hat{\beta}_j$ 的變異數，非對角元素乘以 $\sigma^2$ 給出共變異數。
+\end{remark}
+
+\begin{theorem}[Gauss-Markov 定理]\label{thm:gm}
+在假設 (A1)--(A4) 下，OLS 估計量 $\hat{\bb}$ 是 $\bb$ 的\textbf{最佳線性不偏估計量}（Best Linear Unbiased Estimator, BLUE）。
+
+即：對於任意線性不偏估計量 $\tilde{\bb} = \mathbf{C}\bY$（其中 $\mathbf{C}$ 為常數矩陣），有
+\[
+\var(\tilde{\beta}_j) \geq \var(\hat{\beta}_j), \quad \forall j
+\]
+或更一般地，$\var(\tilde{\bb}) - \var(\hat{\bb})$ 為半正定矩陣。
+\end{theorem}
+
+\begin{proof}
+設 $\tilde{\bb} = \mathbf{C}\bY$ 為 $\bb$ 的線性不偏估計量，其中 $\mathbf{C}$ 為 $(k+1) \times n$ 常數矩陣。
+
+\textbf{步驟一：不偏性的必要條件}
+
+$\expc[\tilde{\bb}] = \mathbf{C}\expc[\bY] = \mathbf{C}\bX\bb = \bb$ 對所有 $\bb$ 成立，故必須 $\mathbf{C}\bX = \bI_{k+1}$。
+
+\textbf{步驟二：分解 $\mathbf{C}$}
+
+令 $\mathbf{C} = (\bX^\top\bX)^{-1}\bX^\top + \mathbf{D}$，其中 $\mathbf{D} = \mathbf{C} - (\bX^\top\bX)^{-1}\bX^\top$。
+
+由 $\mathbf{C}\bX = \bI$：
+\[
+\mathbf{D}\bX = \mathbf{C}\bX - (\bX^\top\bX)^{-1}\bX^\top\bX = \bI - \bI = \mathbf{0}
+\]
+
+\textbf{步驟三：計算 $\var(\tilde{\bb})$}
+
+\begin{align*}
+\var(\tilde{\bb}) &= \var(\mathbf{C}\bY) = \mathbf{C} \var(\bY) \mathbf{C}^\top = \sigma^2 \mathbf{C}\mathbf{C}^\top\\
+&= \sigma^2 \left[(\bX^\top\bX)^{-1}\bX^\top + \mathbf{D}\right]\left[\bX(\bX^\top\bX)^{-1} + \mathbf{D}^\top\right]\\
+&= \sigma^2 \left[(\bX^\top\bX)^{-1}\bX^\top\bX(\bX^\top\bX)^{-1} + (\bX^\top\bX)^{-1}\bX^\top\mathbf{D}^\top + \mathbf{D}\bX(\bX^\top\bX)^{-1} + \mathbf{D}\mathbf{D}^\top\right]
+\end{align*}
+
+由 $\mathbf{D}\bX = \mathbf{0}$，中間兩項為零（$(\bX^\top\bX)^{-1}\bX^\top\mathbf{D}^\top = [(\mathbf{D}\bX)(\bX^\top\bX)^{-1}]^\top = \mathbf{0}$）：
+\[
+\var(\tilde{\bb}) = \sigma^2 (\bX^\top\bX)^{-1} + \sigma^2 \mathbf{D}\mathbf{D}^\top = \var(\hat{\bb}) + \sigma^2 \mathbf{D}\mathbf{D}^\top
+\]
+
+由於 $\mathbf{D}\mathbf{D}^\top$ 為半正定矩陣，$\var(\tilde{\bb}) - \var(\hat{\bb}) = \sigma^2 \mathbf{D}\mathbf{D}^\top \succeq \mathbf{0}$。
+
+等號成立當且僅當 $\mathbf{D} = \mathbf{0}$，即 $\mathbf{C} = (\bX^\top\bX)^{-1}\bX^\top$，此時 $\tilde{\bb} = \hat{\bb}$。
+\end{proof}
+
+\subsection{$\sigma^2$ 的估計}
+
+\begin{lemma}[二次型的期望值]\label{lem:quadratic-form}
+設 $\mathbf{z}$ 為 $n \times 1$ 隨機向量，$\expc[\mathbf{z}] = \boldsymbol{\mu}$，$\var(\mathbf{z}) = \boldsymbol{\Sigma}$。設 $\mathbf{A}$ 為 $n \times n$ 常數矩陣。則：
+\[
+\expc[\mathbf{z}^\top\mathbf{A}\mathbf{z}] = \tr(\mathbf{A}\boldsymbol{\Sigma}) + \boldsymbol{\mu}^\top\mathbf{A}\boldsymbol{\mu}
+\]
+特別地，當 $\expc[\mathbf{z}] = \mathbf{0}$ 時，$\expc[\mathbf{z}^\top\mathbf{A}\mathbf{z}] = \tr(\mathbf{A}\boldsymbol{\Sigma})$。
+\end{lemma}
+
+\begin{proof}
+$\mathbf{z}^\top\mathbf{A}\mathbf{z} = \sum_{i=1}^{n}\sum_{j=1}^{n} a_{ij} z_i z_j$ 為純量。取期望：
+\[
+\expc[\mathbf{z}^\top\mathbf{A}\mathbf{z}] = \sum_{i=1}^{n}\sum_{j=1}^{n} a_{ij} \expc[z_i z_j]
+\]
+
+由 $\cov(z_i, z_j) = \expc[z_i z_j] - \mu_i\mu_j$，得 $\expc[z_i z_j] = \Sigma_{ij} + \mu_i\mu_j$。代入：
+\begin{align*}
+\expc[\mathbf{z}^\top\mathbf{A}\mathbf{z}] &= \sum_{i,j} a_{ij}(\Sigma_{ij} + \mu_i\mu_j)\\
+&= \sum_{i,j} a_{ij}\Sigma_{ij} + \sum_{i,j} a_{ij}\mu_i\mu_j\\
+&= \tr(\mathbf{A}\boldsymbol{\Sigma}) + \boldsymbol{\mu}^\top\mathbf{A}\boldsymbol{\mu}
+\end{align*}
+（第一項利用 $\tr(\mathbf{A}\boldsymbol{\Sigma}) = \sum_i (\mathbf{A}\boldsymbol{\Sigma})_{ii} = \sum_i \sum_j a_{ij}\Sigma_{ji} = \sum_{i,j} a_{ij}\Sigma_{ij}$，因 $\boldsymbol{\Sigma}$ 對稱。）
+\end{proof}
+
+\begin{theorem}[$\MSE$ 的不偏性]\label{thm:mse-unbiased}
+\[
+s^2 = \MSE = \frac{\SSE}{n - k - 1} = \frac{\mathbf{e}^\top\mathbf{e}}{n - k - 1}
+\]
+是 $\sigma^2$ 的不偏估計量。
+\end{theorem}
+
+\begin{proof}
+\textbf{步驟一：將 $\SSE$ 表示為誤差的二次型}
+
+由 $\mathbf{e} = \bM\bY = \bM(\bX\bb + \be) = \bM\bX\bb + \bM\be = \bM\be$（因為 $\bM\bX = \mathbf{0}$）。
+
+故：
+\[
+\SSE = \mathbf{e}^\top\mathbf{e} = (\bM\be)^\top(\bM\be) = \be^\top\bM^\top\bM\be = \be^\top\bM\be
+\]
+（最後一步利用 $\bM$ 對稱冪等：$\bM^\top\bM = \bM\bM = \bM$。）
+
+\textbf{步驟二：計算 $\expc[\SSE]$}
+
+應用引理~\ref{lem:quadratic-form}，取 $\mathbf{z} = \be$，$\mathbf{A} = \bM$。
+
+由假設 (A2)，$\expc[\be] = \mathbf{0}$（即 $\boldsymbol{\mu} = \mathbf{0}$）。由假設 (A3)，$\var(\be) = \sigma^2\bI$（即 $\boldsymbol{\Sigma} = \sigma^2\bI$）。
+
+由引理~\ref{lem:quadratic-form}：
+\begin{align*}
+\expc[\SSE] &= \expc[\be^\top\bM\be]\\
+&= \tr(\bM \cdot \sigma^2\bI) + \mathbf{0}^\top\bM\mathbf{0}\\
+&= \sigma^2 \tr(\bM\bI) + 0\\
+&= \sigma^2 \tr(\bM)
+\end{align*}
+
+\textbf{步驟三：計算 $\tr(\bM)$}
+
+由性質~\ref{prop:HM}(iv)，$\tr(\bM) = n - k - 1$。
+
+故 $\expc[\SSE] = \sigma^2 (n - k - 1)$。
+
+\textbf{步驟四：結論}
+\[
+\expc[\MSE] = \expc\left[\frac{\SSE}{n-k-1}\right] = \frac{\expc[\SSE]}{n-k-1} = \frac{\sigma^2(n-k-1)}{n-k-1} = \sigma^2
+\]
+故 $\MSE$ 是 $\sigma^2$ 的不偏估計量。
+\end{proof}
+
+%=============================================================================
+\section{簡單線性迴歸：$k = 1$ 的特例}
+%=============================================================================
+
+當只有一個自變數時（$k = 1$），多元迴歸退化為\textbf{簡單線性迴歸}：
+\[
+Y_i = \beta_0 + \beta_1 X_i + \varepsilon_i
+\]
+
+此時設計矩陣為：
+\[
+\bX = \begin{pmatrix} 1 & X_1 \\ 1 & X_2 \\ \vdots & \vdots \\ 1 & X_n \end{pmatrix}
+\]
+
+\begin{theorem}[簡單迴歸的顯式公式]
+當 $k = 1$ 時，OLS 估計量為：
+\[
+\boxed{\hat{\beta}_1 = \frac{S_{XY}}{S_{XX}} = \frac{\sum_{i=1}^{n}(X_i - \bar{X})(Y_i - \bar{Y})}{\sum_{i=1}^{n}(X_i - \bar{X})^2}}
 \]
 \[
 \boxed{\hat{\beta}_0 = \bar{Y} - \hat{\beta}_1 \bar{X}}
 \]
-其中：$S_{XX} = \sum(X_i - \bar{X})^2$，$S_{XY} = \sum(X_i - \bar{X})(Y_i - \bar{Y})$。
+其中 $S_{XX} = \sum(X_i - \bar{X})^2$，$S_{XY} = \sum(X_i - \bar{X})(Y_i - \bar{Y})$。
 \end{theorem}
 
-\begin{prf}
-OLS 最小化殘差平方和 $Q(\beta_0, \beta_1) = \sum_{i=1}^{n}(Y_i - \beta_0 - \beta_1 X_i)^2$。
-
-\textbf{Step 1}：對 $\beta_0$ 偏微分並令其為零：
+\begin{proof}
+計算 $\bX^\top\bX$ 和 $\bX^\top\bY$：
 \[
-\frac{\partial Q}{\partial \beta_0} = -2\sum_{i=1}^{n}(Y_i - \beta_0 - \beta_1 X_i) = 0
+\bX^\top\bX = \begin{pmatrix} 1 & \cdots & 1 \\ X_1 & \cdots & X_n \end{pmatrix} \begin{pmatrix} 1 & X_1 \\ \vdots & \vdots \\ 1 & X_n \end{pmatrix} = \begin{pmatrix} n & \sum X_i \\ \sum X_i & \sum X_i^2 \end{pmatrix} = \begin{pmatrix} n & n\bar{X} \\ n\bar{X} & \sum X_i^2 \end{pmatrix}
 \]
-展開得 $\sum Y_i - n\beta_0 - \beta_1\sum X_i = 0$，故
 \[
-\hat{\beta}_0 = \bar{Y} - \hat{\beta}_1\bar{X}
+\bX^\top\bY = \begin{pmatrix} \sum Y_i \\ \sum X_i Y_i \end{pmatrix} = \begin{pmatrix} n\bar{Y} \\ \sum X_i Y_i \end{pmatrix}
 \]
 
-\textbf{Step 2}：對 $\beta_1$ 偏微分並令其為零：
-\[
-\frac{\partial Q}{\partial \beta_1} = -2\sum_{i=1}^{n}X_i(Y_i - \beta_0 - \beta_1 X_i) = 0
-\]
-展開得 $\sum X_i Y_i - \beta_0\sum X_i - \beta_1\sum X_i^2 = 0$。
+$\bX^\top\bX$ 的行列式：$\det(\bX^\top\bX) = n\sum X_i^2 - n^2\bar{X}^2 = n(\sum X_i^2 - n\bar{X}^2) = n \cdot S_{XX}$
 
-\textbf{Step 3}：將 $\hat{\beta}_0 = \bar{Y} - \hat{\beta}_1\bar{X}$ 代入：
+$(\bX^\top\bX)^{-1} = \frac{1}{n \cdot S_{XX}} \begin{pmatrix} \sum X_i^2 & -n\bar{X} \\ -n\bar{X} & n \end{pmatrix}$
+
+由 $\hat{\bb} = (\bX^\top\bX)^{-1}\bX^\top\bY$：
 \begin{align*}
-\sum X_i Y_i - (\bar{Y} - \hat{\beta}_1\bar{X})\sum X_i - \hat{\beta}_1\sum X_i^2 &= 0\\
-\sum X_i Y_i - n\bar{X}\bar{Y} + \hat{\beta}_1 n\bar{X}^2 - \hat{\beta}_1\sum X_i^2 &= 0\\
-\sum X_i Y_i - n\bar{X}\bar{Y} &= \hat{\beta}_1(\sum X_i^2 - n\bar{X}^2)
+\hat{\beta}_1 &= \frac{1}{n \cdot S_{XX}}\left[-n\bar{X} \cdot n\bar{Y} + n \sum X_i Y_i\right] = \frac{n(\sum X_i Y_i - n\bar{X}\bar{Y})}{n \cdot S_{XX}} = \frac{S_{XY}}{S_{XX}}
 \end{align*}
 
-由於 $S_{XY} = \sum X_i Y_i - n\bar{X}\bar{Y}$ 且 $S_{XX} = \sum X_i^2 - n\bar{X}^2$，故
+由正規方程式第一列：$n\hat{\beta}_0 + n\bar{X}\hat{\beta}_1 = n\bar{Y} \ie \hat{\beta}_0 = \bar{Y} - \hat{\beta}_1\bar{X}$。
+\end{proof}
+
+\begin{corollary}[簡單迴歸估計量的變異數]
 \[
-\hat{\beta}_1 = \frac{S_{XY}}{S_{XX}} = \frac{\sum(X_i - \bar{X})(Y_i - \bar{Y})}{\sum(X_i - \bar{X})^2}
+\var(\hat{\beta}_1) = \frac{\sigma^2}{S_{XX}}, \qquad \var(\hat{\beta}_0) = \sigma^2\left(\frac{1}{n} + \frac{\bar{X}^2}{S_{XX}}\right)
 \]
-\end{prf}
+\end{corollary}
 
-\begin{theorem}[OLS 估計量的不偏性]\label{thm:unbiased}
-$\hat{\beta}_0$ 與 $\hat{\beta}_1$ 是 $\beta_0$ 與 $\beta_1$ 的不偏估計量。
-\end{theorem}
-
-\begin{prf}
-\textbf{證明 $\expc[\hat{\beta}_1] = \beta_1$}：
-
-將 $\hat{\beta}_1$ 改寫為 $Y_i$ 的線性組合。令 $w_i = \dfrac{X_i - \bar{X}}{S_{XX}}$，則 $\sum w_i = 0$ 且 $\sum w_i X_i = 1$。
+\begin{proof}
+由 $\var(\hat{\bb}) = \sigma^2(\bX^\top\bX)^{-1}$：
 \[
-\hat{\beta}_1 = \frac{\sum(X_i - \bar{X})Y_i}{S_{XX}} = \sum w_i Y_i
+\var(\hat{\bb}) = \frac{\sigma^2}{n \cdot S_{XX}} \begin{pmatrix} \sum X_i^2 & -n\bar{X} \\ -n\bar{X} & n \end{pmatrix}
 \]
 
-由模型 $Y_i = \beta_0 + \beta_1 X_i + \varepsilon_i$：
-\begin{align*}
-\expc[\hat{\beta}_1] &= \expc\left[\sum w_i Y_i\right] = \sum w_i \expc[Y_i] = \sum w_i(\beta_0 + \beta_1 X_i)\\
-&= \beta_0 \sum w_i + \beta_1 \sum w_i X_i = \beta_0 \cdot 0 + \beta_1 \cdot 1 = \beta_1
-\end{align*}
+$\var(\hat{\beta}_1) = \frac{\sigma^2 \cdot n}{n \cdot S_{XX}} = \frac{\sigma^2}{S_{XX}}$
 
-\textbf{證明 $\expc[\hat{\beta}_0] = \beta_0$}：
-\[
-\expc[\hat{\beta}_0] = \expc[\bar{Y} - \hat{\beta}_1\bar{X}] = \expc[\bar{Y}] - \bar{X}\expc[\hat{\beta}_1] = (\beta_0 + \beta_1\bar{X}) - \bar{X}\beta_1 = \beta_0
-\]
-\end{prf}
+$\var(\hat{\beta}_0) = \frac{\sigma^2 \sum X_i^2}{n \cdot S_{XX}} = \frac{\sigma^2(\sum X_i^2 - n\bar{X}^2 + n\bar{X}^2)}{n \cdot S_{XX}} = \frac{\sigma^2 S_{XX}}{n \cdot S_{XX}} + \frac{\sigma^2 n\bar{X}^2}{n \cdot S_{XX}} = \sigma^2\left(\frac{1}{n} + \frac{\bar{X}^2}{S_{XX}}\right)$
+\end{proof}
 
-\begin{theorem}[OLS 估計量的變異數]\label{thm:var-beta}
-\[
-\boxed{\var(\hat{\beta}_1) = \frac{\sigma^2}{S_{XX}}}
-\]
-\[
-\boxed{\var(\hat{\beta}_0) = \sigma^2\left(\frac{1}{n} + \frac{\bar{X}^2}{S_{XX}}\right)}
-\]
-\end{theorem}
+%=============================================================================
+\section{判定係數與 ANOVA}
+%=============================================================================
 
-\begin{prf}
-\textbf{證明 $\var(\hat{\beta}_1) = \sigma^2/S_{XX}$}：
+\subsection{平方和分解}
 
-由 $\hat{\beta}_1 = \sum w_i Y_i$，其中 $w_i = (X_i - \bar{X})/S_{XX}$，且 $Y_i$ 獨立：
-\begin{align*}
-\var(\hat{\beta}_1) &= \var\left(\sum w_i Y_i\right) = \sum w_i^2 \var(Y_i) = \sigma^2 \sum w_i^2\\
-&= \sigma^2 \sum \frac{(X_i - \bar{X})^2}{S_{XX}^2} = \sigma^2 \cdot \frac{S_{XX}}{S_{XX}^2} = \frac{\sigma^2}{S_{XX}}
-\end{align*}
-
-\textbf{證明 $\var(\hat{\beta}_0)$}：
-\begin{align*}
-\var(\hat{\beta}_0) &= \var(\bar{Y} - \hat{\beta}_1\bar{X}) = \var(\bar{Y}) + \bar{X}^2\var(\hat{\beta}_1) - 2\bar{X}\cov(\bar{Y}, \hat{\beta}_1)
-\end{align*}
-
-由於 $\cov(\bar{Y}, \hat{\beta}_1) = \cov\left(\frac{1}{n}\sum Y_i, \sum w_i Y_i\right) = \frac{\sigma^2}{n}\sum w_i = 0$，故
-\[
-\var(\hat{\beta}_0) = \frac{\sigma^2}{n} + \bar{X}^2 \cdot \frac{\sigma^2}{S_{XX}} = \sigma^2\left(\frac{1}{n} + \frac{\bar{X}^2}{S_{XX}}\right)
-\]
-\end{prf}
-
-\subsection{變異數分解}
-
-\begin{theorem}[變異數分解——ANOVA]\label{thm:anova}
+\begin{theorem}[變異數分解]
 \[
 \boxed{\SST = \SSR + \SSE}
 \]
 其中：
 \begin{itemize}
-\item $\SST = \sum(Y_i - \bar{Y})^2$（總變異）
-\item $\SSR = \sum(\hat{Y}_i - \bar{Y})^2$（迴歸變異）
-\item $\SSE = \sum(Y_i - \hat{Y}_i)^2$（殘差變異）
+\item $\SST = \bY^\top\bM_0\bY = \sum(Y_i - \bar{Y})^2$（總平方和, Total Sum of Squares），$\bM_0 = \bI - \frac{1}{n}\bone\bone^\top$
+\item $\SSR = \hat{\bY}^\top\bM_0\hat{\bY} = \sum(\hat{Y}_i - \bar{Y})^2$（迴歸平方和, Regression Sum of Squares）
+\item $\SSE = \mathbf{e}^\top\mathbf{e} = \sum(Y_i - \hat{Y}_i)^2$（殘差平方和, Error Sum of Squares）
 \end{itemize}
 \end{theorem}
 
-\begin{prf}
-將 $Y_i - \bar{Y}$ 分解為 $(Y_i - \hat{Y}_i) + (\hat{Y}_i - \bar{Y})$：
-\begin{align*}
-\SST &= \sum(Y_i - \bar{Y})^2 = \sum\big[(Y_i - \hat{Y}_i) + (\hat{Y}_i - \bar{Y})\big]^2\\
-&= \sum(Y_i - \hat{Y}_i)^2 + \sum(\hat{Y}_i - \bar{Y})^2 + 2\sum(Y_i - \hat{Y}_i)(\hat{Y}_i - \bar{Y})
-\end{align*}
+\begin{proof}
+$\bY - \bar{Y}\bone = (\bY - \hat{\bY}) + (\hat{\bY} - \bar{Y}\bone) = \mathbf{e} + (\hat{\bY} - \bar{Y}\bone)$
 
-\textbf{關鍵}：證明交叉項為零。令 $e_i = Y_i - \hat{Y}_i$（殘差），則：
-\begin{align*}
-\sum e_i(\hat{Y}_i - \bar{Y}) &= \sum e_i \hat{Y}_i - \bar{Y}\sum e_i
-\end{align*}
+平方展開：$\SST = \mathbf{e}^\top\mathbf{e} + (\hat{\bY} - \bar{Y}\bone)^\top(\hat{\bY} - \bar{Y}\bone) + 2\mathbf{e}^\top(\hat{\bY} - \bar{Y}\bone)$
 
-由 OLS 正規方程式，$\sum e_i = 0$ 且 $\sum e_i X_i = 0$。
+交叉項：$\mathbf{e}^\top(\hat{\bY} - \bar{Y}\bone) = \mathbf{e}^\top\hat{\bY} - \bar{Y}\mathbf{e}^\top\bone = 0 - \bar{Y} \cdot 0 = 0$（由正規方程式）
 
-又 $\hat{Y}_i = \hat{\beta}_0 + \hat{\beta}_1 X_i$，故
+故 $\SST = \SSE + \SSR$。
+\end{proof}
+
+\subsection{判定係數}
+
+\begin{definition}[判定係數 $R^2$]
 \[
-\sum e_i \hat{Y}_i = \hat{\beta}_0 \sum e_i + \hat{\beta}_1 \sum e_i X_i = 0
+\boxed{R^2 = \frac{\SSR}{\SST} = 1 - \frac{\SSE}{\SST}}
 \]
-
-因此交叉項為零，$\SST = \SSE + \SSR$。
-\end{prf}
-
-\begin{corollary}[SSR 的另一形式]
-$\SSR = \hat{\beta}_1^2 S_{XX} = \hat{\beta}_1 S_{XY}$。
-\end{corollary}
-
-\begin{prf}
-\begin{align*}
-\SSR &= \sum(\hat{Y}_i - \bar{Y})^2 = \sum(\hat{\beta}_0 + \hat{\beta}_1 X_i - \bar{Y})^2\\
-&= \sum\big[(\bar{Y} - \hat{\beta}_1\bar{X}) + \hat{\beta}_1 X_i - \bar{Y}\big]^2 = \sum\big[\hat{\beta}_1(X_i - \bar{X})\big]^2\\
-&= \hat{\beta}_1^2 \sum(X_i - \bar{X})^2 = \hat{\beta}_1^2 S_{XX}
-\end{align*}
-
-又 $\hat{\beta}_1 = S_{XY}/S_{XX}$，故 $\SSR = \hat{\beta}_1^2 S_{XX} = \hat{\beta}_1 \cdot S_{XY}$。
-\end{prf}
-
-\begin{theorem}[$R^2$ 與相關係數的關係]\label{thm:r2-corr}
-$R^2 = r_{XY}^2$，其中 $r_{XY}$ 是 $X$ 與 $Y$ 的樣本相關係數。
-\end{theorem}
-
-\begin{prf}
-樣本相關係數 $\ds r_{XY} = \frac{S_{XY}}{\sqrt{S_{XX} \cdot S_{YY}}}$。
-
-由 $R^2 = \SSR/\SST = \hat{\beta}_1^2 S_{XX}/S_{YY}$ 且 $\hat{\beta}_1 = S_{XY}/S_{XX}$：
-\[
-R^2 = \frac{(S_{XY}/S_{XX})^2 \cdot S_{XX}}{S_{YY}} = \frac{S_{XY}^2}{S_{XX} \cdot S_{YY}} = r_{XY}^2
-\]
-\end{prf}
-
-\subsection{$\sigma^2$ 的估計}
-
-\begin{theorem}[$\sigma^2$ 的不偏估計]\label{thm:mse}
-\[
-s^2 = \MSE = \frac{\SSE}{n-2}
-\]
-是 $\sigma^2$ 的不偏估計量。
-\end{theorem}
-
-\begin{prf}
-需證明 $\expc[\SSE] = (n-2)\sigma^2$。
-
-由 $\SSE = \SST - \SSR = \sum(Y_i - \bar{Y})^2 - \hat{\beta}_1^2 S_{XX}$：
-\begin{align*}
-\expc[\SSE] &= \expc[\SST] - S_{XX}\,\expc[\hat{\beta}_1^2]
-\end{align*}
-
-\textbf{計算 $\expc[\SST]$}：
-\begin{align*}
-\expc[\SST] &= \expc\left[\sum Y_i^2 - n\bar{Y}^2\right] = \sum\expc[Y_i^2] - n\,\expc[\bar{Y}^2]
-\end{align*}
-
-由 $\expc[Y_i^2] = \var(Y_i) + (\expc[Y_i])^2 = \sigma^2 + (\beta_0 + \beta_1 X_i)^2$，且
-$\expc[\bar{Y}^2] = \var(\bar{Y}) + (\expc[\bar{Y}])^2 = \sigma^2/n + (\beta_0 + \beta_1\bar{X})^2$，經計算：
-\[
-\expc[\SST] = (n-1)\sigma^2 + \beta_1^2 S_{XX}
-\]
-
-\textbf{計算 $\expc[\hat{\beta}_1^2]$}：
-\[
-\expc[\hat{\beta}_1^2] = \var(\hat{\beta}_1) + (\expc[\hat{\beta}_1])^2 = \frac{\sigma^2}{S_{XX}} + \beta_1^2
-\]
-
-\textbf{合併}：
-\begin{align*}
-\expc[\SSE] &= (n-1)\sigma^2 + \beta_1^2 S_{XX} - S_{XX}\left(\frac{\sigma^2}{S_{XX}} + \beta_1^2\right)\\
-&= (n-1)\sigma^2 + \beta_1^2 S_{XX} - \sigma^2 - \beta_1^2 S_{XX} = (n-2)\sigma^2
-\end{align*}
-
-故 $\expc[\MSE] = \expc[\SSE/(n-2)] = \sigma^2$。
-\end{prf}
-
-\subsection{假設檢定}
-
-\begin{theorem}[斜率的 $t$ 檢定]\label{thm:t-test}
-在 $H_0: \beta_1 = 0$ 下，檢定統計量
-\[
-\boxed{t = \frac{\hat{\beta}_1}{\SE(\hat{\beta}_1)} = \frac{\hat{\beta}_1}{s/\sqrt{S_{XX}}} \sim t_{n-2}}
-\]
-\end{theorem}
-
-\begin{prf}
-\textbf{Step 1}：標準化 $\hat{\beta}_1$。
-
-由定理 \ref{thm:unbiased} 和 \ref{thm:var-beta}，$\hat{\beta}_1 \sim N(\beta_1, \sigma^2/S_{XX})$，故在 $H_0: \beta_1 = 0$ 下：
-\[
-Z = \frac{\hat{\beta}_1 - 0}{\sigma/\sqrt{S_{XX}}} \sim N(0, 1)
-\]
-
-\textbf{Step 2}：$\SSE/\sigma^2$ 的分配。
-
-可證明 $\SSE/\sigma^2 \sim \chi^2_{n-2}$（殘差有 $n$ 個觀測值減去 2 個估計參數）。
-
-\textbf{Step 3}：$\hat{\beta}_1$ 與 $\SSE$ 獨立。
-
-由常態分配的性質，$\hat{\beta}_1$（依賴 $\bar{Y}$ 的方向）與 $\SSE$（垂直於該方向）獨立。
-
-\textbf{Step 4}：構造 $t$ 統計量。
-
-由 $t$ 分配定義：
-\[
-t = \frac{Z}{\sqrt{\chi^2_{n-2}/(n-2)}} = \frac{\hat{\beta}_1/(\sigma/\sqrt{S_{XX}})}{\sqrt{\SSE/\sigma^2/(n-2)}} = \frac{\hat{\beta}_1}{s/\sqrt{S_{XX}}} \sim t_{n-2}
-\]
-\end{prf}
-
-\begin{theorem}[整體 $F$ 檢定]\label{thm:f-test}
-在 $H_0: \beta_1 = 0$ 下，
-\[
-\boxed{F = \frac{\MSR}{\MSE} = \frac{\SSR/1}{\SSE/(n-2)} \sim F_{1, n-2}}
-\]
-且 $F = t^2$。
-\end{theorem}
-
-\begin{prf}
-\textbf{證明 $F \sim F_{1, n-2}$}：
-
-在 $H_0: \beta_1 = 0$ 下，$\SSR/\sigma^2 \sim \chi^2_1$（因為 $\SSR$ 是一個參數的函數）。
-
-由於 $\SSR$ 與 $\SSE$ 獨立（可由正交分解證明），且 $\SSE/\sigma^2 \sim \chi^2_{n-2}$：
-\[
-F = \frac{\SSR/\sigma^2/1}{\SSE/\sigma^2/(n-2)} = \frac{\SSR/1}{\SSE/(n-2)} \sim F_{1, n-2}
-\]
-
-\textbf{證明 $F = t^2$}：
-\begin{align*}
-F &= \frac{\SSR}{\MSE} = \frac{\hat{\beta}_1^2 S_{XX}}{s^2} = \frac{\hat{\beta}_1^2}{s^2/S_{XX}} = \left(\frac{\hat{\beta}_1}{s/\sqrt{S_{XX}}}\right)^2 = t^2
-\end{align*}
-\end{prf}
-
-\subsection{調整後 $R^2$}
-
-\begin{theorem}[調整後 $R^2$]\label{thm:adj-r2}
-對於有 $k$ 個自變數的多元迴歸：
-\[
-\boxed{\bar{R}^2 = 1 - \frac{n-1}{n-k-1}(1 - R^2) = 1 - \frac{\SSE/(n-k-1)}{\SST/(n-1)}}
-\]
-\end{theorem}
-
-\begin{prf}
-由 $R^2 = 1 - \SSE/\SST$：
-\[
-1 - R^2 = \frac{\SSE}{\SST}
-\]
-
-調整後 $R^2$ 用均方取代平方和：
-\[
-\bar{R}^2 = 1 - \frac{\SSE/(n-k-1)}{\SST/(n-1)} = 1 - \frac{n-1}{n-k-1} \cdot \frac{\SSE}{\SST} = 1 - \frac{n-1}{n-k-1}(1 - R^2)
-\]
-
-這樣調整的原因：當增加無意義的自變數時，$\SSE$ 下降但自由度也下降，$\bar{R}^2$ 可能下降，避免過度擬合。
-\end{prf}
-
-%=============================================================================
-\section{信賴區間與預測}
-%=============================================================================
-
-\begin{theorem}[迴歸係數的信賴區間]\label{thm:ci-beta}
-$\beta_1$ 的 $(1-\alpha)$ 信賴區間為：
-\[
-\boxed{\hat{\beta}_1 \pm t_{\alpha/2, n-2} \cdot \frac{s}{\sqrt{S_{XX}}}}
-\]
-\end{theorem}
-
-\begin{prf}
-由定理 \ref{thm:t-test}，$\dfrac{\hat{\beta}_1 - \beta_1}{s/\sqrt{S_{XX}}} \sim t_{n-2}$。
-
-故 $\prb\left(-t_{\alpha/2, n-2} \leqslant \dfrac{\hat{\beta}_1 - \beta_1}{s/\sqrt{S_{XX}}} \leqslant t_{\alpha/2, n-2}\right) = 1 - \alpha$
-
-移項得 $\prb\left(\hat{\beta}_1 - t_{\alpha/2, n-2} \cdot \dfrac{s}{\sqrt{S_{XX}}} \leqslant \beta_1 \leqslant \hat{\beta}_1 + t_{\alpha/2, n-2} \cdot \dfrac{s}{\sqrt{S_{XX}}}\right) = 1 - \alpha$
-\end{prf}
-
-\begin{theorem}[平均反應的信賴區間]\label{thm:ci-mean}
-對於給定 $X = X_0$，$\expc[Y|X_0] = \beta_0 + \beta_1 X_0$ 的 $(1-\alpha)$ 信賴區間：
-\[
-\boxed{\hat{Y}_0 \pm t_{\alpha/2, n-2} \cdot s\sqrt{\frac{1}{n} + \frac{(X_0 - \bar{X})^2}{S_{XX}}}}
-\]
-\end{theorem}
-
-\begin{prf}
-令 $\hat{Y}_0 = \hat{\beta}_0 + \hat{\beta}_1 X_0$ 為 $\expc[Y|X_0]$ 的估計。
-
-\textbf{計算 $\var(\hat{Y}_0)$}：
-\begin{align*}
-\hat{Y}_0 &= \bar{Y} - \hat{\beta}_1\bar{X} + \hat{\beta}_1 X_0 = \bar{Y} + \hat{\beta}_1(X_0 - \bar{X})
-\end{align*}
-
-由於 $\cov(\bar{Y}, \hat{\beta}_1) = 0$：
-\begin{align*}
-\var(\hat{Y}_0) &= \var(\bar{Y}) + (X_0 - \bar{X})^2 \var(\hat{\beta}_1)\\
-&= \frac{\sigma^2}{n} + (X_0 - \bar{X})^2 \cdot \frac{\sigma^2}{S_{XX}} = \sigma^2\left(\frac{1}{n} + \frac{(X_0 - \bar{X})^2}{S_{XX}}\right)
-\end{align*}
-
-故 $\dfrac{\hat{Y}_0 - (\beta_0 + \beta_1 X_0)}{s\sqrt{\frac{1}{n} + \frac{(X_0 - \bar{X})^2}{S_{XX}}}} \sim t_{n-2}$，由此得信賴區間。
-\end{prf}
-
-\begin{theorem}[個別預測的預測區間]\label{thm:pi}
-對於給定 $X = X_0$，個別觀測值 $Y_{\text{new}}$ 的 $(1-\alpha)$ 預測區間：
-\[
-\boxed{\hat{Y}_0 \pm t_{\alpha/2, n-2} \cdot s\sqrt{1 + \frac{1}{n} + \frac{(X_0 - \bar{X})^2}{S_{XX}}}}
-\]
-\end{theorem}
-
-\begin{prf}
-預測誤差為 $Y_{\text{new}} - \hat{Y}_0$。
-
-由於 $Y_{\text{new}} = \beta_0 + \beta_1 X_0 + \varepsilon_{\text{new}}$ 與 $\hat{Y}_0$ 獨立：
-\begin{align*}
-\var(Y_{\text{new}} - \hat{Y}_0) &= \var(Y_{\text{new}}) + \var(\hat{Y}_0)\\
-&= \sigma^2 + \sigma^2\left(\frac{1}{n} + \frac{(X_0 - \bar{X})^2}{S_{XX}}\right) = \sigma^2\left(1 + \frac{1}{n} + \frac{(X_0 - \bar{X})^2}{S_{XX}}\right)
-\end{align*}
-
-故預測區間比信賴區間多了 $\sigma^2$ 這一項（個別觀測的隨機變異）。
-\end{prf}
-
-%=============================================================================
-\section{多元線性迴歸}
-%=============================================================================
-
-\begin{definition}[多元迴歸模型]
-\[
-Y_i = \beta_0 + \beta_1 X_{i1} + \cdots + \beta_k X_{ik} + \varepsilon_i, \quad \varepsilon_i \stackrel{\text{iid}}{\sim} N(0, \sigma^2)
-\]
+$R^2$ 表示自變數能解釋依變數總變異的比例，$0 \leq R^2 \leq 1$。
 \end{definition}
 
-\begin{theorem}[整體 $F$ 檢定（多元迴歸）]\label{thm:f-multiple}
-檢定 $H_0: \beta_1 = \beta_2 = \cdots = \beta_k = 0$：
+\begin{definition}[調整後判定係數]\label{def:adj-R2}
 \[
-\boxed{F = \frac{\MSR}{\MSE} = \frac{\SSR/k}{\SSE/(n-k-1)} = \frac{R^2/k}{(1-R^2)/(n-k-1)} \sim F_{k, n-k-1}}
+\boxed{\bar{R}^2 = 1 - \frac{n-1}{n-k-1}(1 - R^2) = 1 - \frac{\SSE/(n-k-1)}{\SST/(n-1)} = 1 - \frac{\MSE}{s_Y^2}}
+\]
+其中 $s_Y^2 = \SST/(n-1)$ 為 $Y$ 的樣本變異數。
+\end{definition}
+
+\begin{remark}[自由度的來源]
+調整後 $R^2$ 的分子分母分別除以相應的自由度：
+\begin{itemize}
+\item \textbf{分母 $n - 1$}：$\SST = \sum(Y_i - \bar{Y})^2$ 有 $n$ 項，但受到一個約束 $\sum(Y_i - \bar{Y}) = 0$，故自由度為 $n - 1$。
+\item \textbf{分子 $n - k - 1$}：$\SSE = \sum e_i^2$ 有 $n$ 項，但受到 $k + 1$ 個約束（正規方程式 $\bX^\top\mathbf{e} = \mathbf{0}$ 有 $k + 1$ 個方程），故自由度為 $n - (k + 1) = n - k - 1$。
+\end{itemize}
+調整後 $R^2$ 對增加的自變數進行懲罰。若增加不顯著變數，$\bar{R}^2$ 可能下降。$\bar{R}^2$ 可為負。
+\end{remark}
+
+\begin{theorem}[簡單迴歸中 $R^2 = r^2$]
+在簡單線性迴歸（$k = 1$）中，$R^2 = r_{XY}^2$，其中 $r_{XY}$ 為 $X$ 與 $Y$ 的樣本相關係數。
+\end{theorem}
+
+\begin{proof}
+$R^2 = \SSR/\SST = \hat{\beta}_1^2 S_{XX}/S_{YY} = (S_{XY}/S_{XX})^2 \cdot S_{XX}/S_{YY} = S_{XY}^2/(S_{XX} S_{YY}) = r_{XY}^2$
+\end{proof}
+
+%=============================================================================
+\section{假設檢定}
+%=============================================================================
+
+\subsection{抽樣分配}
+
+\begin{theorem}[OLS 估計量的抽樣分配]\label{thm:beta-dist}
+在假設 (A1)--(A5) 下：
+\[
+\hat{\bb} | \bX \sim N\left(\bb, \sigma^2(\bX^\top\bX)^{-1}\right)
 \]
 \end{theorem}
 
-\begin{prf}
-在 $H_0$ 下，$\SSR/\sigma^2 \sim \chi^2_k$（$k$ 個限制式），$\SSE/\sigma^2 \sim \chi^2_{n-k-1}$（$n$ 個觀測減去 $k+1$ 個參數），且兩者獨立。
+\begin{proof}
+由 $\hat{\bb} = \bb + (\bX^\top\bX)^{-1}\bX^\top\be$，$\hat{\bb}$ 是 $\be$ 的線性變換。
 
-由 $F$ 分配定義：
+在假設 (A5) 下，$\be \sim N(\mathbf{0}, \sigma^2\bI)$。
+
+常態分配的線性變換仍為常態：若 $\mathbf{z} \sim N(\boldsymbol{\mu}, \boldsymbol{\Sigma})$，則 $\mathbf{A}\mathbf{z} + \mathbf{b} \sim N(\mathbf{A}\boldsymbol{\mu} + \mathbf{b}, \mathbf{A}\boldsymbol{\Sigma}\mathbf{A}^\top)$。
+
+取 $\mathbf{A} = (\bX^\top\bX)^{-1}\bX^\top$，$\mathbf{z} = \be$，$\mathbf{b} = \bb$：
 \[
-F = \frac{\SSR/\sigma^2/k}{\SSE/\sigma^2/(n-k-1)} = \frac{\SSR/k}{\SSE/(n-k-1)} \sim F_{k, n-k-1}
+\hat{\bb} = \bb + (\bX^\top\bX)^{-1}\bX^\top\be \sim N\left(\bb + (\bX^\top\bX)^{-1}\bX^\top \cdot \mathbf{0}, (\bX^\top\bX)^{-1}\bX^\top(\sigma^2\bI)\bX(\bX^\top\bX)^{-1}\right)
+\]
+\[
+= N\left(\bb, \sigma^2(\bX^\top\bX)^{-1}\right)
+\]
+\end{proof}
+
+\begin{theorem}[$\SSE/\sigma^2$ 的分配]\label{thm:sse-dist}
+在假設 (A1)--(A5) 下：
+\[
+\frac{\SSE}{\sigma^2} \sim \chi^2_{n-k-1}
+\]
+且 $\SSE$ 與 $\hat{\bb}$ 獨立。
+\end{theorem}
+
+\begin{proof}
+\textbf{步驟一：標準化}
+
+令 $\mathbf{z} = \be/\sigma$，則 $\mathbf{z} \sim N(\mathbf{0}, \bI_n)$（標準常態向量）。
+
+由 $\mathbf{e} = \bM\be$：
+\[
+\frac{\SSE}{\sigma^2} = \frac{\be^\top\bM\be}{\sigma^2} = \mathbf{z}^\top\bM\mathbf{z}
 \]
 
-又 $R^2 = \SSR/\SST$，故 $\SSR = R^2 \cdot \SST$，$\SSE = (1-R^2)\SST$：
-\[
-F = \frac{R^2 \cdot \SST/k}{(1-R^2)\SST/(n-k-1)} = \frac{R^2/k}{(1-R^2)/(n-k-1)}
-\]
-\end{prf}
+\textbf{步驟二：二次型的分配}
 
-\begin{theorem}[個別係數 $t$ 檢定]\label{thm:t-individual}
+由定理~\ref{thm:quadratic-chisq}，若 $\mathbf{z} \sim N(\mathbf{0}, \bI_n)$ 且 $\mathbf{A}$ 為對稱冪等矩陣，則 $\mathbf{z}^\top\mathbf{A}\mathbf{z} \sim \chi^2_r$，其中 $r = \tr(\mathbf{A})$。
+
+$\bM$ 為對稱冪等矩陣，$\tr(\bM) = n - k - 1$，故：
+\[
+\frac{\SSE}{\sigma^2} = \mathbf{z}^\top\bM\mathbf{z} \sim \chi^2_{n-k-1}
+\]
+
+\textbf{步驟三：獨立性}
+
+$\hat{\bb} = \bb + (\bX^\top\bX)^{-1}\bX^\top\be$ 與 $\mathbf{e} = \bM\be$ 的獨立性：
+
+兩者皆為 $\be$ 的線性變換。由常態分配的性質，獨立性等價於共變異數為零：
+\begin{align*}
+\cov\left((\bX^\top\bX)^{-1}\bX^\top\be, \bM\be\right) &= (\bX^\top\bX)^{-1}\bX^\top \var(\be) \bM^\top\\
+&= (\bX^\top\bX)^{-1}\bX^\top (\sigma^2\bI) \bM\\
+&= \sigma^2 (\bX^\top\bX)^{-1}\bX^\top\bM = \mathbf{0}
+\end{align*}
+（最後一步利用 $\bX^\top\bM = (\bM\bX)^\top = \mathbf{0}^\top = \mathbf{0}$。）
+\end{proof}
+
+\subsection{整體 $F$ 檢定}
+
+\begin{table}[H]
+\centering
+\caption{多元迴歸 ANOVA 表}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{l|c|c|c|c}
+\toprule
+\textbf{來源} & \textbf{SS} & \textbf{df} & \textbf{MS} & \textbf{$F$} \\
+\midrule
+迴歸 & $\SSR$ & $k$ & $\MSR = \SSR/k$ & $F = \MSR/\MSE$ \\
+殘差 & $\SSE$ & $n-k-1$ & $\MSE = \SSE/(n-k-1)$ & \\
+\midrule
+總和 & $\SST$ & $n-1$ & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{theorem}[整體 $F$ 檢定]\label{thm:f-test}
+檢定 $H_0: \beta_1 = \beta_2 = \cdots = \beta_k = 0$：
+\[
+\boxed{F = \frac{\MSR}{\MSE} = \frac{R^2/k}{(1-R^2)/(n-k-1)} \sim F_{k, n-k-1}} \quad \text{（在 $H_0$ 下）}
+\]
+\end{theorem}
+
+\begin{proof}
+\textbf{$F$ 統計量的公式}：
+
+$F = \frac{\SSR/k}{\SSE/(n-k-1)}$。由 $R^2 = \SSR/\SST$ 和 $1 - R^2 = \SSE/\SST$：
+\[
+F = \frac{R^2 \cdot \SST/k}{(1-R^2) \cdot \SST/(n-k-1)} = \frac{R^2/k}{(1-R^2)/(n-k-1)}
+\]
+
+\textbf{$F$ 分配的推導}：
+
+在 $H_0$ 下，可以證明 $\SSR/\sigma^2 \sim \chi^2_k$ 且與 $\SSE$ 獨立。由定理~\ref{thm:sse-dist}，$\SSE/\sigma^2 \sim \chi^2_{n-k-1}$。
+
+$F$ 分配的定義：若 $U \sim \chi^2_m$，$V \sim \chi^2_n$ 獨立，則 $(U/m)/(V/n) \sim F_{m,n}$。
+
+故：
+\[
+F = \frac{(\SSR/\sigma^2)/k}{(\SSE/\sigma^2)/(n-k-1)} = \frac{\SSR/k}{\SSE/(n-k-1)} \sim F_{k, n-k-1}
+\]
+\end{proof}
+
+\subsection{個別係數 $t$ 檢定}
+
+\begin{theorem}[個別係數檢定]\label{thm:t-test}
 對於 $H_0: \beta_j = 0$：
 \[
 \boxed{t = \frac{\hat{\beta}_j}{\SE(\hat{\beta}_j)} \sim t_{n-k-1}}
 \]
+其中 $\SE(\hat{\beta}_j) = s \sqrt{[(\bX^\top\bX)^{-1}]_{jj}}$，$s = \sqrt{\MSE}$。
 \end{theorem}
 
-\begin{prf}
-由多元迴歸理論，$\hat{\beta}_j \sim N(\beta_j, \sigma^2 c_{jj})$，其中 $c_{jj}$ 是 $(\mathbf{X}'\mathbf{X})^{-1}$ 的第 $j$ 個對角元素。
+\begin{proof}
+由定理~\ref{thm:beta-dist}，$\hat{\beta}_j \sim N(\beta_j, \sigma^2[(\bX^\top\bX)^{-1}]_{jj})$。
 
-以 $s^2$ 估計 $\sigma^2$ 後，$\dfrac{\hat{\beta}_j - \beta_j}{s\sqrt{c_{jj}}} \sim t_{n-k-1}$。
+標準化：$Z = \frac{\hat{\beta}_j - \beta_j}{\sigma\sqrt{[(\bX^\top\bX)^{-1}]_{jj}}} \sim N(0, 1)$
 
-在 $H_0: \beta_j = 0$ 下，檢定統計量為 $t = \hat{\beta}_j/\SE(\hat{\beta}_j)$。
-\end{prf}
+由定理~\ref{thm:sse-dist}，$\SSE/\sigma^2 \sim \chi^2_{n-k-1}$，且與 $\hat{\beta}_j$ 獨立。
+
+$t$ 分配的定義：若 $Z \sim N(0,1)$，$V \sim \chi^2_\nu$ 獨立，則 $Z/\sqrt{V/\nu} \sim t_\nu$。
+
+令 $V = \SSE/\sigma^2$，$\nu = n - k - 1$：
+\begin{align*}
+t &= \frac{Z}{\sqrt{V/\nu}} = \frac{\frac{\hat{\beta}_j - \beta_j}{\sigma\sqrt{[(\bX^\top\bX)^{-1}]_{jj}}}}{\sqrt{\frac{\SSE/\sigma^2}{n-k-1}}}\\
+&= \frac{\hat{\beta}_j - \beta_j}{\sqrt{\frac{\SSE}{n-k-1}} \cdot \sqrt{[(\bX^\top\bX)^{-1}]_{jj}}}\\
+&= \frac{\hat{\beta}_j - \beta_j}{s \sqrt{[(\bX^\top\bX)^{-1}]_{jj}}} \sim t_{n-k-1}
+\end{align*}
+
+在 $H_0: \beta_j = 0$ 下，$t = \hat{\beta}_j / \SE(\hat{\beta}_j)$。
+\end{proof}
+
+\begin{theorem}[簡單迴歸中 $t^2 = F$]
+在簡單線性迴歸（$k = 1$）中，檢定 $H_0: \beta_1 = 0$ 時：
+\[
+t^2 = F
+\]
+\end{theorem}
+
+\begin{proof}
+$t = \hat{\beta}_1/(s/\sqrt{S_{XX}})$，故 $t^2 = \hat{\beta}_1^2 S_{XX}/s^2 = \hat{\beta}_1^2 S_{XX}/\MSE = \SSR/\MSE = F$
+\end{proof}
+
+%=============================================================================
+\section{進階主題}
+%=============================================================================
+
+\subsection{含交互作用項的模型}
+
+\begin{definition}[交互作用]
+模型 $Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \beta_3 X_1 X_2 + \varepsilon$ 中，$X_1$ 對 $Y$ 的\textbf{邊際效應}為：
+\[
+\frac{\partial Y}{\partial X_1} = \beta_1 + \beta_3 X_2
+\]
+此效應取決於 $X_2$ 的值——這就是「交互作用」的含義。
+\end{definition}
+
+\begin{example}[廣告與定價的交互作用]
+模型：$Y = 20 + 2.5 X_1 - 1.2 X_2 + 0.04 X_1 X_2$（$Y$: 銷售，$X_1$: 廣告，$X_2$: 定價）
+
+廣告的邊際效應 $= 2.5 + 0.04 X_2$。當定價 $X_2$ 越高，廣告效果越強。
+\end{example}
+
+\subsection{無截距模型}
+
+\begin{definition}[無截距迴歸——多元形式]
+考慮模型 $Y_i = \beta_1 X_{i1} + \cdots + \beta_k X_{ik} + \varepsilon_i$（無截距項），矩陣形式為 $\bY = \bX\bb + \be$，其中 $\bX$ 為 $n \times k$ 矩陣（不含全 1 的行）。
+
+OLS 估計量仍為 $\hat{\bb} = (\bX^\top\bX)^{-1}\bX^\top\bY$。
+\end{definition}
+
+\begin{property}[無截距模型的特性]
+\begin{enumerate}[label=(\roman*)]
+  \item[]
+\item $\sum_{i=1}^{n} e_i$ 不一定為零（因為 $\bX$ 不包含截距項，正規方程式不含 $\sum e_i = 0$）
+\item $\bX^\top\mathbf{e} = \mathbf{0}$ 仍成立（這是正規方程式的直接結果）
+\item Centered-$R^2 = 1 - \SSE/\SST$ 可能為負，因為 $\SST + \SSE$ 不一定等於 $\SSR$
+\item 使用 Uncentered-$R^2 = 1 - \SSE/\sum Y_i^2$ 較為適當
+\end{enumerate}
+\end{property}
+
+\begin{example}[CAPM 模型]
+資本資產定價模型（Capital Asset Pricing Model, CAPM）的實證形式為：
+\[
+R_{it} - R_f = \beta_i (R_{mt} - R_f) + \varepsilon_{it}
+\]
+其中 $R_{it} - R_f$ 為資產 $i$ 的超額報酬，$R_{mt} - R_f$ 為市場超額報酬。這是典型的無截距迴歸。
+
+若加入截距項（Jensen's alpha）：$R_{it} - R_f = \alpha_i + \beta_i (R_{mt} - R_f) + \varepsilon_{it}$，則 $\alpha_i \neq 0$ 表示該資產的表現優於（$\alpha > 0$）或劣於（$\alpha < 0$）市場基準。
+\end{example}
 
 %=============================================================================
 \section{計算範例}
 %=============================================================================
 
 \begin{example}
-給定資料：$(1, 2), (2, 4), (3, 5), (4, 4), (5, 5)$，進行完整線性迴歸分析。
+某分析師研究家庭垃圾產量的決定因素。資料：$n = 440$，$k = 3$（房屋大小、兒童數、成人數），$R^2 = 0.170$，$F = 29.80$。
+
+\begin{enumerate}[label=(\alph*)]
+\item 計算調整後 $R^2$
+\item 計算殘差自由度
+\item 進行整體 $F$ 檢定（$\alpha = 0.05$）
+\end{enumerate}
 \end{example}
 
 \begin{solution}
-\textbf{1. 基本統計量}：$n = 5$，$\bar{X} = 3$，$\bar{Y} = 4$，$S_{XX} = 10$，$S_{XY} = 6$，$S_{YY} = 6$。
+\textbf{(a) 調整後 $R^2$}：
+\[
+\bar{R}^2 = 1 - \frac{n-1}{n-k-1}(1-R^2) = 1 - \frac{439}{436}(0.830) = 1 - 1.0069 \times 0.830 = 1 - 0.836 = \boxed{0.164}
+\]
 
-\textbf{2. 估計值}：$\hat{\beta}_1 = 6/10 = 0.6$，$\hat{\beta}_0 = 4 - 0.6(3) = 2.2$。
+\textbf{(b) 殘差自由度}：$df_{\text{殘差}} = n - k - 1 = 440 - 3 - 1 = \boxed{436}$
 
-\textbf{3. ANOVA}：$\SSR = (0.6)^2 \times 10 = 3.6$，$\SSE = 6 - 3.6 = 2.4$，$R^2 = 0.6$。
+\textbf{(c) $F$ 檢定}：
 
-\textbf{4. 假設檢定}：$\MSE = 2.4/3 = 0.8$，$s = 0.894$。
+驗算：$F = \frac{R^2/k}{(1-R^2)/(n-k-1)} = \frac{0.170/3}{0.830/436} = \frac{0.0567}{0.00190} = 29.8$ $\checkmark$
 
-$\SE(\hat{\beta}_1) = 0.894/\sqrt{10} = 0.283$，$t = 0.6/0.283 = 2.12$。
+臨界值：$F_{0.05, 3, 436} \approx 2.63$
 
-$df = 3$，$t_{0.025, 3} = 3.182$。因為 $|2.12| < 3.182$，不拒絕 $H_0$。
-
-\textbf{5. 信賴區間}：$0.6 \pm 3.182 \times 0.283 = 0.6 \pm 0.90 = (-0.30, 1.50)$。
+決策：$29.80 > 2.63$，\textbf{拒絕 $H_0$}。模型整體顯著。
 \end{solution}
 
 \begin{example}
-$n = 100$，$k = 4$，$R^2 = 0.36$，求 $F$ 值和調整後 $R^2$。
+$n = 100$，$k = 4$，$R^2 = 0.36$。
 \end{example}
 
 \begin{solution}
-\textbf{$F$ 值}：
-\[
-F = \frac{0.36/4}{(1-0.36)/(100-4-1)} = \frac{0.09}{0.64/95} = \frac{0.09}{0.00674} = 13.35
-\]
+$F = \frac{0.36/4}{0.64/95} = \frac{0.09}{0.00674} = 13.35$
 
-\textbf{調整後 $R^2$}：
-\[
-\bar{R}^2 = 1 - \frac{99}{95}(1 - 0.36) = 1 - 1.042 \times 0.64 = 1 - 0.667 = 0.333
-\]
+$\bar{R}^2 = 1 - \frac{99}{95}(0.64) = 1 - 0.667 = 0.333$
 \end{solution}
 
-%%=============================================================================
-%\section{公式總整理}
-%%=============================================================================
-%
-%\begin{center}
-%\renewcommand{\arraystretch}{1.6}
-%\begin{tabular}{ll}
-%\toprule
-%項目 & 公式 \\
-%\midrule
-%斜率估計 & $\hat{\beta}_1 = S_{XY}/S_{XX}$ \\
-%截距估計 & $\hat{\beta}_0 = \bar{Y} - \hat{\beta}_1\bar{X}$ \\
-%$\var(\hat{\beta}_1)$ & $\sigma^2/S_{XX}$ \\
-%$\SE(\hat{\beta}_1)$ & $s/\sqrt{S_{XX}}$ \\
-%判定係數 & $R^2 = \SSR/\SST = r_{XY}^2$ \\
-%調整後 $R^2$ & $1 - \dfrac{n-1}{n-k-1}(1-R^2)$ \\
-%$t$ 檢定 & $t = \hat{\beta}_j/\SE(\hat{\beta}_j) \sim t_{n-k-1}$ \\
-%$F$ 檢定 & $F = \dfrac{R^2/k}{(1-R^2)/(n-k-1)} \sim F_{k, n-k-1}$ \\
-%\bottomrule
-%\end{tabular}
-%\end{center}
+\begin{example}
+$Y$ 對 $X$ 迴歸得 $\hat{Y} = 2 + 0.5X$，$R^2 = 0.64$。求 $X$ 對 $Y$ 迴歸的斜率。
+\end{example}
+
+\begin{solution}
+$r^2 = R^2 = 0.64$，$\hat{\beta}_1 = 0.5 > 0$，故 $r = 0.8$。
+
+由 $\hat{\beta}_1 \cdot \hat{\gamma}_1 = r^2$：$\hat{\gamma}_1 = 0.64/0.5 = 1.28$
+\end{solution}
+
+%=============================================================================
+\section{習題}
+%=============================================================================
+
+\begin{exercise}
+已知 $\SST = 100$，$\SSE = 36$，$n = 12$，$k = 1$。求 $R^2$、$\bar{R}^2$、$F$。
+\end{exercise}
+
+\begin{solution}
+$R^2 = 1 - 36/100 = 0.64$
+
+$\bar{R}^2 = 1 - \frac{11}{10}(0.36) = 1 - 0.396 = 0.604$
+
+$F = \frac{0.64/1}{0.36/10} = \frac{0.64}{0.036} = 17.78$
+\end{solution}
+
+\begin{exercise}
+迴歸輸出：$n = 200$，$k = 3$，$R^2 = 0.72$，截距 $\hat{\beta}_0 = 7.19$，$\SE(\hat{\beta}_0) = 1.09$。
+
+(a) 計算 $\bar{R}^2$
+
+(b) 計算截距的 $t$ 值
+
+(c) 在 $\alpha = 0.05$ 下檢定整體模型顯著性
+\end{exercise}
+
+\begin{solution}
+\textbf{(a)} $\bar{R}^2 = 1 - \frac{199}{196}(0.28) = 1 - 0.284 = 0.716$
+
+\textbf{(b)} $t = 7.19/1.09 = 6.59$
+
+\textbf{(c)} $F = \frac{0.72/3}{0.28/196} = \frac{0.24}{0.00143} = 168$
+
+$F_{0.05, 3, 196} \approx 2.65$。$168 > 2.65$，拒絕 $H_0$，模型整體顯著。
+\end{solution}
 
 \end{document}
