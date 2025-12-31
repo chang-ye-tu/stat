@@ -1,0 +1,3433 @@
+\chapter{Advanced Topic --- Stochastic Processes}
+\label{ch:11}
+
+\section*{Chapter Outline}
+\begin{itemize}
+\item Section 1 \quad Simple Random Walk
+\item Section 2 \quad Markov Chains
+\item Section 3 \quad Markov Chain Monte Carlo
+\item Section 4 \quad Martingales
+\item Section 5 \quad Brownian Motion
+\item Section 6 \quad Poisson Processes
+\item Section 7 \quad Further Proofs
+\end{itemize}
+
+In this chapter, we consider stochastic processes, which are processes that proceed randomly in time. That is, rather than consider fixed random variables $X$, $Y$, etc., or even sequences of independent and identically distributed (i.i.d.)\ random variables, we shall instead consider sequences $X_0, X_1, X_2, \ldots$ where $X_n$ represents some random quantity at time $n$. In general, the value $X_n$ at time $n$ might depend on the quantity $X_{n-1}$ at time $n-1$, or even the values $X_m$ for other times $m < n$. Stochastic processes have a different ``flavor'' from ordinary random variables --- because they proceed in time, they seem more ``alive.''
+
+We begin with a simple but very interesting case, namely, simple random walk.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Simple Random Walk}
+\label{sec:11.1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Simple random walk can be thought of as a model for repeated gambling. Specifically, suppose you start with \$$a$, and repeatedly make \$1 bets. At each bet, you have probability $p$ of winning \$1 and probability $q$ of losing \$1, where $p + q = 1$. If $X_n$ is the amount of money you have at time $n$ (henceforth, your fortune at time $n$), then $X_0 = a$, while $X_1$ could be $a + 1$ or $a - 1$ depending on whether you win or lose your first bet. Then $X_2$ could be $a + 2$ (if you win your first two bets), or $a$ (if you win once and lose once), or $a - 2$ (if you lose your first two bets). Continuing in this way, we obtain a whole sequence $X_0, X_1, X_2, \ldots$ of random values, corresponding to your fortune at times $0, 1, 2, \ldots$.
+
+We shall refer to the stochastic process $\{X_n\}$ as \emph{simple random walk}. Another way to define this model is to start with random variables $Z_i$ that are i.i.d.\ with $\prb(Z_i = 1) = p$ and $\prb(Z_i = -1) = 1 - p = q$, where $0 < p < 1$. (Here, $Z_i = 1$ if you win the $i$th bet, while $Z_i = -1$ if you lose the $i$th bet.) We then set $X_0 = a$, and for $n \geqslant 1$ we set
+\[
+X_n = a + Z_1 + Z_2 + \cdots + Z_n.
+\]
+The following is a specific example of this.
+
+\begin{example}
+\label{ex:11.1.1}
+Consider simple random walk with $a = 8$ and $p = 1/3$, so you start with \$8 and have probability $1/3$ of winning each bet. Then the probability that you have \$9 after one bet is given by
+\[
+\prb(X_1 = 9) = \prb(8 + Z_1 = 9) = \prb(Z_1 = 1) = 1/3,
+\]
+as it should be. Also, the probability that you have \$7 after one bet is given by
+\[
+\prb(X_1 = 7) = \prb(8 + Z_1 = 7) = \prb(Z_1 = -1) = 2/3.
+\]
+On the other hand, the probability that you have \$10 after two bets is given by
+\[
+\prb(X_2 = 10) = \prb(8 + Z_1 + Z_2 = 10) = \prb(Z_1 = Z_2 = 1) = (1/3)(1/3) = 1/9.
+\]
+\end{example}
+
+\begin{example}
+\label{ex:11.1.2}
+Consider again simple random walk with $a = 8$ and $p = 1/3$. Then the probability that you have \$7 after three bets is given by
+\[
+\prb(X_3 = 7) = \prb(8 + Z_1 + Z_2 + Z_3 = 7) = \prb(Z_1 + Z_2 + Z_3 = -1).
+\]
+Now, there are three different ways we could have $Z_1 + Z_2 + Z_3 = -1$, namely: (a) $Z_1 = 1$, while $Z_2 = Z_3 = -1$; (b) $Z_2 = 1$, while $Z_1 = Z_3 = -1$; or (c) $Z_3 = 1$, while $Z_1 = Z_2 = -1$. Each of these three options has probability $(1/3)(2/3)(2/3)$. Hence,
+\[
+\prb(X_3 = 7) = (1/3)(2/3)(2/3) + (1/3)(2/3)(2/3) + (1/3)(2/3)(2/3) = 4/9.
+\]
+\end{example}
+
+If the number of bets is much larger than three, then it becomes less and less convenient to compute probabilities in the above manner. A more systematic approach is required. We turn to that next.
+
+%------------------------------------------------------------------------------
+\subsection{The Distribution of the Fortune}
+\label{ssec:11.1.1}
+%------------------------------------------------------------------------------
+
+We first compute the distribution of $X_n$, i.e., the probability that your fortune $X_n$ after $n$ bets takes on various values.
+
+\begin{theorem}
+\label{thm:11.1.1}
+Let $\{X_n\}$ be simple random walk as before, and let $n$ be a positive integer. If $k$ is an integer such that $-n \leqslant k \leqslant n$ and $n + k$ is even, then
+\[
+\prb(X_n = a + k) = \binom{n}{\frac{n+k}{2}} p^{(n+k)/2} q^{(n-k)/2}.
+\]
+For all other values of $k$, we have $\prb(X_n = a + k) = 0$. Furthermore, $\expc[X_n] = a + n(2p - 1)$.
+\end{theorem}
+
+\begin{proof}
+See Section~\ref{sec:11.7}.
+\end{proof}
+
+This theorem tells us the entire distribution, and expected value, of the fortune $X_n$ at time $n$.
+
+\begin{example}
+\label{ex:11.1.3}
+Suppose $p = 1/3$, $n = 8$, and $a = 1$. Then $\prb(X_n = 6) = 0$ because $6 - 1 = 5$, and $n + 5 = 13$ is not even. Also, $\prb(X_n = 13) = 0$ because $13 - 1 = 12$ and $12 > n$. On the other hand,
+\[
+\prb(X_n = 5) = \prb(X_n = 1 + 4) = \binom{n}{\frac{n+4}{2}} p^{(n+4)/2} q^{(n-4)/2} = \binom{8}{6} (1/3)^6 (2/3)^{8-7} = \binom{8}{6} (1/3)^6 (2/3)^{2} \approx 0.0256.
+\]
+Also, $\expc[X_n] = a + n(2p - 1) = 1 + 8(2/3 - 1) = -5/3$.
+\end{example}
+
+Regarding $\expc[X_n]$, we immediately obtain the following corollary.
+
+\begin{corollary}
+\label{cor:11.1.1}
+If $p = 1/2$, then $\expc[X_n] = a$ for all $n \geqslant 0$. If $p < 1/2$, then $\expc[X_n] < a$ for all $n \geqslant 1$. If $p > 1/2$, then $\expc[X_n] > a$ for all $n \geqslant 1$.
+\end{corollary}
+
+This corollary has the following interpretation. If $p = 1/2$, then the game is \emph{fair}, i.e., both you and your opponent have equal chance of winning each bet. Thus, the corollary says that for fair games, your expected fortune $\expc[X_n]$ will never change from its initial value, $a$.
+
+On the other hand, if $p < 1/2$, then the game is \emph{subfair}, i.e., your opponent's chances are better than yours. In this case, the corollary says your expected fortune will decrease, i.e., be less than its initial value of $a$. Similarly, if $p > 1/2$ then the game is \emph{superfair}, and the corollary says your expected fortune will increase, i.e., be more than its initial value of $a$.
+
+Of course, in a real gambling casino, the game is always subfair (which is how the casino makes its profit). Hence, in a real casino, the average amount of money with which you leave will always be less than the amount with which you entered!
+
+\begin{example}
+\label{ex:11.1.4}
+Suppose $a = 10$ and $p = 1/4$. Then $\expc[X_n] = 10 + n(2p - 1) = 10 - 3n/4$. Hence, we always have $\expc[X_n] \leqslant 10$, and indeed $\expc[X_n] \leqslant 0$ if $n \geqslant 14$. That is, your expected fortune is never more than your initial value of \$10 and in fact is negative after 14 or more bets.
+\end{example}
+
+Finally, we note as an aside that it is possible to change your probabilities by changing your gambling strategy, as in the following example. Hence, the preceding analysis applies only to the strategy of betting just \$1 each time.
+
+\begin{example}
+\label{ex:11.1.5}
+Consider the ``double 'til you win'' gambling strategy, defined as follows. We first bet \$1. Each time we lose, we double our bet on the succeeding turn. As soon as we win once, we stop playing (i.e., bet zero from then on).
+
+It is easily seen that, with this gambling strategy, we will be up \$1 as soon as we win a bet (which must happen eventually because $p > 0$). Hence, with probability 1 we will gain \$1 with this gambling strategy for any positive value of $p$.
+
+This is rather surprising, because if $0 < p < 1/2$ then the odds in this game are against us. So it seems that we have ``cheated fate,'' and indeed we have. On the other hand, we may need to lose an arbitrarily large amount of money before we win our \$1, so ``infinite capital'' is required to follow this gambling strategy. If only finite capital is available, then it is impossible to cheat fate in this manner. For a proof of this, see more advanced probability books, e.g., page 64 of \emph{A First Look at Rigorous Probability Theory}, 2nd ed., by J.~S.\ Rosenthal (World Scientific Publishing, Singapore, 2006).
+\end{example}
+
+%------------------------------------------------------------------------------
+\subsection{The Gambler's Ruin Problem}
+\label{ssec:11.1.2}
+%------------------------------------------------------------------------------
+
+The previous subsection considered the distribution and expected value of the fortune $X_n$ at a fixed time $n$. Here, we consider the \emph{gambler's ruin problem}, which requires the consideration of many different $n$ at once, i.e., considers the time evolution of the process.
+
+Let $\{X_n\}$ be simple random walk as before, for some initial fortune $a$ and some probability $p$ of winning each bet. Assume $a$ is a positive integer. Furthermore, let $c > a$ be some other integer. The gambler's ruin question is: If you repeatedly bet \$1, then what is the probability that you will reach a fortune of \$$c$ before you lose all your money by reaching a fortune \$0? In other words, will the random walk hit $c$ before hitting 0? Informally, what is the probability that the gambler gets rich (i.e., has \$$c$) before going broke?
+
+More formally, let
+\[
+\tau_0 = \min\{n \geqslant 0 : X_n = 0\}, \qquad \tau_c = \min\{n \geqslant 0 : X_n = c\}
+\]
+be the first hitting times of 0 and $c$, respectively. That is, $\tau_0$ is the first time your fortune reaches 0, while $\tau_c$ is the first time your fortune reaches $c$.
+
+The gambler's ruin question is: What is
+\[
+\prb(\tau_c < \tau_0),
+\]
+the probability of hitting $c$ before hitting 0? This question is not so easy to answer, because there is no limit to how long it might take until either $\tau_c$ or $\tau_0$ is hit. Hence, it is not sufficient to just compute the probabilities after 10 bets, or 20 bets, or 100 bets, or even 1,000,000 bets. Fortunately, it is possible to answer this question, as follows.
+
+\begin{theorem}
+\label{thm:11.1.2}
+Let $\{X_n\}$ be simple random walk, with some initial fortune $a$ and probability $p$ of winning each bet. Assume $0 < a < c$. Then the probability $\prb(\tau_c < \tau_0)$ of hitting $c$ before $0$ is given by
+\[
+\prb(\tau_c < \tau_0) = \begin{cases}
+a/c & p = 1/2 \\[6pt]
+\displaystyle\frac{1 - \left(\dfrac{q}{p}\right)^a}{1 - \left(\dfrac{q}{p}\right)^c} & p \neq 1/2.
+\end{cases}
+\]
+\end{theorem}
+
+\begin{proof}
+See Section~\ref{sec:11.7} for the proof.
+\end{proof}
+
+Consider some applications of this result.
+
+\begin{example}
+\label{ex:11.1.6}
+Suppose you start with \$5 (i.e., $a = 5$) and your goal is to win \$10 before going broke (i.e., $c = 10$). If $p = 0.500$, then your probability of success is $a/c = 0.500$. If $p = 0.499$, then your probability of success is given by
+\[
+\frac{1 - \left(\dfrac{0.501}{0.499}\right)^5}{1 - \left(\dfrac{0.501}{0.499}\right)^{10}} - 1,
+\]
+which is approximately $0.495$. If $p = 0.501$, then your probability of success is given by
+\[
+\frac{1 - \left(\dfrac{0.499}{0.501}\right)^5}{1 - \left(\dfrac{0.499}{0.501}\right)^{10}} - 1,
+\]
+which is approximately $0.505$. We thus see that in this case, small changes in $p$ lead to small changes in the probability of winning at gambler's ruin.
+\end{example}
+
+\begin{example}
+\label{ex:11.1.7}
+Suppose now that you start with \$5000 (i.e., $a = 5000$) and your goal is to win \$10,000 before going broke (i.e., $c = 10{,}000$). If $p = 0.500$, then your probability of success is $a/c = 0.500$, same as before. On the other hand, if $p = 0.499$, then your probability of success is given by
+\[
+\frac{1 - \left(\dfrac{0.501}{0.499}\right)^{5000}}{1 - \left(\dfrac{0.501}{0.499}\right)^{10{,}000}} - 1,
+\]
+which is approximately $2 \times 10^{-9}$, i.e., two parts in a billion! Finally, if $p = 0.501$, then your probability of success is given by
+\[
+\frac{1 - \left(\dfrac{0.499}{0.501}\right)^{5000}}{1 - \left(\dfrac{0.499}{0.501}\right)^{10{,}000}} - 1,
+\]
+which is extremely close to 1. We thus see that in this case, small changes in $p$ lead to extremely large changes in the probability of winning at gambler's ruin. For example, even a tiny disadvantage on each bet can lead to a very large disadvantage in the long run! The reason for this is that, to get from 5000 to 10,000, many bets must be made, so small changes in $p$ have a huge effect overall.
+\end{example}
+
+Finally, we note that it is also possible to use the gambler's ruin result to compute $\prb(\tau_0 < \infty)$, the probability that the walk will ever hit 0 (equivalently, that you will ever lose all your money), as follows.
+
+\begin{theorem}
+\label{thm:11.1.3}
+Let $\{X_n\}$ be simple random walk, with initial fortune $a > 0$ and probability $p$ of winning each bet. Then the probability $\prb(\tau_0 < \infty)$ that the walk will ever hit $0$ is given by
+\[
+\prb(\tau_0 < \infty) = \begin{cases}
+1 & p \leqslant 1/2 \\[6pt]
+(q/p)^a & p > 1/2.
+\end{cases}
+\]
+\end{theorem}
+
+\begin{proof}
+See Section~\ref{sec:11.7} for the proof.
+\end{proof}
+
+\begin{example}
+\label{ex:11.1.8}
+Suppose $a = 2$ and $p = 2/3$. Then the probability that you will eventually lose all your money is given by $(q/p)^a = ((1/3)/(2/3))^2 = 1/4$. Thus, starting with just \$2, we see that 3/4 of the time, you will be able to bet forever without ever losing all your money.
+
+On the other hand, if $p \leqslant 1/2$, then no matter how large $a$ is, it is certain that you will eventually lose all your money.
+\end{example}
+
+\subsection*{Summary of Section~\ref{sec:11.1}}
+
+A simple random walk is a sequence $\{X_n\}$ of random variables, with $X_0 = 1$ and
+\[
+\prb(X_{n+1} = X_n + 1) = p = 1 - \prb(X_{n+1} = X_n - 1).
+\]
+It follows that $\prb(X_n = a + k) = \binom{n}{\frac{n+k}{2}} p^{(n+k)/2} q^{(n-k)/2}$ for $k \in \{-n, -n+2, \ldots, n-4, n\}$, and $\expc[X_n] = a + n(2p - 1)$.
+
+If $0 < a < c$, then the gambler's ruin probability of reaching $c$ before $0$ is equal to $a/c$ if $p = 1/2$, otherwise to $\dfrac{1 - ((1-p)/p)^a}{1 - ((1-p)/p)^c}$.
+
+%------------------------------------------------------------------------------
+\subsection*{Exercises}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.1.1}
+Let $\{X_n\}$ be simple random walk, with initial fortune $a = 12$ and probability $p = 1/3$ of winning each bet. Compute $\prb(X_n = x)$ for the following values of $n$ and $x$.
+\begin{enumerate}[(a)]
+\item $n = 0$, $x = 13$
+\item $n = 1$, $x = 12$
+\item $n = 1$, $x = 13$
+\item $n = 1$, $x = 11$
+\item $n = 1$, $x = 14$
+\item $n = 2$, $x = 12$
+\item $n = 2$, $x = 13$
+\item $n = 2$, $x = 14$
+\item $n = 2$, $x = 15$
+\item $n = 20$, $x = 15$
+\item $n = 20$, $x = 16$
+\item $n = 20$, $x = 18$
+\item $n = 20$, $x = 10$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item 0.
+    \item 0.
+    \item $1/3$.
+    \item $2/3$.
+    \item 0.
+    \item $2(1/3)(2/3) = 4/9$.
+    \item 0.
+    \item $(1/3)(1/3) = 1/9$.
+    \item 0.
+    \item 0.
+    \item $\binom{20}{12}(1/3)^{12}(2/3)^8 = 0.00925$.
+    \item 0.
+    \item $\binom{20}{9}(1/3)^9(2/3)^{11} = 0.0987$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.1.2}
+Let $\{X_n\}$ be simple random walk, with initial fortune $a = 5$ and probability $p = 2/5$ of winning each bet.
+\begin{enumerate}[(a)]
+\item Compute $\prb(X_1 = 6, X_2 = 5)$.
+\item Compute $\prb(X_1 = 4, X_2 = 5)$.
+\item Compute $\prb(X_2 = 5)$.
+\item What is the relationship between the quantities in parts (a), (b), and (c)? Why is this so?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(X_1 = 6, X_2 = 5) = (2/5)(3/5) = 6/25$.
+    \item $\prb(X_1 = 4, X_2 = 5) = (3/5)(2/5) = 6/25$.
+    \item $\prb(X_2 = 5) = \binom{2}{1}(2/5)(3/5) = 12/25$.
+    \item By the law of total probability, $\prb(X_2 = 5) = \prb(X_1 = 6, X_2 = 5) + \prb(X_1 = 4, X_2 = 5)$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.1.3}
+Let $\{X_n\}$ be simple random walk, with initial fortune $a = 7$ and probability $p = 1/6$ of winning each bet.
+\begin{enumerate}[(a)]
+\item Compute $\prb(X_1 = X_3 = 8)$.
+\item Compute $\prb(X_1 = 6, X_3 = 8)$.
+\item Compute $\prb(X_3 = 8)$.
+\item What is the relationship between the quantities in parts (a), (b), and (c)? Why is this so?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(X_1 = X_3 = 8) = \prb(X_1 = 8, X_2 = 7, X_3 = 8) + \prb(X_1 = 8, X_2 = 9, X_3 = 8) = (1/6)(5/6)(1/6) + (1/6)(1/6)(5/6) = 10/216 = 5/108$.
+    \item $\prb(X_1 = 6, X_3 = 8) = \prb(X_1 = 6, X_2 = 7, X_3 = 8) = (5/6)(1/6)(1/6) = 5/216$.
+    \item $\prb(X_3 = 8) = \binom{3}{2}(1/6)^2(5/6)^1 = 15/216 = 5/72$.
+    \item By the law of total probability, $\prb(X_3 = 8) = \prb(X_1 = 6, X_3 = 8) + \prb(X_1 = 8, X_3 = 8)$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.1.4}
+Suppose $a = 1000$ and $p = 0.49$.
+\begin{enumerate}[(a)]
+\item Compute $\expc[X_n]$ for $n = 0, 1, 2, 10, 20, 100$, and $1000$.
+\item How large does $n$ need to be before $\expc[X_n] \leqslant 0$?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Here $\expc(X_n) = a + n(2p - 1) = 1000 - n(0.02)$. Hence, $\expc(X_0) = 1000$; $\expc(X_1) = 999.98$; $\expc(X_2) = 999.96$; $\expc(X_{10}) = 999.80$; $\expc(X_{20}) = 999.60$; $\expc(X_{100}) = 998$; $\expc(X_{1000}) = 980$.
+    \item If $\expc(X_n) < 0$, then $1000 - n(0.02) < 0$, i.e., $n > 1000/(0.02) = 50{,}000$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.1.5}
+Let $\{X_n\}$ be simple random walk, with initial fortune $a$ and probability $p = 0.499$ of winning each bet. Compute the gambler's ruin probability $\prb(\tau_c < \tau_0)$ for the following values of $a$ and $c$. Interpret your results in words.
+\begin{enumerate}[(a)]
+\item $a = 9$, $c = 10$
+\item $a = 90$, $c = 100$
+\item $a = 900$, $c = 1000$
+\item $a = 9000$, $c = 10{,}000$
+\item $a = 90{,}000$, $c = 100{,}000$
+\item $a = 900{,}000$, $c = 1{,}000{,}000$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Here $\prb(\tau_c < \tau_0) = 0.89819$. That is, if you start with \$9 and repeatedly make \$1 bets having probability 0.499 of winning each bet, then the probability you will reach \$10 before going broke is equal to 0.89819.
+    \item Here $\prb(\tau_c < \tau_0) = 0.881065$.
+    \item Here $\prb(\tau_c < \tau_0) = 0.664169$.
+    \item Here $\prb(\tau_c < \tau_0) = 0.0183155$.
+    \item Here $\prb(\tau_c < \tau_0) = 4 \times 10^{-18}$.
+    \item Here $\prb(\tau_c < \tau_0) = 2 \times 10^{-174}$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.1.6}
+Let $\{X_n\}$ be simple random walk, with initial fortune $a = 10$ and probability $p$ of winning each bet. Compute $\prb(\tau_0 < \infty)$, where $p = 0.4$ and also where $p = 0.6$. Interpret your results in words.
+\end{exercise}
+
+\begin{solution}
+If $p = 0.4$, then $\prb(\tau_0 < \infty) = 1$. If $p = 0.6$, then $\prb(\tau_0 < \infty) = ((1 - p)/p)^a = (0.4/0.6)^{10} = 0.0173415$, i.e., less than 2\%. That is, if we start with \$10 and repeatedly make bets with probability 0.4 of winning each bet, then we will eventually go broke with certainty. However, if the probability of winning each bet is 0.6, then there is less than 2\% chance of eventually going broke.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.1.7}
+Let $\{X_n\}$ be simple random walk, with initial fortune $a = 5$, and probability $p = 1/4$ of winning each bet.
+\begin{enumerate}[(a)]
+\item Compute $\prb(X_1 = 6)$.
+\item Compute $\prb(X_1 = 4)$.
+\item Compute $\prb(X_2 = 7)$.
+\item Compute $\prb(X_2 = 7 \mid X_1 = 6)$.
+\item Compute $\prb(X_2 = 7 \mid X_1 = 4)$.
+\item Compute $\prb(X_1 = 6 \mid X_2 = 7)$.
+\item Explain why the answer to part (f) equals what it equals.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+We use Theorem \ref{thm:11.1.1}.
+\begin{enumerate}[(a)]
+    \item $a = 5$, $n = 1$, $k = 1$, $p = 1/4$, $q = 3/4$ so $\prb(X_n = a + k) = 1/4$.
+    \item $a = 5$, $n = 1$, $k = -1$, $p = 1/4$, $q = 3/4$ so $\prb(X_n = a + k) = 3/4$.
+    \item $a = 5$, $n = 2$, $k = 2$, $p = 1/4$, $q = 3/4$ so $\prb(X_n = a + k) = (1/4)^2 = 0.0625$.
+    \item $a = 6$, $n = 1$, $k = 1$, $p = 1/4$, $q = 3/4$ so $\prb(X_n = a + k) = 1/4$.
+    \item $a = 4$, $n = 1$, $k = 3$, $p = 1/4$, $q = 3/4$ so $\prb(X_n = a + k) = 0$.
+    \item $\prb(X_1 = 6 \mid X_2 = 7) = \prb(X_1 = 6, X_2 = 7)/\prb(X_2 = 7) = \prb(X_1 = 6)\prb(X_2 = 7 \mid X_1 = 6)/\prb(X_2 = 7) = (1/4)(1/4)/(1/4)^2 = 1$.
+    \item We know that the initial fortune is 5 so to get to 7 in two steps the walk must have been at 6 after the first step.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.1.8}
+Let $\{X_n\}$ be simple random walk, with initial fortune $a = 1000$ and probability $p = 2/5$ of winning each bet.
+\begin{enumerate}[(a)]
+\item Compute $\expc[X_1]$.
+\item Compute $\expc[X_{10}]$.
+\item Compute $\expc[X_{100}]$.
+\item Compute $\expc[X_{1000}]$.
+\item Find the smallest value of $n$ such that $\expc[X_n] \leqslant 0$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+We use Theorem \ref{thm:11.1.1}. $a + n(2p - 1)$
+\begin{enumerate}[(a)]
+    \item $a = 1000$, $n = 1$, $p = 2/5$, $q = 3/5$ so $\expc(X_1) = 1000 + 1(2 \cdot 2/5 - 1) = 999.8$.
+    \item $a = 5$, $n = 10$, $p = 1/4$, $q = 3/4$ so $\expc(X_{10}) = 1000 + 10(2 \cdot 2/5 - 1) = 998.0$.
+    \item $a = 5$, $n = 1$, $p = 2/5$, $q = 3/5$ so $\expc(X_{100}) = 1000 + 100(2 \cdot 2/5 - 1) = 980.0$.
+    \item $a = 6$, $n = 1$, $p = 2/5$, $q = 3/5$ so $\expc(X_{1000}) = 1000 + 1000(2 \cdot 2/5 - 1) = 800.0$.
+    \item $0 \geqslant \expc(X_1) = 1000 + n(2 \cdot 2/5 - 1) = 1000 - n/5$ if and only if $n \geqslant 5000$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.1.9}
+Let $\{X_n\}$ be simple random walk, with initial fortune $a = 100$ and probability $p = 18/38$ of winning each bet (as when betting on Red in roulette).
+\begin{enumerate}[(a)]
+\item Compute $\prb(X_1 > a)$.
+\item Compute $\prb(X_2 > a)$.
+\item Compute $\prb(X_3 > a)$.
+\item Guess the value of $\lim_{n \to \infty} \prb(X_n > a)$.
+\item Interpret part (d) in plain English.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(X_1 \geqslant a) = \prb(X_1 = a + 1) = 18/38$.
+    \item $\prb(X_2 \geqslant a) = (18/38)^2 + \binom{2}{1}(18/38)(20/38) = 0.72299$.
+    \item $\prb(X_3 \geqslant a) = (18/38)^3 + \binom{3}{2}(18/38)^2(20/38) = 0.46056$.
+    \item $\lim_{n \to \infty} \prb(X_n \geqslant a) = 0$.
+    \item In the long run the gambler loses money.
+\end{enumerate}
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Problems}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.1.10}
+Suppose you start with \$10 and repeatedly bet \$2 (instead of \$1), having probability $p$ of winning each time. Suppose your goal is \$100, i.e., you keep on betting until you either lose all your money, or reach \$100.
+\begin{enumerate}[(a)]
+\item As a function of $p$, what is the probability that you will reach \$100 before losing all your money? Be sure to justify your solution. (Hint: You may find yourself dividing both 10 and 100 by 2.)
+\item Suppose $p = 0.4$. Compute a numerical value for the solution in part (a).
+\item Compare the probabilities in part (b) with the corresponding probabilities if you bet just \$1 each time. Which is larger?
+\item Repeat part (b) for the case where you bet \$10 each time. Does the probability of success increase or decrease?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item This is equivalent to having \$5, and trying to reach \$50, by making bets of just \$1 each time---since we can count things in units of \$2 instead of \$1. Hence, the desired probability is $(1 - ((1 - p)/p)^5)/(1 - ((1 - p)/p)^{50})$.
+    \item If $p = 0.4$, then this equals approximately $1.034 \times 10^{-8}$.
+    \item The corresponding probability with \$1 bets is $(1 - ((1 - p)/p)^{10})/(1 - ((1 - p)/p)^{100}) = 1.39 \times 10^{-16}$. Hence, we have a larger probability of reaching our goal if we bet \$2 each time, rather than \$1.
+    \item The corresponding probability with \$10 bets is $(1 - ((1 - p)/p)^1)/(1 - ((1 - p)/p)^{10}) = 0.00882$. Hence, the probability of success increases if we bet \$10 each time, rather than \$1 or \$2.
+\end{enumerate}
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Challenges}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.1.11}
+Prove that the formula for the gambler's ruin probability $\prb(\tau_c < \tau_0)$ is a continuous function of $p$, by proving that it is continuous at $p = 1/2$. That is, prove that
+\[
+\lim_{p \to 1/2} \frac{1 - ((1-p)/p)^a}{1 - ((1-p)/p)^c} = \frac{a}{c}.
+\]
+\end{exercise}
+
+\begin{solution}
+Fix $a$ and $c$ and let $f(x) = (1 - x^a)/(1 - x^c)$. We wish to compute $\lim_{p \to 1/2} f((1 - p)/p)$. Since $\lim_{p \to 1/2}((1 - p)/p) = 1$, the desired limit is equal to $\lim_{x \to 1} f(x)$ (if it exists). But from L'H\^{o}pital's rule, $\lim_{x \to 1} f(x) = \lim_{x \to 1}(\frac{\mathrm{d}}{\mathrm{d}x}(1 - x^a)/\frac{\mathrm{d}}{\mathrm{d}x}(1 - x^c)) = \lim_{x \to 1}(ax^{a-1})/(cx^{c-1}) = a/c$, as desired.
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Discussion Topics}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.1.12}
+Suppose you repeatedly play roulette in a real casino, betting the same amount each time, continuing forever as long as you have money to bet. Is it certain that you will eventually lose all your money? Why or why not?
+\end{exercise}
+
+\begin{exercise}
+\label{exer:11.1.13}
+In Problem~\ref{exer:11.1.10}, parts (c) and (d), can you explain intuitively why the probabilities change as they do, as we increase the amount we bet each time?
+\end{exercise}
+
+\begin{exercise}
+\label{exer:11.1.14}
+Suppose you start at $a$ and need to reach $c$, where $c > a > 0$. You must keep gambling until you reach either $c$ or $0$. Suppose you are playing a subfair game (i.e., $p < 1/2$), but you can choose how much to bet each time (i.e., you can bet \$1, or \$2, or more, though of course you cannot bet more than you have). What betting amounts do you think\footnote{For more advanced results about this, see, e.g., Theorem 7.3 of \emph{Probability and Measure}, 3rd ed., by P.\ Billingsley (John Wiley \& Sons, New York, 1995).} will maximize your probability of success, i.e., maximize $\prb(\tau_c < \tau_0)$? (Hint: The results of Problem~\ref{exer:11.1.10} may provide a clue.)
+\end{exercise}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Markov Chains}
+\label{sec:11.2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Intuitively, a Markov chain represents the random motion of some object. We shall write $X_n$ for the position (or value) of the object at time $n$. There are then rules that give the probabilities for where the object will jump next.
+
+A Markov chain requires a \emph{state space} $\mathcal{S}$, which is the set of all places the object can go. (For example, perhaps $\mathcal{S} = \{1, 2, 3\}$, or $\mathcal{S} = \{\text{top}, \text{bottom}\}$, or $\mathcal{S}$ is the set of all positive integers.)
+
+A Markov chain also requires \emph{transition probabilities}, which give the probabilities for where the object will jump next. Specifically, for $i, j \in \mathcal{S}$, the number $p_{ij}$ is the probability that, if the object is at $i$, it will next jump to $j$. Thus, the collection $\{p_{ij} : i, j \in \mathcal{S}\}$ of transition probabilities satisfies $p_{ij} \geqslant 0$ for all $i, j \in \mathcal{S}$, and
+\[
+\sum_{j \in \mathcal{S}} p_{ij} = 1
+\]
+for each $i \in \mathcal{S}$.
+
+We also need to consider where the Markov chain starts. Often, we will simply set $X_0 = s$ for some particular state $s \in \mathcal{S}$. More generally, we could have an \emph{initial distribution} $\{\nu_i : i \in \mathcal{S}\}$ where $\nu_i = \prb(X_0 = i)$. In this case, we need $\nu_i \geqslant 0$ for each $i \in \mathcal{S}$, and
+\[
+\sum_{i \in \mathcal{S}} \nu_i = 1.
+\]
+
+To summarize, here $\mathcal{S}$ is the state space of all places the object can go; $\nu_i$ represents the probability that the object starts at the point $i$; and $p_{ij}$ represents the probability that, if the object is at the point $i$, it will then jump to the point $j$ on the next step. In terms of the sequence of random values $X_0, X_1, X_2, \ldots$, we then have that
+\[
+\prb(X_{n+1} = j \mid X_n = i) = p_{ij}
+\]
+for any positive integer $n$ and any $i, j \in \mathcal{S}$. Note that we also require that this jump probability does not depend on the chain's previous history. That is, we require
+\[
+\prb(X_{n+1} = j \mid X_n = i, X_{n-1} = x_{n-1}, \ldots, X_0 = x_0) = p_{ij}
+\]
+for all $n$ and all $i, j, x_0, \ldots, x_{n-1} \in \mathcal{S}$.
+
+%------------------------------------------------------------------------------
+\subsection{Examples of Markov Chains}
+\label{ssec:11.2.1}
+%------------------------------------------------------------------------------
+
+We present some examples of Markov chains here.
+
+\begin{example}
+\label{ex:11.2.1}
+Let $\mathcal{S} = \{1, 2, 3\}$ consist of just three elements, and define the transition probabilities by $p_{11} = 0$, $p_{12} = 1/2$, $p_{13} = 1/2$, $p_{21} = 1/3$, $p_{22} = 1/3$, $p_{23} = 1/3$, $p_{31} = 1/4$, $p_{32} = 1/4$, and $p_{33} = 1/2$. This means that, for example, if the chain is at the state 3, then it has probability $1/4$ of jumping to state 1 on the next jump, probability $1/4$ of jumping to state 2 on the next jump, and probability $1/2$ of remaining at state 3 on the next jump.
+
+This Markov chain jumps around on the three points $\{1, 2, 3\}$ in a random and interesting way. For example, if it starts at the point 1, then it might jump to 2 or to 3 (with probability $1/2$ each). If it jumps to (say) 3, then on the next step it might jump to 1 or 2 (probability $1/4$ each) or 3 (probability $1/2$). It continues making such random jumps forever.
+
+Note that we can also write the transition probabilities $p_{ij}$ in matrix form, as
+\[
+(p_{ij}) = \begin{pmatrix}
+0 & 1/2 & 1/2 \\
+1/3 & 1/3 & 1/3 \\
+1/4 & 1/4 & 1/2
+\end{pmatrix}
+\]
+(so that $p_{31} = 1/4$, etc.). The matrix $(p_{ij})$ is then called a \emph{stochastic matrix}. This matrix representation is convenient sometimes.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.2}
+Again, let $\mathcal{S} = \{1, 2, 3\}$. This time define the transition probabilities $p_{ij}$ in matrix form, as
+\[
+(p_{ij}) = \begin{pmatrix}
+1/4 & 1/4 & 1/2 \\
+1/3 & 1/3 & 1/3 \\
+0.01 & 0.01 & 0.98
+\end{pmatrix}.
+\]
+This also defines a Markov chain on $\mathcal{S}$. For example, from the state 3, there is probability 0.01 of jumping to state 1, probability 0.01 of jumping to state 2, and probability 0.98 of staying in state 3.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.3}
+Let $\mathcal{S} = \{\text{bedroom}, \text{kitchen}, \text{den}\}$. Define the transition probabilities $p_{ij}$ in matrix form by
+\[
+(p_{ij}) = \begin{pmatrix}
+1/4 & 1/4 & 1/2 \\
+0 & 0 & 1 \\
+0.01 & 0.01 & 0.98
+\end{pmatrix}.
+\]
+This defines a Markov chain on $\mathcal{S}$. For example, from the bedroom, the chain has probability $1/4$ of staying in the bedroom, probability $1/4$ of jumping to the kitchen, and probability $1/2$ of jumping to the den.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.4}
+This time let $\mathcal{S} = \{1, 2, 3, 4\}$, and define the transition probabilities $p_{ij}$ in matrix form, as
+\[
+(p_{ij}) = \begin{pmatrix}
+0.2 & 0.4 & 0 & 0.4 \\
+0.4 & 0.2 & 0.4 & 0 \\
+0 & 0.4 & 0.2 & 0.4 \\
+0.4 & 0 & 0.4 & 0.2
+\end{pmatrix}.
+\]
+This defines a Markov chain on $\mathcal{S}$. For example, from the state 4, it has probability $0.4$ of jumping to the state 1, but probability $0$ of jumping to the state 2.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.5}
+This time, let $\mathcal{S} = \{1, 2, 3, 4, 5, 6, 7\}$, and define the transition probabilities $p_{ij}$ in matrix form, as
+\[
+(p_{ij}) = \begin{pmatrix}
+1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+1/2 & 0 & 1/2 & 0 & 0 & 0 & 0 \\
+0 & 1/5 & 4/5 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1/3 & 1/3 & 1/3 & 0 & 0 \\
+1/10 & 0 & 0 & 0 & 7/10 & 0 & 1/5 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0
+\end{pmatrix}.
+\]
+This defines a (complicated!) Markov chain on $\mathcal{S}$.
+\end{example}
+
+\begin{example}[Random Walk on the Circle]
+\label{ex:11.2.6}
+Let $\mathcal{S} = \{0, 1, 2, \ldots, d-1\}$ and define the transition probabilities by saying that $p_{ii} = 1/3$ for all $i \in \mathcal{S}$, and also $p_{ij} = 1/3$ whenever $i$ and $j$ are ``next to'' each other around the circle. That is, $p_{ij} = 1/3$ whenever $j = i$, or $j = i + 1$, or $j = i - 1$. Also, $p_{0,d-1} = p_{d-1,0} = 1/3$. Otherwise, $p_{ij} = 0$.
+
+If we think of the $d$ elements of $\mathcal{S}$ as arranged in a circle, then our object, at each step, either stays where it is, or moves one step clockwise, or moves one step counterclockwise --- each with probability $1/3$. (Note in particular that it can go around the ``corner'' by jumping from $d - 1$ to 0, or from 0 to $d - 1$, with probability $1/3$.)
+\end{example}
+
+\begin{example}[Ehrenfest's Urn]
+\label{ex:11.2.7}
+Consider two urns, urn \#1 and urn \#2, where $d$ balls are divided between the two urns. Suppose at each step, we choose one ball uniformly at random from among the $d$ balls and switch it to the opposite urn. We let $X_n$ be the number of balls in urn \#1 at time $n$. Thus, there are $d - X_n$ balls in urn \#2 at time $n$.
+
+Here, the state space is $\mathcal{S} = \{0, 1, 2, \ldots, d\}$ because these are all the possible numbers of balls in urn \#1 at any time $n$.
+
+Also, if there are $i$ balls in urn \#1 at some time, then there is probability $i/n$ that we next choose one of those $i$ balls, in which case the number of balls in urn \#1 goes down to $i - 1$. Hence,
+\[
+p_{i,i-1} = i/d.
+\]
+Similarly,
+\[
+p_{i,i+1} = (d - i)/d
+\]
+because there is probability $(d - i)/d$ that we will instead choose one of the $d - i$ balls in urn \#2. Thus, this Markov chain moves randomly among the possible numbers $0, 1, \ldots, d$ of balls in urn \#1 at each time.
+
+One might expect that, if $d$ is large and the Markov chain is run for a long time, there would most likely be approximately $d/2$ balls in urn \#1. (We shall consider such questions in Section~\ref{ssec:11.2.4}.)
+\end{example}
+
+The above examples should convince you that Markov chains on finite state spaces come in all shapes and sizes. Markov chains on infinite state spaces are also important. Indeed, we have already seen one such class of Markov chains.
+
+\begin{example}[Simple Random Walk]
+\label{ex:11.2.8}
+Let $\mathcal{S} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$ be the set of all integers. Then $\mathcal{S}$ is infinite, so we cannot write the transition probabilities $p_{ij}$ in matrix form.
+
+Fix $a \in \mathcal{S}$, and let $X_0 = a$. Fix a real number $p$ with $0 < p < 1$, and let $p_{i,i+1} = p$ and $p_{i,i-1} = 1 - p$ for each $i \in \mathbb{Z}$, with $p_{ij} = 0$ if $|j - i| \neq 1$. Thus, this Markov chain begins at the point $a$ (with probability 1) and at each step either increases by 1 (with probability $p$) or decreases by 1 (with probability $1 - p$). It is easily seen that this Markov chain corresponds precisely to the random walk (i.e., repeated gambling) model of Section~\ref{ssec:11.1.2}.
+\end{example}
+
+Finally, we note that in a group, you can create your own Markov chain, as follows (try it --- it's fun!).
+
+\begin{example}
+\label{ex:11.2.9}
+Form a group of between 5 and 50 people. Each group member should secretly pick out two other people from the group, an ``A person'' and ``B person.'' Also, each group member should have a coin.
+
+Take any object, such as a ball, or a pen, or a stuffed frog. Give the object to one group member to start. This person should then immediately flip the coin. If the coin comes up heads, the group member gives (or throws!) the object to his or her A person. If it comes up tails, the object goes to his or her B person. The person receiving the object should then immediately flip the coin and continue the process. (Saying your name when you receive the object is a great way for everyone to meet each other!)
+
+Continue this process for a large number of turns. What patterns do you observe? Does everyone eventually receive the object? With what frequency? How long does it take the object to return to where it started? Make as many interesting observations as you can; some of them will be related to the topics that follow.
+\end{example}
+
+%------------------------------------------------------------------------------
+\subsection{Computing with Markov Chains}
+\label{ssec:11.2.2}
+%------------------------------------------------------------------------------
+
+Suppose a Markov chain $\{X_n\}$ has transition probabilities $p_{ij}$ and initial distribution $\{\nu_i\}$. Then $\prb(X_0 = i) = \nu_i$ for all states $i$. What about $\prb(X_1 = i)$? We have the following result.
+
+\begin{theorem}
+\label{thm:11.2.1}
+Consider a Markov chain $\{X_n\}$ with state space $\mathcal{S}$, transition probabilities $p_{ij}$, and initial distribution $\{\nu_i\}$. Then for any $i \in \mathcal{S}$,
+\[
+\prb(X_1 = i) = \sum_{k \in \mathcal{S}} \nu_k p_{ki}.
+\]
+\end{theorem}
+
+\begin{proof}
+From the law of total probability,
+\[
+\prb(X_1 = i) = \sum_{k \in \mathcal{S}} \prb(X_0 = k, X_1 = i).
+\]
+But $\prb(X_0 = k, X_1 = i) = \prb(X_0 = k) \prb(X_1 = i \mid X_0 = k) = \nu_k p_{ki}$ and the result follows.
+\end{proof}
+
+Consider an example of this.
+
+\begin{example}
+\label{ex:11.2.10}
+Again, let $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+1/4 & 1/4 & 1/2 \\
+1/3 & 1/3 & 1/3 \\
+0.01 & 0.01 & 0.98
+\end{pmatrix}.
+\]
+Suppose that $\prb(X_0 = 1) = 1/7$, $\prb(X_0 = 2) = 2/7$, and $\prb(X_0 = 3) = 4/7$. Then
+\[
+\prb(X_1 = 3) = \sum_{k \in \mathcal{S}} \nu_k p_{k3} = (1/7)(1/2) + (2/7)(1/3) + (4/7)(0.98) \approx 0.73.
+\]
+Thus, about 73\% of the time, this chain will be in state 3 after one step.
+\end{example}
+
+To proceed, let us write
+\[
+P_i(A) = \prb(A \mid X_0 = i)
+\]
+for the probability of the event $A$ assuming that the chain starts in the state $i$, that is, assuming that $\nu_i = 1$ and $\nu_j = 0$ for $j \neq i$. We then see that $P_i(X_n = j)$ is the probability that, if the chain starts in state $i$ and is run for $n$ steps, it will end up in state $j$. Can we compute this?
+
+For $n = 0$, we must have $X_0 = i$. Hence, $P_i(X_0 = j) = 1$ if $i = j$, while $P_i(X_0 = j) = 0$ if $i \neq j$.
+
+For $n = 1$, we see that $P_i(X_1 = j) = p_{ij}$. That is, the probability that we will be at the state $j$ after one step is given by the transition probability $p_{ij}$.
+
+What about for $n = 2$? If we start at $i$ and end up at $j$ after 2 steps, then we have to be at some state after 1 step. Let $k$ be this state. Then we see the following.
+
+\begin{theorem}
+\label{thm:11.2.2}
+We have $P_i(X_1 = k, X_2 = j) = p_{ik} p_{kj}$.
+\end{theorem}
+
+\begin{proof}
+If we start at $i$, then the probability of jumping first to $k$ is equal to $p_{ik}$. Given that we have jumped first to $k$, the probability of then jumping to $j$ is given by $p_{kj}$. Hence,
+\begin{align*}
+P_i(X_1 = k, X_2 = j) &= \prb(X_1 = k, X_2 = j \mid X_0 = i) \\
+&= \prb(X_1 = k \mid X_0 = i) \prb(X_2 = k \mid X_1 = j, X_0 = i) \\
+&= p_{ik} p_{kj}. \qedhere
+\end{align*}
+\end{proof}
+
+Using this, we obtain the following.
+
+\begin{theorem}
+\label{thm:11.2.3}
+We have $\displaystyle P_i(X_2 = j) = \sum_{k \in \mathcal{S}} p_{ik} p_{kj}$.
+\end{theorem}
+
+\begin{proof}
+By the law of total probability,
+\[
+P_i(X_2 = j) = \sum_{k \in \mathcal{S}} P_i(X_1 = k, X_2 = j),
+\]
+so the result follows from Theorem~\ref{thm:11.2.2}.
+\end{proof}
+
+\begin{example}
+\label{ex:11.2.11}
+Consider again the chain of Example~\ref{ex:11.2.1}, with $\mathcal{S} = \{1, 2, 3\}$ and
+\[
+(p_{ij}) = \begin{pmatrix}
+0 & 1/2 & 1/2 \\
+1/3 & 1/3 & 1/3 \\
+1/4 & 1/4 & 1/2
+\end{pmatrix}.
+\]
+Then
+\begin{align*}
+P_1(X_2 = 3) &= \sum_{k \in \mathcal{S}} p_{1k} p_{k3} = p_{11} p_{13} + p_{12} p_{23} + p_{13} p_{33} \\
+&= (0)(1/2) + (1/2)(1/3) + (1/2)(1/2) = 1/6 + 1/4 = 5/12.
+\end{align*}
+\end{example}
+
+By induction (see Problem~\ref{exer:11.2.18}), we obtain the following.
+
+\begin{theorem}
+\label{thm:11.2.4}
+We have
+\[
+P_i(X_n = j) = \sum_{i_1, i_2, \ldots, i_{n-1} \in \mathcal{S}} p_{ii_1} p_{i_1 i_2} p_{i_2 i_3} \cdots p_{i_{n-2} i_{n-1}} p_{i_{n-1} j}.
+\]
+\end{theorem}
+
+\begin{proof}
+See Problem~\ref{exer:11.2.18}.
+\end{proof}
+
+Theorem~\ref{thm:11.2.4} thus gives a complete formula for the probability, starting at a state $i$ at time 0, that the chain will be at some other state $j$ at time $n$. We see from Theorem~\ref{thm:11.2.4} that, once we know the transition probabilities $p_{ij}$ for all $i, j \in \mathcal{S}$, then we can compute the values of $P_i(X_n = j)$ for all $i, j \in \mathcal{S}$ and all positive integers $n$. (The computations get pretty messy, though!) The quantities $P_i(X_n = j)$ are sometimes called the \emph{higher-order transition probabilities}.
+
+Consider an application of this.
+
+\begin{example}
+\label{ex:11.2.12}
+Consider once again the chain with $\mathcal{S} = \{1, 2, 3\}$ and
+\[
+(p_{ij}) = \begin{pmatrix}
+0 & 1/2 & 1/2 \\
+1/3 & 1/3 & 1/3 \\
+1/4 & 1/4 & 1/2
+\end{pmatrix}.
+\]
+Then
+\begin{align*}
+P_1(X_3 = 3) &= \sum_{k, \ell \in \mathcal{S}} p_{1k} p_{k\ell} p_{\ell 3} \\
+&= p_{11} p_{11} p_{13} + p_{11} p_{12} p_{23} + p_{11} p_{13} p_{33} + p_{12} p_{21} p_{13} + p_{12} p_{22} p_{23} + p_{12} p_{23} p_{33} \\
+&\quad + p_{13} p_{31} p_{13} + p_{13} p_{32} p_{23} + p_{13} p_{33} p_{33} \\
+&= (0)(0)(1/2) + (0)(1/2)(1/3) + (0)(1/2)(1/2) + (1/2)(1/3)(1/2) \\
+&\quad + (1/2)(1/3)(1/3) + (1/2)(1/3)(1/2) + (1/2)(1/4)(1/2) + (1/2)(1/4)(1/3) + (1/2)(1/2)(1/2) \\
+&= 31/72.
+\end{align*}
+\end{example}
+
+Finally, we note that if we write $A$ for the matrix $(p_{ij})$, write $\mu^{(0)}$ for the row vector $(\nu_i) = (\prb(X_0 = i))$, and write $\mu^{(1)}$ for the row vector $(\prb(X_1 = i))$, then Theorem~\ref{thm:11.2.1} can be written succinctly using matrix multiplication as $\mu^{(1)} = \mu^{(0)} A$. That is, the (row) vector of probabilities for the chain after one step $\mu^{(1)}$ is equal to the (row) vector of probabilities for the chain after zero steps $\mu^{(0)}$, multiplied by the matrix $A$ of transition probabilities. In fact, if we write $\mu^{(n)}$ for the row vector $(\prb(X_n = i))$, then proceeding by induction, we see that $\mu^{(n+1)} = \mu^{(n)} A$ for each $n$. Therefore, $\mu^{(n)} = \mu^{(0)} A^n$, where $A^n$ is the $n$th power of the matrix $A$. In this context, Theorem~\ref{thm:11.2.4} has a particularly nice interpretation. It says that $P_i(X_n = j)$ is equal to the $(i,j)$ entry of the matrix $A^n$, i.e., the $n$th power of the matrix $A$.
+
+%------------------------------------------------------------------------------
+\subsection{Stationary Distributions}
+\label{ssec:11.2.3}
+%------------------------------------------------------------------------------
+
+Suppose we have Markov chain transition probabilities $p_{ij}$ on a state space $\mathcal{S}$. Let $\{\pi_i : i \in \mathcal{S}\}$ be a probability distribution on $\mathcal{S}$, so that $\pi_i \geqslant 0$ for all $i$, and $\sum_{i \in \mathcal{S}} \pi_i = 1$. We have the following definition.
+
+\begin{definition}
+\label{def:11.2.1}
+The distribution $\{\pi_i : i \in \mathcal{S}\}$ is \emph{stationary} for a Markov chain with transition probabilities $p_{ij}$ on a state space $\mathcal{S}$, if $\sum_{i \in \mathcal{S}} \pi_i p_{ij} = \pi_j$ for all $j \in \mathcal{S}$.
+\end{definition}
+
+The reason for the terminology ``stationary'' is that, if the chain begins with those probabilities, then it will always have those same probabilities, as the following theorem and corollary show.
+
+\begin{theorem}
+\label{thm:11.2.5}
+Suppose $\{\pi_i : i \in \mathcal{S}\}$ is a stationary distribution for a Markov chain with transition probabilities $p_{ij}$ on a state space $\mathcal{S}$. Suppose that for some integer $n$, we have $\prb(X_n = i) = \pi_i$ for all $i \in \mathcal{S}$. Then we also have $\prb(X_{n+1} = i) = \pi_i$ for all $i \in \mathcal{S}$.
+\end{theorem}
+
+\begin{proof}
+If $\{\pi_i\}$ is stationary, then we compute that
+\begin{align*}
+\prb(X_{n+1} = j) &= \sum_{i \in \mathcal{S}} \prb(X_n = i, X_{n+1} = j) \\
+&= \sum_{i \in \mathcal{S}} \prb(X_n = i) \prb(X_{n+1} = j \mid X_n = i) \\
+&= \sum_{i \in \mathcal{S}} \pi_i p_{ij} = \pi_j. \qedhere
+\end{align*}
+\end{proof}
+
+By induction, we obtain the following corollary.
+
+\begin{corollary}
+\label{cor:11.2.1}
+Suppose $\{\pi_i : i \in \mathcal{S}\}$ is a stationary distribution for a Markov chain with transition probabilities $p_{ij}$ on a state space $\mathcal{S}$. Suppose that for some integer $n$, we have $\prb(X_n = i) = \pi_i$ for all $i \in \mathcal{S}$. Then we also have $\prb(X_m = i) = \pi_i$ for all $i \in \mathcal{S}$ and all integers $m \geqslant n$.
+\end{corollary}
+
+The above theorem and corollary say that, once a Markov chain is in its stationary distribution, it will remain in its stationary distribution forevermore.
+
+\begin{example}
+\label{ex:11.2.13}
+Consider the Markov chain with $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+1/2 & 1/4 & 1/4 \\
+1/2 & 1/4 & 1/4 \\
+1/2 & 1/4 & 1/4
+\end{pmatrix}.
+\]
+No matter where this Markov chain is, it always jumps with the same probabilities, i.e., to state 1 with probability $1/2$, to state 2 with probability $1/4$, or to state 3 with probability $1/4$.
+
+Indeed, if we set $\pi_1 = 1/2$, $\pi_2 = 1/4$, and $\pi_3 = 1/4$, then we see that $p_{ij} = \pi_j$ for all $i, j \in \mathcal{S}$. Hence,
+\[
+\sum_{i \in \mathcal{S}} \pi_i p_{ij} = \sum_{i \in \mathcal{S}} \pi_i \pi_j = \pi_j \sum_{i \in \mathcal{S}} \pi_i = \pi_j \cdot 1 = \pi_j.
+\]
+Thus, $\{\pi_i\}$ is a stationary distribution. Hence, once in the distribution $\{\pi_i\}$, the chain will stay in the distribution $\{\pi_i\}$ forever.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.14}
+Consider a Markov chain with $\mathcal{S} = \{0, 1\}$ and
+\[
+(p_{ij}) = \begin{pmatrix}
+0.1 & 0.9 \\
+0.6 & 0.4
+\end{pmatrix}.
+\]
+If this chain had a stationary distribution $\{\pi_i\}$, then we must have that
+\begin{align*}
+\pi_0 \cdot 0.1 + \pi_1 \cdot 0.6 &= \pi_0, \\
+\pi_0 \cdot 0.9 + \pi_1 \cdot 0.4 &= \pi_1.
+\end{align*}
+The first equation gives $\pi_1 \cdot 0.6 = \pi_0 \cdot 0.9$, so $\pi_1 = (3/2) \pi_0$. This is also consistent with the second equation. In addition, we require that $\pi_0 + \pi_1 = 1$, i.e., that $\pi_0 + (3/2) \pi_0 = 1$, so that $\pi_0 = 2/5$. Then $\pi_1 = (3/2)(2/5) = 3/5$.
+
+We then check that the settings $\pi_0 = 2/5$ and $\pi_1 = 3/5$ satisfy the above equations. Hence, $\{\pi_i\}$ is indeed a stationary distribution for this Markov chain.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.15}
+Consider next the Markov chain with $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+0 & 1/2 & 1/2 \\
+1/2 & 0 & 1/2 \\
+1/2 & 1/2 & 0
+\end{pmatrix}.
+\]
+We see that this Markov chain has the property that, in addition to having $\sum_{j \in \mathcal{S}} p_{ij} = 1$, for all $i$, it also has $\sum_{i \in \mathcal{S}} p_{ij} = 1$, for all $j$. That is, not only do the rows of the matrix $(p_{ij})$ sum to 1, but so do the columns. (Such a matrix is sometimes called \emph{doubly stochastic}.)
+
+Let $\pi_1 = \pi_2 = \pi_3 = 1/3$, so that $\{\pi_i\}$ is the uniform distribution on $\mathcal{S}$. Then we compute that
+\[
+\sum_{i \in \mathcal{S}} \pi_i p_{ij} = \sum_{i \in \mathcal{S}} (1/3) p_{ij} = (1/3) \sum_{i \in \mathcal{S}} p_{ij} = (1/3)(1) = \pi_j.
+\]
+Because this is true for all $j$, we see that $\{\pi_i\}$ is a stationary distribution for this Markov chain.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.16}
+Consider the Markov chain with $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+1/2 & 1/4 & 1/4 \\
+1/3 & 1/3 & 1/3 \\
+0 & 1/4 & 3/4
+\end{pmatrix}.
+\]
+Does this Markov chain have a stationary distribution?
+
+Well, if it had a stationary distribution $\{\pi_i\}$, then the following equations would have to be satisfied:
+\begin{align*}
+\pi_1 &= \pi_1 \cdot (1/2) + \pi_2 \cdot (1/3) + \pi_3 \cdot 0, \\
+\pi_2 &= \pi_1 \cdot (1/4) + \pi_2 \cdot (1/3) + \pi_3 \cdot (1/4), \\
+\pi_3 &= \pi_1 \cdot (1/4) + \pi_2 \cdot (1/3) + \pi_3 \cdot (3/4).
+\end{align*}
+The first equation gives $\pi_1 = (2/3) \pi_2$. The second equation then gives
+\[
+\pi_2 = (1/4)(2/3)\pi_2 + (1/3)\pi_2 + (1/4)\pi_3 = (1/6)\pi_2 + (1/3)\pi_2 + (1/4)\pi_3 = (1/2)\pi_2 + (1/4)\pi_3,
+\]
+so that $\pi_3 = 2\pi_2$.
+
+But we also require $\pi_1 + \pi_2 + \pi_3 = 1$, i.e., $(2/3)\pi_2 + \pi_2 + 2\pi_2 = 1$, so that $\pi_2 = 3/11$. Then $\pi_1 = 2/11$, and $\pi_3 = 6/11$.
+
+It is then easily checked that the distribution given by $\pi_1 = 2/11$, $\pi_2 = 3/11$, and $\pi_3 = 6/11$ satisfies the preceding equations, so it is indeed a stationary distribution for this Markov chain.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.17}
+Consider again random walk on the circle, as in Example~\ref{ex:11.2.6}. We observe that for any state $j$, there are precisely three states $i$ (namely, the state $i = j$, the state one clockwise from $j$, and the state one counterclockwise from $j$) with $p_{ij} = 1/3$. Hence, $\sum_{i \in \mathcal{S}} p_{ij} = 1$. That is, the transition matrix $(p_{ij})$ is again doubly stochastic.
+
+It then follows, just as in Example~\ref{ex:11.2.15}, that the uniform distribution, given by $\pi_i = 1/d$ for $i = 0, 1, \ldots, d-1$, is a stationary distribution for this Markov chain.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.18}
+For Ehrenfest's urn (see Example~\ref{ex:11.2.7}), it is not obvious what might be a stationary distribution. However, a possible solution emerges by thinking about each ball individually. Indeed, any given ball usually stays still but occasionally gets flipped from one urn to the other. So it seems reasonable that in stationarity, it should be equally likely to be in either urn, i.e., have probability $1/2$ of being in urn \#1.
+
+If this is so, then the total number of balls in urn \#1 would have the distribution $\text{Binomial}(n, 1/2)$, since there would be $n$ balls, each having probability $1/2$ of being in urn \#1.
+
+To test this, we set $\pi_i = \binom{d}{i} 2^{-d}$ for $i = 0, 1, \ldots, d$. We then compute that if $1 \leqslant j \leqslant d - 1$, then
+\begin{align*}
+\sum_{i \in \mathcal{S}} \pi_i p_{ij} &= \pi_{j-1} p_{j-1,j} + \pi_{j+1} p_{j+1,j} \\
+&= \binom{d}{j-1} 2^{-d} \cdot \frac{d - (j-1)}{d} + \binom{d}{j+1} 2^{-d} \cdot \frac{j+1}{d} \\
+&= \frac{1}{d \cdot 2^d} \left[ \binom{d}{j-1} (d - j + 1) + \binom{d}{j+1} (j+1) \right] \\
+&= \frac{1}{d \cdot 2^d} \left[ \binom{d-1}{j-1} d + \binom{d-1}{j} d \right] \\
+&= \frac{1}{2^d} \left[ \binom{d-1}{j-1} + \binom{d-1}{j} \right].
+\end{align*}
+Next, we use the identity known as Pascal's triangle, which says that
+\[
+\binom{d-1}{j-1} + \binom{d-1}{j} = \binom{d}{j}.
+\]
+Hence, we conclude that
+\[
+\sum_{i \in \mathcal{S}} \pi_i p_{ij} = \binom{d}{j} 2^{-d} = \pi_j.
+\]
+With minor modifications (see Problem~\ref{exer:11.2.19}), the preceding argument works for $j = 0$ and $j = d$ as well. We therefore conclude that $\sum_{i \in \mathcal{S}} \pi_i p_{ij} = \pi_j$ for all $j \in \mathcal{S}$. Hence, $\{\pi_i\}$ is a stationary distribution.
+\end{example}
+
+One easy way to check for stationarity is the following.
+
+\begin{definition}
+\label{def:11.2.2}
+A Markov chain is said to be \emph{reversible} with respect to a distribution $\{\pi_i\}$ if, for all $i, j \in \mathcal{S}$, we have $\pi_i p_{ij} = \pi_j p_{ji}$.
+\end{definition}
+
+\begin{theorem}
+\label{thm:11.2.6}
+If a Markov chain is reversible with respect to $\{\pi_i\}$, then $\{\pi_i\}$ is a stationary distribution for the chain.
+\end{theorem}
+
+\begin{proof}
+We compute, using reversibility, that for any $j \in \mathcal{S}$,
+\[
+\sum_{i \in \mathcal{S}} \pi_i p_{ij} = \sum_{i \in \mathcal{S}} \pi_j p_{ji} = \pi_j \sum_{i \in \mathcal{S}} p_{ji} = \pi_j \cdot 1 = \pi_j.
+\]
+Hence, $\{\pi_i\}$ is a stationarity distribution.
+\end{proof}
+
+\begin{example}
+\label{ex:11.2.19}
+Suppose $\mathcal{S} = \{1, 2, 3, 4, 5\}$, and the transition probabilities are given by
+\[
+(p_{ij}) = \begin{pmatrix}
+1/3 & 2/3 & 0 & 0 & 0 \\
+1/3 & 0 & 2/3 & 0 & 0 \\
+0 & 1/3 & 0 & 2/3 & 0 \\
+0 & 0 & 1/3 & 0 & 2/3 \\
+0 & 0 & 0 & 1/3 & 2/3
+\end{pmatrix}.
+\]
+It is not immediately clear what stationary distribution this chain may possess. Furthermore, to compute directly as in Example~\ref{ex:11.2.16} would be quite messy.
+
+On the other hand, we observe that for $1 \leqslant i \leqslant 4$, we always have $p_{i,i+1} = 2 p_{i+1,i}$. Hence, if we set $\pi_i = C \cdot 2^i$ for some $C > 0$, then we will have
+\[
+\pi_i p_{i,i+1} = C \cdot 2^i \cdot p_{i,i+1} = C \cdot 2^{i+1} \cdot p_{i+1,i},
+\]
+while
+\[
+\pi_{i+1} p_{i+1,i} = C \cdot 2^{i+1} \cdot p_{i+1,i}.
+\]
+Hence, $\pi_i p_{i,i+1} = \pi_{i+1} p_{i+1,i}$ for each $i$.
+
+Furthermore, $p_{ij} = 0$ if $i$ and $j$ differ by at least 2. It follows that $\pi_i p_{ij} = \pi_j p_{ji}$ for each $i, j \in \mathcal{S}$. Hence, the chain is reversible with respect to $\{\pi_i\}$ and so $\{\pi_i\}$ is a stationary distribution for the chain.
+
+Finally, we solve for $C$. We need $\sum_{i \in \mathcal{S}} \pi_i = 1$. Hence, we must have $C = 1/\sum_{i \in \mathcal{S}} 2^i = 1/\sum_{i=1}^{5} 2^i = 1/62$. Thus, $\pi_i = 2^i/62$ for $i \in \mathcal{S}$.
+\end{example}
+
+%------------------------------------------------------------------------------
+\subsection{Markov Chain Limit Theorem}
+\label{ssec:11.2.4}
+%------------------------------------------------------------------------------
+
+Suppose now that $\{X_n\}$ is a Markov chain, which has a stationary distribution $\{\pi_i\}$. We have already seen that, if $\prb(X_n = i) = \pi_i$ for all $i$ for some $n$, then also $\prb(X_m = i) = \pi_i$ for all $i$ for all $m \geqslant n$.
+
+Suppose now that it is not the case that $\prb(X_n = i) = \pi_i$ for all $i$. One might still expect that, if the chain is run for a long time (i.e., $n \to \infty$), then the probability of being at a particular state $i \in \mathcal{S}$ might converge to $\pi_i$, regardless of the initial state chosen. That is, one might expect that
+\begin{equation}
+\label{eq:11.2.1}
+\lim_{n \to \infty} \prb(X_n = i) = \pi_i,
+\end{equation}
+for each $i \in \mathcal{S}$ regardless of the initial distribution $\{\nu_i\}$.
+
+This is not true in complete generality, as the following two examples show. However, we shall see in Theorem~\ref{thm:11.2.8} that this is indeed true for most Markov chains.
+
+\begin{example}
+\label{ex:11.2.20}
+Suppose that $\mathcal{S} = \{1, 2\}$ and that the transition probabilities are given by
+\[
+(p_{ij}) = \begin{pmatrix}
+1 & 0 \\
+0 & 1
+\end{pmatrix}.
+\]
+That is, this Markov chain never moves at all! Suppose also that $\nu_1 = 1$, i.e., that we always have $X_0 = 1$.
+
+In this case, any distribution is stationary for this chain. In particular, we can take $\pi_1 = \pi_2 = 1/2$ as a stationary distribution. On the other hand, we clearly have $P_1(X_n = 1) = 1$ for all $n$. Because $\pi_1 = 1/2$, and $1 \neq 1/2$, we do not have $\lim_{n \to \infty} \prb(X_n = i) = \pi_i$ in this case.
+
+We shall see later that this Markov chain is not ``irreducible,'' which is the obstacle to convergence.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.21}
+Suppose again that $\mathcal{S} = \{1, 2\}$, but that this time the transition probabilities are given by
+\[
+(p_{ij}) = \begin{pmatrix}
+0 & 1 \\
+1 & 0
+\end{pmatrix}.
+\]
+That is, this Markov chain always moves from 1 to 2, and from 2 to 1. Suppose again that $\nu_1 = 1$, i.e., that we always have $X_0 = 1$.
+
+We may again take $\pi_1 = \pi_2 = 1/2$ as a stationary distribution (in fact, this time the stationary distribution is unique). On the other hand, this time we clearly have $P_1(X_n = 1) = 1$ for $n$ even, and $P_1(X_n = 1) = 0$ for $n$ odd. Hence, again we do not have $\lim_{n \to \infty} P_1(X_n = 1) = \pi_1 = 1/2$.
+
+We shall see that here the obstacle to convergence is that the Markov chain is ``periodic,'' with period 2.
+\end{example}
+
+In light of these examples, we make some definitions.
+
+\begin{definition}
+\label{def:11.2.3}
+A Markov chain is \emph{irreducible} if it is possible for the chain to move from any state to any other state. Equivalently, the Markov chain is irreducible if for any $i, j \in \mathcal{S}$, there is a positive integer $n$ with $P_i(X_n = j) > 0$.
+\end{definition}
+
+Thus, the Markov chain of Example~\ref{ex:11.2.20} is not irreducible because it is not possible to get from state 1 to state 2. Indeed, in that case, $P_1(X_n = 2) = 0$ for all $n$.
+
+\begin{example}
+\label{ex:11.2.22}
+Consider the Markov chain with $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+1/2 & 1/2 & 0 \\
+1/2 & 1/4 & 1/4 \\
+1/2 & 1/4 & 1/4
+\end{pmatrix}.
+\]
+For this chain, it is not possible to get from state 1 to state 3 in one step. On the other hand, it is possible to get from state 1 to state 2, and then from state 2 to state 3. Hence, this chain is still irreducible.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.23}
+Consider the Markov chain with $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+1/2 & 1/2 & 0 \\
+3/4 & 1/4 & 0 \\
+1/2 & 1/4 & 1/4
+\end{pmatrix}.
+\]
+For this chain, it is not possible to get from state 1 to state 3 in one step. Furthermore, it is not possible to get from state 2 to state 3, either. In fact, there is no way to ever get from state 1 to state 3, in any number of steps. Hence, this chain is not irreducible.
+\end{example}
+
+Clearly, if a Markov chain is not irreducible, then the Markov chain convergence \eqref{eq:11.2.1} will not always hold, because it will be impossible to ever get to certain states of the chain.
+
+We also need the following definition.
+
+\begin{definition}
+\label{def:11.2.4}
+Given Markov chain transitions $p_{ij}$ on a state space $\mathcal{S}$, and a state $i \in \mathcal{S}$, the \emph{period} of $i$ is the greatest common divisor (g.c.d.)\ of the set $\{n \geqslant 1 : p^{(n)}_{ii} > 0\}$ where $p^{(n)}_{ii} = \prb(X_n = i \mid X_0 = i)$.
+\end{definition}
+
+That is, the period of $i$ is the g.c.d.\ of the times at which it is possible to travel from $i$ to $i$. For example, the period of $i$ is 2 if it is only possible to travel from $i$ to $i$ in an even number of steps. (Such was the case for Example~\ref{ex:11.2.21}.) On the other hand, if $p_{ii} > 0$, then clearly the period of $i$ is 1.
+
+Clearly, if the period of some state is greater than 1, then again \eqref{eq:11.2.1} will not always hold, because the chain will be able to reach certain states at certain times only. This prompts the following definition.
+
+\begin{definition}
+\label{def:11.2.5}
+A Markov chain is \emph{aperiodic} if the period of each state is equal to 1.
+\end{definition}
+
+\begin{example}
+\label{ex:11.2.24}
+Consider the Markov chain with $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+1 & 0 & 0
+\end{pmatrix}.
+\]
+For this chain, from state 1 it is possible only to get to state 2. And from state 2 it is possible only to get to state 3. Then from state 3 it is possible only to get to state 1. Hence, it is possible only to return to state 1 after an integer multiple of 3 steps. Hence, state 1 (and, indeed, all three states) has period equal to 3, and the chain is not aperiodic.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.25}
+Consider the Markov chain with $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+1/2 & 0 & 1/2
+\end{pmatrix}.
+\]
+For this chain, from state 1 it is possible only to get to state 2. And from state 2 it is possible only to get to state 3. However, from state 3 it is possible to get to either state 1 or state 3. Hence, it is possible to return to state 1 after either 3 or 4 steps. Because the g.c.d.\ of 3 and 4 is 1, we conclude that the period of state 1 (and, indeed, of all three states) is equal to 1, and the chain is indeed aperiodic.
+\end{example}
+
+We note the following simple fact.
+
+\begin{theorem}
+\label{thm:11.2.7}
+If a Markov chain has $p_{ij} > 0$ for all $i, j \in \mathcal{S}$, then the chain is irreducible and aperiodic.
+\end{theorem}
+
+\begin{proof}
+If $p_{ij} > 0$ for all $i, j \in \mathcal{S}$, then $P_i(X_1 = j) > 0$ for all $i, j \in \mathcal{S}$. Hence, the Markov chain must be irreducible.
+
+Also, if $p_{ij} > 0$ for all $i, j \in \mathcal{S}$, then the set $\{n \geqslant 1 : p^{(n)}_{ii} > 0\}$ contains the value $n = 1$ (and, indeed, all positive integers $n$). Hence, its greatest common divisor must be 1. Therefore, each state $i$ has period 1, so the chain is aperiodic.
+\end{proof}
+
+In terms of the preceding definitions, we have the following very important theorem about Markov chain convergence.
+
+\begin{theorem}
+\label{thm:11.2.8}
+Suppose a Markov chain is irreducible and aperiodic and has a stationary distribution $\{\pi_i\}$. Then regardless of the initial distribution $\{\nu_i\}$, we have $\lim_{n \to \infty} \prb(X_n = i) = \pi_i$ for all states $i$.
+\end{theorem}
+
+\begin{proof}
+For a proof of this, see more advanced probability books, e.g., pages 92--93 of \emph{A First Look at Rigorous Probability Theory}, 2nd ed., by J.~S.\ Rosenthal (World Scientific Publishing, Singapore, 2006).
+\end{proof}
+
+Theorem~\ref{thm:11.2.8} shows that stationary distributions are even more important. Not only does a Markov chain remain in a stationary distribution once it is there, but for most chains (irreducible and aperiodic ones), the probabilities converge to the stationary distribution in any case. Hence, the stationary distribution provides fundamental information about the \emph{long-term behavior} of the Markov chain.
+
+\begin{example}
+\label{ex:11.2.26}
+Consider again the Markov chain with $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+1/2 & 1/4 & 1/4 \\
+1/2 & 1/4 & 1/4 \\
+1/2 & 1/4 & 1/4
+\end{pmatrix}.
+\]
+We have already seen that if we set $\pi_1 = 1/2$, $\pi_2 = 1/4$, and $\pi_3 = 1/4$, then $\{\pi_i\}$ is a stationary distribution. Furthermore, we see that $p_{ij} > 0$ for all $i, j \in \mathcal{S}$, so by Theorem~\ref{thm:11.2.7} the Markov chain must be irreducible and aperiodic.
+
+We conclude that $\lim_{n \to \infty} \prb(X_n = i) = \pi_i$ for all states $i$. For example, $\lim_{n \to \infty} \prb(X_n = 1) = 1/2$. (Also, this limit does not depend on the initial distribution, so, for example, $\lim_{n \to \infty} P_1(X_n = 1) = 1/2$ and $\lim_{n \to \infty} P_2(X_n = 1) = 1/2$, as well.)
+
+In fact, for this example we will have $\prb(X_n = i) = \pi_i$ for all $i$ provided $n \geqslant 1$.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.27}
+Consider again the Markov chain of Example~\ref{ex:11.2.14}, with $\mathcal{S} = \{0, 1\}$ and
+\[
+(p_{ij}) = \begin{pmatrix}
+0.1 & 0.9 \\
+0.6 & 0.4
+\end{pmatrix}.
+\]
+We have already seen that this Markov chain has a stationary distribution, given by $\pi_0 = 2/5$ and $\pi_1 = 3/5$.
+
+Furthermore, because $p_{ij} > 0$ for all $i, j \in \mathcal{S}$, this Markov chain is irreducible and aperiodic. Therefore, we conclude that $\lim_{n \to \infty} \prb(X_n = i) = \pi_i$. So, if (say) $n = 100$, then we will have $\prb(X_{100} = 0) \approx 2/5$, and $\prb(X_{100} = 1) \approx 3/5$. Once again, this conclusion does not depend on the initial distribution, so, e.g., $\lim_{n \to \infty} P_0(X_n = i) = \lim_{n \to \infty} P_1(X_n = i) = \pi_i$ as well.
+\end{example}
+
+\begin{example}
+\label{ex:11.2.28}
+Consider again the Markov chain of Example~\ref{ex:11.2.16}, with $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+1/2 & 1/4 & 1/4 \\
+1/3 & 1/3 & 1/3 \\
+0 & 1/4 & 3/4
+\end{pmatrix}.
+\]
+We have already seen that this chain has a stationary distribution $\{\pi_i\}$ given by $\pi_1 = 2/11$, $\pi_2 = 3/11$, and $\pi_3 = 6/11$.
+
+Now, in this case, we do not have $p_{ij} > 0$ for all $i, j \in \mathcal{S}$ because $p_{31} = 0$. On the other hand, $p_{32} > 0$ and $p_{21} > 0$, so by Theorem~\ref{thm:11.2.3}, we have
+\[
+P_3(X_2 = 1) = \sum_{k \in \mathcal{S}} p_{3k} p_{k1} \geqslant p_{32} p_{21} > 0.
+\]
+Hence, the chain is still irreducible.
+
+Similarly, we have $P_3(X_2 = 3) \geqslant p_{32} p_{23} > 0$, and $P_3(X_3 = 3) \geqslant p_{32} p_{21} p_{13} > 0$. Therefore, because the g.c.d.\ of 2 and 3 is 1, we see that the g.c.d.\ of the set of $n$ with $P_3(X_n = 3) > 0$ is also 1. Hence, the chain is still aperiodic.
+
+Because the chain is irreducible and aperiodic, it follows from Theorem~\ref{thm:11.2.8} that $\lim_{n \to \infty} \prb(X_n = i) = \pi_i$, for all states $i$. Hence, $\lim_{n \to \infty} \prb(X_n = 1) = 2/11$, $\lim_{n \to \infty} \prb(X_n = 2) = 3/11$, and $\lim_{n \to \infty} \prb(X_n = 3) = 6/11$. Thus, if (say) $n = 500$, then we expect that $\prb(X_{500} = 1) \approx 2/11$, $\prb(X_{500} = 2) \approx 3/11$, and $\prb(X_{500} = 3) \approx 6/11$.
+\end{example}
+
+\subsection*{Summary of Section~\ref{sec:11.2}}
+
+A Markov chain is a sequence $\{X_n\}$ of random variables, having transition probabilities $p_{ij}$ such that $\prb(X_{n+1} = j \mid X_n = i) = p_{ij}$, and having an initial distribution $\{\nu_i\}$ such that $\prb(X_0 = i) = \nu_i$.
+
+There are many different examples of Markov chains.
+
+All probabilities for all the $X_n$ can be computed in terms of $\{\nu_i\}$ and $p_{ij}$.
+
+A distribution $\{\pi_i\}$ is stationary for the chain if $\sum_{i \in \mathcal{S}} \pi_i p_{ij} = \pi_j$ for all $j \in \mathcal{S}$.
+
+If the Markov chain is irreducible and aperiodic, and $\{\pi_i\}$ is stationary, then $\lim_{n \to \infty} \prb(X_n = i) = \pi_i$ for all $i \in \mathcal{S}$.
+
+%------------------------------------------------------------------------------
+\subsection*{Exercises}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.2.1}
+Consider a Markov chain with $\mathcal{S} = \{1, 2, 3\}$, $\nu_1 = 0.7$, $\nu_2 = 0.1$, $\nu_3 = 0.2$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+1/4 & 1/4 & 1/2 \\
+1/6 & 1/2 & 1/3 \\
+1/8 & 3/8 & 1/2
+\end{pmatrix}.
+\]
+Compute the following quantities.
+\begin{enumerate}[(a)]
+\item $\prb(X_0 = 1)$
+\item $\prb(X_0 = 2)$
+\item $\prb(X_0 = 3)$
+\item $\prb(X_1 = 2 \mid X_0 = 1)$
+\item $\prb(X_3 = 2 \mid X_2 = 1)$
+\item $\prb(X_1 = 2 \mid X_0 = 2)$
+\item $\prb(X_1 = 2)$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(X_0 = 1) = \mu_1 = 0.7$.
+    \item $\prb(X_0 = 2) = \mu_2 = 0.1$.
+    \item $\prb(X_0 = 3) = \mu_3 = 0.2$.
+    \item $\prb(X_1 = 2 \mid X_0 = 1) = p_{12} = 1/4$.
+    \item $\prb(X_3 = 2 \mid X_2 = 1) = p_{12} = 1/4$.
+    \item $\prb(X_1 = 2 \mid X_0 = 2) = p_{22} = 1/2$.
+    \item $\prb(X_1 = 2) = \sum_i \mu_i p_{i2} = (0.7)(1/4) + (0.1)(1/2) + (0.2)(3/8) = 0.3$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.2}
+Consider a Markov chain with $\mathcal{S} = \{\text{high}, \text{low}\}$, $\nu_{\text{high}} = 1/3$, $\nu_{\text{low}} = 2/3$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+1/4 & 3/4 \\
+1/6 & 5/6
+\end{pmatrix}.
+\]
+Compute the following quantities.
+\begin{enumerate}[(a)]
+\item $\prb(X_0 = \text{high})$
+\item $\prb(X_0 = \text{low})$
+\item $\prb(X_1 = \text{high} \mid X_0 = \text{high})$
+\item $\prb(X_3 = \text{high} \mid X_2 = \text{low})$
+\item $\prb(X_1 = \text{high})$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(X_0 = \text{high}) = \mu_{\text{high}} = 1/3$.
+    \item $\prb(X_0 = \text{low}) = \mu_{\text{low}} = 2/3$.
+    \item $\prb(X_1 = \text{high} \mid X_0 = \text{high}) = p_{\text{high},\text{high}} = 1/4$.
+    \item $\prb(X_3 = \text{high} \mid X_2 = \text{high}) = p_{\text{high},\text{high}} = 1/4$.
+    \item $\prb(X_1 = \text{high}) = \sum_i \mu_i p_{i,\text{high}} = (1/3)(1/4) + (2/3)(1/6) = 7/36$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.3}
+Consider a Markov chain with $\mathcal{S} = \{0, 1\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+0.2 & 0.8 \\
+0.3 & 0.7
+\end{pmatrix}.
+\]
+\begin{enumerate}[(a)]
+\item Compute $P_i(X_2 = j)$ for all four combinations of $i, j \in \mathcal{S}$.
+\item Compute $P_0(X_3 = 1)$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb_0(X_2 = 0) = \sum_i p_{0i} p_{i0} = (0.2)(0.2) + (0.8)(0.3) = 0.28$. $\prb_0(X_2 = 1) = \sum_i p_{0i} p_{i1} = (0.2)(0.8) + (0.8)(0.7) = 0.72$. $\prb_1(X_2 = 0) = \sum_i p_{1i} p_{i0} = (0.3)(0.2) + (0.7)(0.3) = 0.27$. $\prb_1(X_2 = 1) = \sum_i p_{1i} p_{i1} = (0.3)(0.8) + (0.7)(0.7) = 0.73$.
+    \item $\prb_0(X_3 = 1) = \sum_{i,j} p_{0i} p_{ij} p_{j1} = (0.2)(0.2)(0.8) + (0.2)(0.8)(0.7) + (0.8)(0.3)(0.8) + (0.8)(0.7)(0.7) = 0.728$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.4}
+Consider again the Markov chain with $\mathcal{S} = \{0, 1\}$ and
+\[
+(p_{ij}) = \begin{pmatrix}
+0.2 & 0.8 \\
+0.3 & 0.7
+\end{pmatrix}.
+\]
+\begin{enumerate}[(a)]
+\item Compute a stationary distribution $\{\pi_i\}$ for this chain.
+\item Compute $\lim_{n \to \infty} P_0(X_n = 0)$.
+\item Compute $\lim_{n \to \infty} P_1(X_n = 0)$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item We need $\pi_0(0.2) + \pi_1(0.3) = \pi_0$ and $\pi_0(0.8) + \pi_1(0.7) = \pi_1$, where $\pi_1 = (8/3)\pi_0$, where $\pi_0 = 3/11$, and $\pi_1 = 8/11$.
+    \item Since $p_{ij} > 0$ for all $i$ and $j$, the chain is irreducible and aperiodic, so $\lim_{n \to \infty} \prb_0(X_n = 0) = \pi_0 = 3/11$.
+    \item Similarly, $\lim_{n \to \infty} \prb_1(X_n = 0) = \pi_0 = 3/11$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.5}
+Consider the Markov chain of Example~\ref{ex:11.2.5}, with $\mathcal{S} = \{1, 2, 3, 4, 5, 6, 7\}$ and
+\[
+(p_{ij}) = \begin{pmatrix}
+1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+1/2 & 0 & 1/2 & 0 & 0 & 0 & 0 \\
+0 & 1/5 & 4/5 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1/3 & 1/3 & 1/3 & 0 & 0 \\
+1/10 & 0 & 0 & 0 & 7/10 & 0 & 1/5 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0
+\end{pmatrix}.
+\]
+Compute the following quantities.
+\begin{enumerate}[(a)]
+\item $P_2(X_1 = 1)$
+\item $P_2(X_1 = 2)$
+\item $P_2(X_1 = 3)$
+\item $P_2(X_2 = 1)$
+\item $P_2(X_2 = 2)$
+\item $P_2(X_2 = 3)$
+\item $P_2(X_3 = 3)$
+\item $P_2(X_3 = 1)$
+\item $P_2(X_1 = 7)$
+\item $P_2(X_2 = 7)$
+\item $P_2(X_3 = 7)$
+\item $\max_n P_2(X_n = 7)$ (i.e., the largest probability of going from state 2 to state 7 in $n$ steps, for any $n$)
+\item Is this Markov chain irreducible?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb_2(X_1 = 1) = p_{21} = 1/2$.
+    \item $\prb_2(X_1 = 2) = p_{22} = 0$.
+    \item $\prb_2(X_1 = 3) = p_{23} = 1/2$.
+    \item $\prb_2(X_2 = 1) = \sum_i p_{2i} p_{i3} = (1/2)(1) + (1/2)(0) = 1/2$.
+    \item $\prb_2(X_2 = 2) = \sum_i p_{2i} p_{i3} = (1/2)(0) + (1/2)(1/5) = 1/10$.
+    \item $\prb_2(X_2 = 3) = \sum_i p_{2i} p_{i3} = (1/2)(0) + (1/2)(4/5) = 2/5$.
+    \item $\prb_2(X_3 = 3) = \sum_{ij} p_{2i} p_{ij} p_{j3} = (1/2)(0) + (1/2)(1/5)(1/2) + (1/2)(4/5)(4/5) = 37/100$.
+    \item $\prb_2(X_3 = 1) = \sum_{ij} p_{2i} p_{ij} p_{j1} = (1/2)(1)(1) + (1/2)(1/5)(1/2) = 11/20$.
+    \item $\prb_2(X_1 = 7) = 0$.
+    \item $\prb_2(X_2 = 7) = 0$.
+    \item $\prb_2(X_3 = 7) = 0$.
+    \item $\max_n \prb_2(X_n = 7) = 0$ since it is impossible to get from 2 to 7 in any number of steps.
+    \item No, since e.g.\ it is impossible to get from 2 to 7 in any number of steps.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.6}
+For each of the following transition probability matrices, determine (with explanation) whether it is irreducible, and whether it is aperiodic.
+\begin{enumerate}[(a)]
+\item $(p_{ij}) = \begin{pmatrix} 0.2 & 0.8 \\ 0.3 & 0.7 \end{pmatrix}$
+
+\item $(p_{ij}) = \begin{pmatrix} 1/4 & 1/4 & 1/2 \\ 1/6 & 1/2 & 1/3 \\ 1/8 & 3/8 & 1/2 \end{pmatrix}$
+
+\item $(p_{ij}) = \begin{pmatrix} 0 & 1 \\ 0.3 & 0.7 \end{pmatrix}$
+
+\item $(p_{ij}) = \begin{pmatrix} 0 & 1 & 0 \\ 1/3 & 1/3 & 1/3 \\ 0 & 1 & 0 \end{pmatrix}$
+
+\item $(p_{ij}) = \begin{pmatrix} 0 & 1 & 0 \\ 0 & 0 & 1 \\ 1 & 0 & 0 \end{pmatrix}$
+
+\item $(p_{ij}) = \begin{pmatrix} 0 & 1 & 0 \\ 0 & 0 & 1 \\ 1/2 & 0 & 1/2 \end{pmatrix}$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Here $p_{ij} > 0$ for all $i$ and $j$, so the chain is irreducible and aperiodic.
+    \item Here $p_{ij} > 0$ for all $i$ and $j$, so the chain is irreducible and aperiodic.
+    \item Here $p_{12} p_{21} > 0$ and $p_{22} > 0$, so the chain is irreducible. Also, $p_{12} p_{21} > 0$ and $p_{12} p_{22} p_{21} > 0$ and $p_{22} > 0$, so the chain is aperiodic.
+    \item Since $p_{i2} > 0$ for all $i$, and $p_{2j} > 0$ for all $j$, the chain is irreducible. Also, since $p_{ii}^{(2)} > 0$ and $p_{ii}^{(3)} > 0$ for all $i$, the chain is aperiodic.
+    \item This chain is irreducible since for all $i$ and $j$, $p_{ij}^{(n)} > 0$ for some $n \leqslant 3$. However, the chain is not aperiodic since $p_{ii}^{(n)} > 0$ only when $n$ is a multiple of 3.
+    \item This chain is irreducible since for all $i$ and $j$, $p_{ij}^{(n)} > 0$ for some $n \leqslant 3$. Also, since $p_{ii}^{(3)} > 0$ and $p_{ii}^{(4)} > 0$ for all $i$, the chain is aperiodic.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.7}
+Compute a stationary distribution for the Markov chain of Example~\ref{ex:11.2.4}. (Hint: Do not forget Example~\ref{ex:11.2.15}.)
+\end{exercise}
+
+\begin{solution}
+This chain is doubly stochastic, i.e., has $\sum_i p_{ij} = 1$ for all $j$. Hence, as in Example \ref{ex:11.2.15}, we must have the uniform distribution ($\pi_1 = \pi_2 = \pi_3 = \pi_4 = 1/4$) as a stationary distribution.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.8}
+Show that the random walk on the circle process (see Example~\ref{ex:11.2.6}) is
+\begin{enumerate}[(a)]
+\item irreducible.
+\item aperiodic.
+\item reversible with respect to its stationary distribution.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item By moving clockwise one step at a time, we see that for all $i$ and $j$, we have $p_{ij}^{(n)} > 0$ for some $n \leqslant d$. Hence, the chain is irreducible.
+    \item Since $p_{ii} > 0$ for all $i$, each state has period 1, so the chain is aperiodic.
+    \item If $i$ and $j$ are two or more apart, then $p_{ij} = p_{ji} = 0$. If $i$ and $j$ are one apart, then $\pi_i p_{ij} = (1/d)(1/3) = 1/3d$ and $\pi_j p_{ji} = (1/d)(1/3) = 1/3d$. Hence, the chain is reversible with respect to $\{\pi_i\}$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.9}
+Show that the Ehrenfest's Urn process (see Example~\ref{ex:11.2.7}) is
+\begin{enumerate}[(a)]
+\item irreducible.
+\item not aperiodic.
+\item reversible with respect to its stationary distribution.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item By either increasing or decreasing one step at a time, we see that for all $i$ and $j$, we have $p_{ij}^{(n)} > 0$ for some $n \leqslant d$. Hence, the chain is irreducible.
+    \item The chain can only move from even numbers to odd, and from odd numbers to even. Hence, each state has period 2.
+    \item If $i$ and $j$ are two or more apart, then $p_{ij} = p_{ji} = 0$. If $j = i + 1$, then $\pi_i p_{ij} = (1/2d)\binom{d}{i}((d - i)/d) = (1/2d)(d!/i!(d - i)!)((d - i)/d) = (1/2d)((d - 1)!/i!(d - i - 1)!)$, while $\pi_j p_{ji} = (1/2d)\binom{d}{i+1}((i + 1)/d) = (1/2d)(d!/(i + 1)!(d - i - 1)!)((i + 1)/d) = (1/2d)((d - 1)!/i!(d - i - 1)!)$. Hence, the chain is reversible with respect to $\{\pi_i\}$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.10}
+Consider the Markov chain with $\mathcal{S} = \{1, 2, 3\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+1/2 & 1/2 & 0
+\end{pmatrix}.
+\]
+\begin{enumerate}[(a)]
+\item Determine (with explanation) whether or not the chain is irreducible.
+\item Determine (with explanation) whether or not the chain is aperiodic.
+\item Compute a stationary distribution for the chain.
+\item Compute (with explanation) a good approximation to $P_1(X_{500} = 2)$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item This chain is irreducible since for all $i$ and $j$, $p_{ij}^{(n)} > 0$ for some $n \leqslant 3$.
+    \item Since $p_{ii}^{(3)} > 0$ and $p_{ii}^{(5)} > 0$ for all $i$, the chain is aperiodic.
+    \item We need $\pi_3(1/2) = \pi_1$, $\pi_1(1) + \pi_3(1/2) = \pi_2$, and $\pi_2(1) = \pi_3$. Hence, $\pi_1 = 1/4$ and $\pi_2 = \pi_3 = 1/2$.
+    \item We have $\lim_{n \to \infty} \prb_1(X_n = 2) = \pi_2 = 1/2$. Hence, $\prb_1(X_{500} = 2) \approx 1/2$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.11}
+Repeat all four parts of Exercise~\ref{exer:11.2.10} if $\mathcal{S} = \{1, 2, 3\}$ and
+\[
+(p_{ij}) = \begin{pmatrix}
+0 & 1/2 & 1/2 \\
+0 & 0 & 1 \\
+1/2 & 1/2 & 0
+\end{pmatrix}.
+\]
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item This chain is irreducible since for all $i$ and $j$, $p_{ij}^{(n)} > 0$ for some $n \leqslant 3$.
+    \item Since $p_{ii}^{(3)} > 0$ and $p_{ii}^{(5)} > 0$ for all $i$, the chain is aperiodic.
+    \item We need $\pi_3(1/2) = \pi_1$, $\pi_1(1/2) + \pi_3(1/2) = \pi_2$, and $\pi_1(1/2) + \pi_2(1) = \pi_3$. Hence, $\pi_1 = 2/9$, $\pi_2 = 3/9$, and $\pi_3 = 4/9$.
+    \item We have $\lim_{n \to \infty} \prb_1(X_n = 2) = \pi_2 = 3/9 = 1/3$. Hence, $\prb_1(X_{500} = 2) \approx 1/3$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.12}
+Consider a Markov chain with $\mathcal{S} = \{1, 2, 3\}$ and
+\[
+(p_{ij}) = \begin{pmatrix}
+0.3 & 0.3 & 0.4 \\
+0.2 & 0.2 & 0.6 \\
+0.1 & 0.2 & 0.7
+\end{pmatrix}.
+\]
+\begin{enumerate}[(a)]
+\item Is this Markov chain irreducible and aperiodic? Explain. (Hint: Do not forget Theorem~\ref{thm:11.2.7}.)
+\item Compute $P_1(X_1 = 3)$.
+\item Compute $P_1(X_2 = 3)$.
+\item Compute $P_1(X_3 = 3)$.
+\item Compute $\lim_{n \to \infty} P_1(X_n = 3)$. (Hint: find a stationary distribution for the chain.)
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item This chain is irreducible and aperiodic since $p_{ij} > 0$ for all $i$ and $j$.
+    \item $\prb_1(X_1 = 3) = 0.4$.
+    \item 
+    \[
+        \begin{pmatrix} 0.3 & 0.3 & 0.4 \\ 0.2 & 0.2 & 0.6 \\ 0.1 & 0.2 & 0.7 \end{pmatrix}^2 = \begin{pmatrix} 0.19 & 0.23 & 0.58 \\ 0.16 & 0.22 & 0.62 \\ 0.14 & 0.21 & 0.65 \end{pmatrix}
+    \]
+    so $\prb_1(X_2 = 3) = 0.3 \cdot 0.4 + 0.3 \cdot 0.6 + 0.4 \cdot 0.7 = 0.58$.
+    \item 
+    \[
+        \begin{pmatrix} 0.3 & 0.3 & 0.4 \\ 0.2 & 0.2 & 0.6 \\ 0.1 & 0.2 & 0.7 \end{pmatrix}^3 = \begin{pmatrix} 0.161 & 0.219 & 0.620 \\ 0.154 & 0.216 & 0.630 \\ 0.149 & 0.214 & 0.637 \end{pmatrix}
+    \]
+    so $\prb_1(X_3 = 3) = 0.62$.
+    \item 
+    \[
+        \begin{pmatrix} \pi_1 & \pi_2 & \pi_3 \end{pmatrix} \begin{pmatrix} 0.3 & 0.3 & 0.4 \\ 0.2 & 0.2 & 0.6 \\ 0.1 & 0.2 & 0.7 \end{pmatrix} = \begin{pmatrix} \pi_1 & \pi_2 & \pi_3 \end{pmatrix}
+    \]
+    implies
+    \[
+        \begin{pmatrix} \pi_1 & \pi_2 & \pi_3 \end{pmatrix} \begin{pmatrix} -7 & 3 & 4 \\ 2 & -8 & 6 \\ 1 & 2 & -3 \end{pmatrix} = \begin{pmatrix} 0 & 0 & 0 \end{pmatrix},
+    \]
+    and solving these equations leads to $\pi_1 = (12/50)\pi_3$, $\pi_2 = (17/50)\pi_3$ and finally $\pi_1 + \pi_2 + \pi_3 = 1$ implies $\pi_1 = 12/79$, $\pi_2 = 17/79$, and $\pi_3 = 50/79$. Therefore, $\lim_{n \to \infty} \prb_1(X_n = 3) = 50/79$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.13}
+For the Markov chain of the previous exercise, compute $\prb(X_1 + X_2 = 5)$.
+\end{exercise}
+
+\begin{solution}
+$\prb_1(X_1 + X_2 \geqslant 5) = \prb_1(X_1 = 2, X_2 = 3) + \prb_1(X_1 = 3, X_2 = 2) + \prb_1(X_1 = 3, X_2 = 3) = 0.3 \cdot 0.6 + 0.4 \cdot 0.2 + 0.4 \cdot 0.7 = 0.54$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.14}
+Consider a Markov chain with $\mathcal{S} = \{1, 2, 3\}$ and
+\[
+(p_{ij}) = \begin{pmatrix}
+1 & 0 & 0 \\
+0 & 0 & 1 \\
+0 & 1 & 0
+\end{pmatrix}.
+\]
+\begin{enumerate}[(a)]
+\item Compute the period of each state.
+\item Is this Markov chain aperiodic? Explain.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The period of 1 is 1 since $p_{11}^{(n)} = 1$ for all $n$. The period of 2 is 2 since $p_{11}^{(n)} = 1$ when $n$ is even and is 0 otherwise. Similarly, the period of 3 is 2.
+    \item The chain is not aperiodic since all states do not have period equal to 1.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.15}
+Consider a Markov chain with $\mathcal{S} = \{1, 2, 3\}$ and
+\[
+(p_{ij}) = \begin{pmatrix}
+0 & 1 & 0 \\
+0.5 & 0 & 0.5 \\
+0 & 1 & 0
+\end{pmatrix}.
+\]
+\begin{enumerate}[(a)]
+\item Is this Markov chain irreducible? Explain.
+\item Is this Markov chain aperiodic? Explain.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The chain is irreducible since we can get from any state to any other state with positive probability, e.g., the transitions $1 \to 2 \to 3$, $2 \to 1$, $3 \to 2 \to 1$ all have positive probability of occurring.
+    \item We have that $\gcd\{n : p_{11}^{(n)} > 0\} = \gcd\{2, 4, 6, \ldots\} = 2$ and so the chain is not aperiodic.
+\end{enumerate}
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Problems}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.2.16}
+Consider a Markov chain with $\mathcal{S} = \{1, 2, 3, 4, 5\}$, and
+\[
+(p_{ij}) = \begin{pmatrix}
+1/5 & 4/5 & 0 & 0 & 0 \\
+1/5 & 0 & 4/5 & 0 & 0 \\
+0 & 1/5 & 0 & 4/5 & 0 \\
+0 & 0 & 1/5 & 0 & 4/5 \\
+0 & 0 & 0 & 1/5 & 4/5
+\end{pmatrix}.
+\]
+Compute a stationary distribution $\{\pi_i\}$ for this chain. (Hint: Use reversibility, as in Example~\ref{ex:11.2.19}.)
+\end{exercise}
+
+\begin{solution}
+For reversibility, we need $\pi_1 p_{12} = \pi_2 p_{21}$, so $\pi_2 = (p_{12}/p_{21})\pi_1 = ((4/5)/(1/5))\pi_1 = 4\pi_1$. Then $\pi_3 = (p_{23}/p_{32})\pi_2 = ((4/5)/(1/5))\pi_2 = 4\pi_2 = 4^2\pi_1$. Then $\pi_4 = (p_{34}/p_{43})\pi_3 = ((4/5)/(1/5))\pi_3 = 4\pi_3 = 4^3\pi_1$. Then $\pi_5 = (p_{45}/p_{54})\pi_4 = ((4/5)/(1/5))\pi_4 = 4\pi_4 = 4^4\pi_1$. Hence, since $1 + 4 + 4^2 + 4^3 + 4^4 = 341$, we have $\pi_1 = 1/341$, $\pi_2 = 4/341$, $\pi_3 = 4^2/341$, $\pi_4 = 4^3/341$, and $\pi_5 = 4^4/341$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.17}
+Suppose 100 lily pads are arranged in a circle, numbered $0, 1, \ldots, 99$ (with pad 99 next to pad 0). Suppose a frog begins at pad 0 and each second either jumps one pad clockwise, or jumps one pad counterclockwise, or stays where it is --- each with probability $1/3$. After doing this for a month, what is the approximate probability that the frog will be at pad 55? (Hint: The frog is doing random walk on the circle, as in Example~\ref{ex:11.2.6}. Also, the results of Example~\ref{ex:11.2.17} and Theorem~\ref{thm:11.2.8} may help.)
+\end{exercise}
+
+\begin{solution}
+We know that this example is irreducible and aperiodic, with $\pi_i = 1/d = 1/100$ for all $i$. Hence, $\lim_{n \to \infty} \prb_0(X_n = 55) = 1/100$. Hence, for large $n$ (such as the number of seconds in a month), $\prb_0(X_n = 55) \approx 1/100$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.18}
+Prove Theorem~\ref{thm:11.2.4}. (Hint: Proceed as in the proof of Theorem~\ref{thm:11.2.3}, and use induction.)
+\end{exercise}
+
+\begin{solution}
+We use induction on $n$. The case $n = 1$ follows by definition. Assuming the theorem is true for some $n$, then $\prb_i(X_{n+1} = j) = \sum_k \prb_i(X_n = k, X_{n+1} = j) = \sum_k \prb_i(X_n = k) p_{kj} = \sum_k \sum_{i_1,\ldots,i_{n-1}} p_{ii_1} p_{i_1 i_2} \cdots p_{i_{n-1}k} p_{kj}$. The result follows by replacing the dummy variable $k$ by $i_n$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.2.19}
+In Example~\ref{ex:11.2.18}, prove that $\sum_{i \in \mathcal{S}} \pi_i p_{ij} = \pi_j$ when $j = 0$ and when $j = d$.
+\end{exercise}
+
+\begin{solution}
+If $j = 0$, then $p_{ij} > 0$ only for $i = 1$ when $p_{10} = 1/d$. Hence, $\sum_{i \in S} \pi_i p_{ij} = \pi_1(1/d) = (1/2d)\binom{d}{1}(1/d) = (1/2d)(d)(1/d) = (1/2d) = \pi_0$.
+
+If $j = d$, then $p_{ij} > 0$ only for $i = d - 1$ when $p_{d-1,d} = 1/d$. Hence, $\sum_{i \in S} \pi_i p_{ij} = \pi_1(1/d) = (1/2d)\binom{d}{d-1}(1/d) = (1/2d)(d)(1/d) = (1/2d) = \pi_d$.
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Discussion Topics}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.2.20}
+With a group, create the ``human Markov chain'' of Example~\ref{ex:11.2.9}. Make as many observations as you can about the long-term behavior of the resulting Markov chain.
+\end{exercise}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Markov Chain Monte Carlo}
+\label{sec:11.3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In Section \ref{sec:4.5}, we saw that it is possible to estimate various quantities (such as properties of real objects through experimentation, or the value of complicated sums or integrals) by using Monte Carlo techniques, namely, by generating appropriate random variables on a computer. Furthermore, we have seen in Section \ref{sec:2.10} that it is quite easy to generate random variables having certain special distributions. The Monte Carlo method was used several times in Chapters \ref{ch:6}, \ref{ch:7}, \ref{ch:9}, and \ref{ch:10} to assist in the implementation of various statistical methods.
+
+However, for many (in fact, most!) probability distributions, there is no simple, direct way to simulate (on a computer) random variables having such a distribution. We illustrate this with an example.
+
+\begin{example}
+\label{ex:11.3.1}
+Let $Z$ be a random variable taking values on the set of all integers, with
+\begin{equation}
+\label{eq:11.3.1}
+\prb(Z = j) = C |j + 1|^{2/4} e^{-3|j|} \cos^2(j)
+\end{equation}
+for $j \in \{\ldots, -2, -1, 0, 1, 2, 3, \ldots\}$, where $C = 1/\sum_j |j + 1|^{2/4} e^{-3|j|} \cos^2(j)$.
+
+Now suppose that we want to compute the quantity $A = \expc[(Z - 20)^2]$.
+
+Well, if we could generate i.i.d.\ random variables $Y_1, Y_2, \ldots, Y_M$ with distribution given by \eqref{eq:11.3.1}, for very large $M$, then we could estimate $A$ by
+\[
+\hat{A} = \frac{1}{M} \sum_{i=1}^{M} (Y_i - 20)^2.
+\]
+Then $\hat{A}$ would be a Monte Carlo estimate of $A$.
+
+The problem, of course, is that it is not easy to generate random variables $Y_i$ with this distribution. In fact, it is not even easy to compute the value of $C$.
+\end{example}
+
+Surprisingly, the difficulties described in Example~\ref{ex:11.3.1} can sometimes be solved using Markov chains. We illustrate this idea as follows.
+
+\begin{example}
+\label{ex:11.3.2}
+In the context of Example~\ref{ex:11.3.1}, suppose we could find a Markov chain on the state space $\mathcal{S} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$ of all integers, which was irreducible and aperiodic and which had a stationary distribution given by $\pi_j = C |j + 1|^{2/4} e^{-3|j|} \cos^2(j)$ for $j \in \mathcal{S}$.
+
+If we did, then we could run the Markov chain for a long time $N$, to get random values $X_0, X_1, X_2, \ldots, X_N$. For large enough $N$, by Theorem~\ref{thm:11.2.8}, we would have
+\[
+\prb(X_N = j) \approx \pi_j = C |j + 1|^{2/4} e^{-3|j|} \cos^2(j).
+\]
+Hence, if we set $Y_1 = X_N$, then we would have $\prb(Y_1 = j)$ approximately equal to \eqref{eq:11.3.1}, for all integers $j$. That is, the value of $X_N$ would be approximately as good as a true random variable $Y_1$ with this distribution.
+
+Once the value of $Y_1$ was generated, then we could repeat the process by again running the Markov chain, this time to generate new random values
+\[
+X_0^{[2]}, X_1^{[2]}, X_2^{[2]}, \ldots, X_N^{[2]}
+\]
+(say). We would then have
+\[
+\prb(X_N^{[2]} = j) \approx \pi_j = C |j + 1|^{2/4} e^{-3|j|} \cos^2(j).
+\]
+Hence, if we set $Y_2 = X_N^{[2]}$, then we would have $\prb(Y_2 = j)$ approximately equal to \eqref{eq:11.3.1}, for all integers $j$.
+
+Continuing in this way, we could generate values $Y_1, Y_2, Y_3, \ldots, Y_M$, such that these are approximately i.i.d.\ from the distribution given by \eqref{eq:11.3.1}. We could then, as before, estimate $A$ by
+\[
+\hat{A} \approx A = \frac{1}{M} \sum_{i=1}^{M} (Y_i - 20)^2.
+\]
+This time, the approximation has two sources of error. First, there is \emph{Monte Carlo error} because $M$ might not be large enough. Second, there is \emph{Markov chain error}, because $N$ might not be large enough. However, if $M$ and $N$ are both very large, then $\hat{A}$ will be a good approximation to $A$.
+\end{example}
+
+We summarize the method of the preceding example in the following theorem.
+
+\begin{theorem}[The Markov chain Monte Carlo method]
+\label{thm:11.3.1}
+Suppose we wish to estimate the expected value $A = \expc[h(Z)]$ where $\prb(Z = j) = \pi_j$ for $j \in \mathcal{S}$, with $\prb(Z = j) = 0$ for $j \notin \mathcal{S}$. Suppose for $i = 1, 2, \ldots, M$, we can generate values $X_0^{[i]}, X_1^{[i]}, X_2^{[i]}, \ldots, X_N^{[i]}$ from some Markov chain that is irreducible, aperiodic, and has $\{\pi_j\}$ as a stationary distribution. Let
+\[
+\hat{A} = \frac{1}{M} \sum_{i=1}^{M} h(X_N^{[i]}).
+\]
+If $M$ and $N$ are sufficiently large, then $\hat{A} \approx A$.
+\end{theorem}
+
+It is somewhat inefficient to run $M$ different Markov chains. Instead, practitioners often just run a single Markov chain, and average over the different values of the chain. For an irreducible Markov chain run long enough, this will again converge to the right answer, as the following theorem states.
+
+\begin{theorem}[The single-chain Markov chain Monte Carlo method]
+\label{thm:11.3.2}
+Suppose we wish to estimate the expected value $A = \expc[h(Z)]$ where $\prb(Z = j) = \pi_j$ for $j \in \mathcal{S}$, with $\prb(Z = j) = 0$ for $j \notin \mathcal{S}$. Suppose we can generate values $X_0, X_1, X_2, \ldots, X_N$ from some Markov chain that is irreducible, aperiodic, and has $\{\pi_j\}$ as a stationary distribution. For some integer $B \geqslant 0$, let
+\[
+\hat{A} = \frac{1}{N - B + 1} \sum_{i=B+1}^{N} h(X_i).
+\]
+If $N - B$ is sufficiently large, then $\hat{A} \approx A$.
+\end{theorem}
+
+Here, $B$ is the \emph{burn-in time}, designed to remove the influence of the chain's starting value $X_0$. The best choice of $B$ remains controversial among statisticians. However, if the starting value $X_0$ is ``reasonable,'' then it is okay to take $B = 0$, provided that $N$ is sufficiently large. This is what was done, for instance, in Example \ref{ex:7.3.2}.
+
+These theorems indicate that, if we can construct a Markov chain that has $\{\pi_i\}$ as a stationary distribution, then we can use that Markov chain to estimate quantities associated with $\{\pi_i\}$. This is a very helpful trick, and it has made the Markov chain Monte Carlo method into one of the most popular techniques in the entire subject of computational statistics.
+
+However, for this technique to be useful, we need to be able to construct a Markov chain that has $\{\pi_i\}$ as a stationary distribution. This sounds like a difficult problem! Indeed, if $\{\pi_i\}$ were very simple, then we would not need to use Markov chain Monte Carlo at all. But if $\{\pi_i\}$ is complicated, then how can we possibly construct a Markov chain that has that particular stationary distribution?
+
+Remarkably, this problem turns out to be much easier to solve than one might expect. We now discuss one of the best solutions, the Metropolis--Hastings algorithm.
+
+%------------------------------------------------------------------------------
+\subsection{The Metropolis--Hastings Algorithm}
+\label{ssec:11.3.1}
+%------------------------------------------------------------------------------
+
+Suppose we are given a probability distribution $\{\pi_i\}$ on a state space $\mathcal{S}$. How can we construct a Markov chain on $\mathcal{S}$ that has $\{\pi_i\}$ as a stationary distribution?
+
+One answer is given by the \emph{Metropolis--Hastings algorithm}. It designs a Markov chain that proceeds in two stages. In the first stage, a new point is \emph{proposed} from some proposal distribution. In the second stage, the proposed point is either \emph{accepted} or \emph{rejected}. If the proposed point is accepted, then the Markov chain moves there. If it is rejected, then the Markov chain stays where it is. By choosing the probability of accepting to be just right, we end up creating a Markov chain that has $\{\pi_i\}$ as a stationary distribution.
+
+The details of the algorithm are as follows. We start with a state space $\mathcal{S}$, and a probability distribution $\{\pi_i\}$ on $\mathcal{S}$. We then choose some (simple) Markov chain transition probabilities $\{q_{ij} : i, j \in \mathcal{S}\}$ called the \emph{proposal distribution}. Thus, we require that $q_{ij} \geqslant 0$, and $\sum_{j \in \mathcal{S}} q_{ij} = 1$ for each $i \in \mathcal{S}$. However, we do not assume that $\{\pi_i\}$ is a stationary distribution for the chain $\{q_{ij}\}$; indeed, the chain $\{q_{ij}\}$ might not even have a stationary distribution.
+
+Given $X_n = i$, the Metropolis--Hastings algorithm computes the value $X_{n+1}$ as follows.
+\begin{enumerate}
+\item Choose $Y_{n+1} = j$ according to the Markov chain $\{q_{ij}\}$.
+\item Set $\alpha(i,j) = \min\left(1, \dfrac{\pi_j q_{ji}}{\pi_i q_{ij}}\right)$ (the \emph{acceptance probability}).
+\item With probability $\alpha(i,j)$, let $X_{n+1} = Y_{n+1} = j$ (i.e., \emph{accepting} the proposal $Y_{n+1}$). Otherwise, with probability $1 - \alpha(i,j)$, let $X_{n+1} = X_n = i$ (i.e., \emph{rejecting} the proposal $Y_{n+1}$).
+\end{enumerate}
+
+The reason for this unusual algorithm is given by the following theorem.
+
+\begin{theorem}
+\label{thm:11.3.3}
+The preceding Metropolis--Hastings algorithm results in a Markov chain $X_0, X_1, X_2, \ldots$ which has $\{\pi_i\}$ as a stationary distribution.
+\end{theorem}
+
+\begin{proof}
+See Section~\ref{sec:11.7} for the proof.
+\end{proof}
+
+We consider some applications of this algorithm.
+
+\begin{example}
+\label{ex:11.3.3}
+As in Example~\ref{ex:11.3.1}, suppose $\mathcal{S} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$ and
+\[
+\pi_j = C |j + 1|^{2/4} e^{-3|j|} \cos^2(j),
+\]
+for $j \in \mathcal{S}$. We shall construct a Markov chain having $\{\pi_i\}$ as a stationary distribution.
+
+We first need to choose some simple Markov chain $\{q_{ij}\}$. We let $\{q_{ij}\}$ be simple random walk with $p = 1/2$, so that $q_{ij} = 1/2$ if $j = i + 1$ or $j = i - 1$, and $q_{ij} = 0$ otherwise.
+
+We then compute that if $j = i + 1$ or $j = i - 1$, then
+\begin{align}
+\alpha(i,j) &= \min\left(1, \frac{q_{ji} \pi_j}{q_{ij} \pi_i}\right) \notag \\
+&= \min\left(1, \frac{(1/2) C |j + 1|^{2/4} e^{-3|j|} \cos^2(j)}{(1/2) C |i + 1|^{2/4} e^{-3|i|} \cos^2(i)}\right) \notag \\
+&= \min\left(1, \frac{|j + 1|^{2/4} e^{-3|j|} \cos^2(j)}{|i + 1|^{2/4} e^{-3|i|} \cos^2(i)}\right). \label{eq:11.3.2}
+\end{align}
+Note that $C$ has cancelled out, so that $\alpha(i,j)$ does not depend on $C$. (In fact, this will always be the case.) Hence, we see that $\alpha(i,j)$, while somewhat messy, is still very easy for a computer to calculate.
+
+Given $X_n = i$, the Metropolis--Hastings algorithm computes the value $X_{n+1}$ as follows.
+\begin{enumerate}
+\item Let $Y_{n+1} = X_n + 1$ or $Y_{n+1} = X_n - 1$, with probability $1/2$ each.
+\item Let $j = Y_{n+1}$, and compute $\alpha(i,j)$ as in \eqref{eq:11.3.2}.
+\item With probability $\alpha(i,j)$, let $X_{n+1} = Y_{n+1} = j$. Otherwise, with probability $1 - \alpha(i,j)$, let $X_{n+1} = X_n = i$.
+\end{enumerate}
+
+These steps can all be easily performed on a computer. If we repeat this for $n = 0, 1, 2, \ldots, N - 1$ for some large number $N$ of iterations, then we will obtain a random variable $X_N$, where $\prb(X_N = j) \approx \pi_j = C |j + 1|^{2/4} e^{-3|j|} \cos^2(j)$ for all $j \in \mathcal{S}$.
+\end{example}
+
+\begin{example}
+\label{ex:11.3.4}
+Again, let $\mathcal{S} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$, and this time let $\pi_j = K e^{-|j|^4}$ for $j \in \mathcal{S}$. Let the proposal distribution $\{q_{ij}\}$ correspond to a simple random walk with $p = 1/4$, so that $Y_{n+1} = X_n + 1$ with probability $1/4$, and $Y_{n+1} = X_n - 1$ with probability $3/4$.
+
+In this case, we compute that if $j = i + 1$, then
+\begin{equation}
+\label{eq:11.3.3}
+\alpha(i,j) = \min\left(1, \frac{q_{ji} \pi_j}{q_{ij} \pi_i}\right) = \min\left(1, \frac{(3/4) K e^{-|j|^4}}{(1/4) K e^{-|i|^4}}\right) = \min\left(1, 3 e^{|j|^4 - |i|^4}\right).
+\end{equation}
+If instead $j = i - 1$, then
+\begin{equation}
+\label{eq:11.3.4}
+\alpha(i,j) = \min\left(1, \frac{q_{ji} \pi_j}{q_{ij} \pi_i}\right) = \min\left(1, \frac{(1/4) K e^{-|j|^4}}{(3/4) K e^{-|i|^4}}\right) = \min\left(1, (1/3) e^{|j|^4 - |i|^4}\right).
+\end{equation}
+(Note that the constant $K$ has again cancelled out, as expected.) Hence, again $\alpha(i,j)$ is very easy for a computer to calculate.
+
+Given $X_n = i$, the Metropolis--Hastings algorithm computes the value $X_{n+1}$ as follows.
+\begin{enumerate}
+\item Let $Y_{n+1} = X_n + 1$ with probability $1/4$, or $Y_{n+1} = X_n - 1$ with probability $3/4$.
+\item Let $j = Y_{n+1}$, and compute $\alpha(i,j)$ using \eqref{eq:11.3.3} and \eqref{eq:11.3.4}.
+\item With probability $\alpha(i,j)$, let $X_{n+1} = Y_{n+1} = j$. Otherwise, with probability $1 - \alpha(i,j)$, let $X_{n+1} = X_n = i$.
+\end{enumerate}
+
+Once again, these steps can all be easily performed on a computer; if repeated for some large number $N$ of iterations, then $\prb(X_N = j) \approx \pi_j = K e^{-|j|^4}$ for $j \in \mathcal{S}$.
+\end{example}
+
+The Metropolis--Hastings algorithm can also be used for continuous random variables by using densities, as follows.
+
+\begin{example}
+\label{ex:11.3.5}
+Suppose we want to generate a sample from the distribution with density proportional to
+\[
+f(y) = e^{-y^4}(1 + y^3).
+\]
+So the density is $C f(y)$, where $C = 1/\int_{-\infty}^{\infty} f(y) \,\mathrm{d}y$. How can we generate a random variable $Y$ such that $Y$ has approximately this distribution, i.e., has probability density approximately equal to $C f(y)$?
+
+Let us use a proposal distribution given by an $\text{N}(x, 1)$ distribution, namely, a normal distribution with mean $x$ and variance 1. That is, given $X_n = x$, we choose $Y_{n+1}$ by $Y_{n+1} \sim \text{N}(x, 1)$. Because the $\text{N}(x, 1)$ distribution has density $(2\pi)^{-1/2} e^{-(y-x)^2/2}$, this corresponds to a proposal density of $q(x, y) = (2\pi)^{-1/2} e^{-(y-x)^2/2}$.
+
+As for the acceptance probability $\alpha(x, y)$, we again use densities, so that
+\begin{align}
+\alpha(x, y) &= \min\left(1, \frac{C f(y) q(y, x)}{C f(x) q(x, y)}\right) \notag \\
+&= \min\left(1, \frac{(1 + y)^{-1}(1 + x)^3 C e^{-y^4} (2\pi)^{-1/2} e^{-(y-x)^2/2}}{C e^{-x^4} (2\pi)^{-1/2} e^{-(x-y)^2/2}}\right) \notag \\
+&= \min\left(1, \frac{(1 + y)^{-1}}{(1 + x)^{-3}} e^{-y^4 + x^4}\right). \label{eq:11.3.5}
+\end{align}
+
+Given $X_n = x$, the Metropolis--Hastings algorithm computes the value $X_{n+1}$ as follows.
+\begin{enumerate}
+\item Generate $Y_{n+1} \sim \text{N}(X_n, 1)$.
+\item Let $y = Y_{n+1}$, and compute $\alpha(x, y)$ as before.
+\item With probability $\alpha(x, y)$, let $X_{n+1} = Y_{n+1} = y$. Otherwise, with probability $1 - \alpha(x, y)$, let $X_{n+1} = X_n = x$.
+\end{enumerate}
+
+Once again, these steps can all be easily performed on a computer; if repeated for some large number $N$ of iterations, then the random variable $X_N$ will approximately have density given by $C f(y)$.
+\end{example}
+
+%------------------------------------------------------------------------------
+\subsection{The Gibbs Sampler}
+\label{ssec:11.3.2}
+%------------------------------------------------------------------------------
+
+In Section \ref{ssec:7.3.3} we discussed the Gibbs sampler and its application in a Bayesian statistics problem. As we will now demonstrate, the Gibbs sampler is a specialized version of the Metropolis--Hastings algorithm, designed for multivariate distributions. It chooses the proposal probabilities $\{q_{ij}\}$ just right so that we always have $\alpha(i,j) = 1$, i.e., so that no rejections are ever required.
+
+Suppose that $\mathcal{S} = \{\ldots, -2, -1, 0, 1, 2, \ldots\} \times \{\ldots, -2, -1, 0, 1, 2, \ldots\}$, i.e., $\mathcal{S}$ is the set of all ordered pairs of integers $i = (i_1, i_2)$. (Thus, $(2, 3) \in \mathcal{S}$, and $(-6, 14) \in \mathcal{S}$, etc.) Suppose that some distribution $\{\pi_i\}$ is defined on $\mathcal{S}$. Define a proposal distribution $q^{(1)}_{ij}$ as follows.
+
+Let $V(i) = \{j \in \mathcal{S} : j_2 = i_2\}$. That is, $V(i)$ is the set of all states $j \in \mathcal{S}$ such that $i$ and $j$ agree in their second coordinate. Thus, $V(i)$ is a vertical line in $\mathcal{S}$, which passes through the point $i$.
+
+In terms of this definition of $V(i)$, define $q^{(1)}_{ij} = 0$ if $j \notin V(i)$, i.e., if $i$ and $j$ differ in their second coordinate. If $j \in V(i)$, i.e., if $i$ and $j$ agree in their second coordinate, then define
+\[
+q^{(1)}_{ij} = \frac{\pi_j}{\sum_{k \in V(i)} \pi_k}.
+\]
+
+One interpretation is that, if $X_n = i$, and $\prb(Y_{n+1} = j) = q^{(1)}_{ij}$ for $j \in \mathcal{S}$, then the distribution of $Y_{n+1}$ is the conditional distribution of $\{\pi_i\}$, conditional on knowing that the second coordinate must be equal to $i_2$.
+
+In terms of this choice of $q^{(1)}_{ij}$, what is $\alpha(i,j)$? Well, if $j \in V(i)$, then $i \in V(j)$, and also $V(j) = V(i)$. Hence,
+\[
+\alpha(i,j) = \min\left(1, \frac{\pi_j q^{(1)}_{ji}}{\pi_i q^{(1)}_{ij}}\right) = \min\left(1, \frac{\pi_j \cdot \pi_i / \sum_{k \in V(j)} \pi_k}{\pi_i \cdot \pi_j / \sum_{\ell \in V(i)} \pi_\ell}\right) = \min\left(1, \frac{\pi_j \cdot \pi_i}{\pi_i \cdot \pi_j}\right) = \min(1, 1) = 1.
+\]
+That is, this algorithm accepts the proposal $Y_{n+1}$ with probability 1, and never rejects at all!
+
+Now, this algorithm by itself is not very useful because it proposes only states in $V(i)$, so it never changes the value of the second coordinate at all. However, we can similarly define a horizontal line through $i$ by $H(i) = \{j \in \mathcal{S} : j_1 = i_1\}$, so that $H(i)$ is the set of all states $j$ such that $i$ and $j$ agree in their first coordinate. That is, $H(i)$ is a horizontal line in $\mathcal{S}$ that passes through the point $i$.
+
+We can then define $q^{(2)}_{ij} = 0$ if $j \notin H(i)$ (i.e., if $i$ and $j$ differ in their first coordinate), while if $j \in V(i)$ (i.e., if $i$ and $j$ agree in their first coordinate), then
+\[
+q^{(2)}_{ij} = \frac{\pi_j}{\sum_{k \in H(i)} \pi_k}.
+\]
+As before, we compute that for this proposal, we will always have $\alpha(i,j) = 1$, i.e., the Metropolis--Hastings algorithm with this proposal will never reject.
+
+The Gibbs sampler works by combining these two different Metropolis--Hastings algorithms, by alternating between them. That is, given a value $X_n = i$, it produces a value $X_{n+1}$ as follows.
+\begin{enumerate}
+\item Propose a value $Y_{n+1} \in V(i)$ according to the proposal distribution $q^{(1)}_{ij}$.
+\item Always accept $Y_{n+1}$ and set $j = Y_{n+1}$ --- thus moving vertically.
+\item Propose a value $Z_{n+1} \in H(j)$ according to the proposal distribution $q^{(2)}_{ij}$.
+\item Always accept $Z_{n+1}$ --- thus moving horizontally.
+\item Set $X_{n+1} = Z_{n+1}$.
+\end{enumerate}
+
+In this way, the Gibbs sampler does a ``zigzag'' through the state space $\mathcal{S}$, alternately moving in the vertical and in the horizontal direction.
+
+In light of Theorem~\ref{thm:11.3.2}, we immediately obtain the following.
+
+\begin{theorem}
+\label{thm:11.3.4}
+The preceding Gibbs sampler algorithm results in a Markov chain $X_0, X_1, X_2, \ldots$ that has $\{\pi_i\}$ as a stationary distribution.
+\end{theorem}
+
+The Gibbs sampler thus provides a particular way of implementing the Metropolis--Hastings algorithm in multidimensional problems, which never rejects the proposed values.
+
+\subsection*{Summary of Section~\ref{sec:11.3}}
+
+In cases that are too complicated for ordinary Monte Carlo techniques, it is possible to use \emph{Markov chain Monte Carlo} techniques instead, by averaging values arising from a Markov chain.
+
+The Metropolis--Hastings algorithm provides a simple way to create a Markov chain with stationary distribution $\{\pi_i\}$. Given $X_n$, it generates a proposal $Y_{n+1}$ from a proposal distribution $\{q_{ij}\}$, and then either accepts this proposal (and sets $X_{n+1} = Y_{n+1}$) with probability $\alpha(i,j)$, or rejects this proposal (and sets $X_{n+1} = X_n$) with probability $1 - \alpha(i,j)$.
+
+Alternatively, the Gibbs sampler updates the coordinates one at a time from their conditional distribution, such that we always have $\alpha(i,j) = 1$.
+
+%------------------------------------------------------------------------------
+\subsection*{Exercises}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.3.1}
+Suppose $\pi_i = C e^{-|i-13|^4}$ for $i \in \mathcal{S} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$, where $C = 1/\sum_i e^{-|i-13|^4}$. Describe in detail a Metropolis--Hastings algorithm for $\{\pi_i\}$, which uses simple random walk with $p = 1/2$ for the proposals.
+\end{exercise}
+
+\begin{solution}
+First, choose any initial value $X_0$. Then, given $X_n = i$, let $Y_{n+1} = i + 1$ or $i - 1$, with probability $1/2$ each. Let $j = Y_{n+1}$ and let $\alpha_{ij} = \min(1, \pi_j/\pi_i) = \min(1, e^{-(j-13)^4 + (i-13)^4})$. Then let $X_{n+1} = j$ with probability $\alpha_{ij}$, otherwise let $X_{n+1} = i$ with probability $1 - \alpha_{ij}$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.3.2}
+Suppose $\pi_i = C |(i-6)/5|^8$ for $i \in \mathcal{S} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$, where $C = 1/\sum_i |(i-6)/5|^8$. Describe in detail a Metropolis--Hastings algorithm for $\{\pi_i\}$, which uses simple random walk with $p = 5/8$ for the proposals.
+\end{exercise}
+
+\begin{solution}
+First, choose any initial value $X_0$. Then, given $X_n = i$, let $Y_{n+1} = i + 1$ with probability $5/8$ or $Y_{n+1} = i - 1$ with probability $3/8$. Let $j = Y_{n+1}$ and let $\alpha_{ij} = \min(1, \pi_j q_{ji}/\pi_i q_{ij}) = \min(1, (i + 7.5)^{-8}(3/8)/(i + 6.5)^{-8}(5/8))$ if $j = i + 1$ or $\alpha_{ij} = \min(1, \pi_j q_{ji}/\pi_i q_{ij}) = \min(1, (i + 5.5)^{-8}(5/8)/(i + 6.5)^{-8}(3/8))$ if $j = i - 1$. Then let $X_{n+1} = j$ with probability $\alpha_{ij}$, otherwise let $X_{n+1} = i$ with probability $1 - \alpha_{ij}$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.3.3}
+Suppose $\pi_i = K e^{-|i|^4 - |i|^6 - |i|^8}$ for $i \in \mathcal{S} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$, where $C = 1/\sum_i e^{-|i|^4 - |i|^6 - |i|^8}$. Describe in detail a Metropolis--Hastings algorithm for $\{\pi_i\}$, which uses simple random walk with $p = 7/9$ for the proposals.
+\end{exercise}
+
+\begin{solution}
+First, choose any initial value $X_0$. Then, given $X_n = i$, let $Y_{n+1} = i + 1$ with probability $7/9$ or $Y_{n+1} = i - 1$ with probability $2/9$. Let $j = Y_{n+1}$ and let $\alpha_{ij} = \min(1, \pi_j q_{ji}/\pi_i q_{ij}) = \min(1, e^{-j^4 - j^6 - j^8}(2/9)/e^{-i^4 - i^6 - i^8}(7/9))$ if $j = i + 1$ or $\alpha_{ij} = \min(1, \pi_j q_{ji}/\pi_i q_{ij}) = \min(1, e^{-j^4 - j^6 - j^8}(7/9)/e^{-i^4 - i^6 - i^8}(2/9))$ if $j = i - 1$. Then let $X_{n+1} = j$ with probability $\alpha_{ij}$, otherwise let $X_{n+1} = i$ with probability $1 - \alpha_{ij}$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.3.4}
+Suppose $f(x) = e^{-x^4 - x^6 - x^8}$ for $x \in \mathbb{R}^1$. Let $K = 1/\int_{-\infty}^{\infty} e^{-x^4 - x^6 - x^8} \,\mathrm{d}x$. Describe in detail a Metropolis--Hastings algorithm for the distribution having density $K f(x)$, which uses the proposal distribution $\text{N}(x, 1)$, i.e., a normal distribution with mean $x$ and variance 1.
+\end{exercise}
+
+\begin{solution}
+Let $\{Z_n\}$ be i.i.d.\ $\sim N(0, 1)$. First, choose any initial value $X_0$. Then, given $X_n = x$, let $Y_{n+1} = X_n + Z_{n+1}$. Let $y = Y_{n+1}$ and let $\alpha_{xy} = \min(1, f(y)/f(x)) = \min(1, e^{-y^4 - y^6 - y^8 + x^4 + x^6 + x^8})$. Then let $X_{n+1} = y$ with probability $\alpha_{xy}$, otherwise let $X_{n+1} = x$ with probability $1 - \alpha_{xy}$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.3.5}
+Let $f(x) = e^{-x^4 - x^6 - x^8}$ for $x \in \mathbb{R}^1$, and let $K = 1/\int_{-\infty}^{\infty} e^{-x^4 - x^6 - x^8} \,\mathrm{d}x$. Describe in detail a Metropolis--Hastings algorithm for the distribution having density $K f(x)$, which uses the proposal distribution $\text{N}(x, 10)$, i.e., a normal distribution with mean $x$ and variance 10.
+\end{exercise}
+
+\begin{solution}
+Let $\{Z_n\}$ be i.i.d.\ $\sim N(0, 1)$. First, choose any initial value $X_0$. Then, given $X_n = x$, let $Y_{n+1} = X_n + \sqrt{10}Z_{n+1}$. Let $y = Y_{n+1}$ and let $\alpha_{xy} = \min(1, f(y)/f(x)) = \min(1, e^{-y^4 - y^6 - y^8 + x^4 + x^6 + x^8})$. Then let $X_{n+1} = y$ with probability $\alpha_{xy}$, otherwise let $X_{n+1} = x$ with probability $1 - \alpha_{xy}$.
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Computer Exercises}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.3.6}
+Run the algorithm of Exercise~\ref{exer:11.3.1}. Discuss the output.
+\end{exercise}
+
+\begin{solution}
+First, choose any initial value $X_0$. Then, given $X_n = (i_1, i_2)$, choose $Y_{n+1}$ so that $\prb(Y_{n+1} = (i_1, j)) = 2^{-j}$ for $j = 1, 2, 3, \ldots$. Then, given $Y_{n+1} = (i_1, j)$, choose $Z_{n+1}$ so that $\prb(Z_{n+1} = (k, j)) = 2^{-k}$ for $k = 1, 2, 3, \ldots$. Then set $X_{n+1} = Z_{n+1} = (k, j)$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.3.7}
+Run the algorithm of Exercise~\ref{exer:11.3.2}. Discuss the output.
+\end{exercise}
+
+%------------------------------------------------------------------------------
+\subsection*{Problems}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.3.8}
+Suppose $\mathcal{S} = \{1, 2, 3, \ldots\} \times \{1, 2, 3, \ldots\}$, i.e., $\mathcal{S}$ is the set of all pairs of positive integers. For $i = (i_1, i_2) \in \mathcal{S}$, suppose $\pi_i = C \cdot 2^{-(i_1 + i_2)}$ for appropriate positive constant $C$. Describe in detail a Gibbs sampler algorithm for this distribution $\{\pi_i\}$.
+\end{exercise}
+
+%------------------------------------------------------------------------------
+\subsection*{Computer Problems}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.3.9}
+Run the algorithm of Exercise~\ref{exer:11.3.4}. Discuss the output.
+\end{exercise}
+
+\begin{exercise}
+\label{exer:11.3.10}
+Run the algorithm of Exercise~\ref{exer:11.3.5}. Discuss the output.
+\end{exercise}
+
+%------------------------------------------------------------------------------
+\subsection*{Discussion Topics}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.3.11}
+Why do you think Markov chain Monte Carlo algorithms have become so popular in so many branches of science? (List as many reasons as you can.)
+\end{exercise}
+
+\begin{exercise}
+\label{exer:11.3.12}
+Suppose you will be using a Markov chain Monte Carlo estimate of the form
+\[
+\hat{A} = \frac{1}{M} \sum_{i=1}^{M} h(X_N^{[i]}).
+\]
+Suppose also that, due to time constraints, your total number of iterations cannot be more than one million. That is, you must have $N \cdot M \leqslant 1{,}000{,}000$. Discuss the advantages and disadvantages of the following choices of $N$ and $M$.
+\begin{enumerate}[(a)]
+\item $N = 1{,}000{,}000$, $M = 1$
+\item $N = 1$, $M = 1{,}000{,}000$
+\item $N = 100$, $M = 10{,}000$
+\item $N = 10{,}000$, $M = 100$
+\item $N = 1000$, $M = 1000$
+\item Which choice do you think would be best, under what circumstances? Why?
+\end{enumerate}
+\end{exercise}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Martingales}
+\label{sec:11.4}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this section, we study a special class of stochastic processes called \emph{martingales}. We shall see that these processes are characterized by ``staying the same on average.''
+
+As motivation, consider again a simple random walk in the case of a fair game, i.e., with $p = 1/2$. Suppose, as in the gambler's ruin setup, that you start at $a$ and keep going until you hit either $c$ or 0, where $0 < a < c$. Let $Z$ be the value that you end up with, so that we always have either $Z = c$ or $Z = 0$. We know from Theorem~\ref{thm:11.1.2} that in fact $\prb(Z = c) = a/c$, so that $\prb(Z = 0) = 1 - a/c$.
+
+Let us now consider the expected value of $Z$. We have that
+\[
+\expc[Z] = \sum_{z \in \mathbb{R}^1} z \prb(Z = z) = c \prb(Z = c) + 0 \cdot \prb(Z = 0) = c(a/c) = a.
+\]
+That is, the average value of where you end up is $a$. But $a$ is also the value at which you started!
+
+This is not a coincidence. Indeed, because $p = 1/2$ (i.e., the game was fair), this means that ``on average'' you always stayed at $a$. That is, $\{X_n\}$ is a martingale.
+
+%------------------------------------------------------------------------------
+\subsection{Definition of a Martingale}
+\label{ssec:11.4.1}
+%------------------------------------------------------------------------------
+
+We begin with the definition of a martingale. For simplicity, we assume that the martingale is a Markov chain, though this is not really necessary.
+
+\begin{definition}
+\label{def:11.4.1}
+Let $X_0, X_1, X_2, \ldots$ be a Markov chain. The chain is a \emph{martingale} if for all $n = 0, 1, 2, \ldots$, we have $\expc[X_{n+1} - X_n \mid X_n] = 0$. That is, on average the chain's value does not change, regardless of what the current value $X_n$ actually is.
+\end{definition}
+
+\begin{example}
+\label{ex:11.4.1}
+Let $\{X_n\}$ be simple random walk with $p = 1/2$. Then $X_{n+1} - X_n$ is equal to either $+1$ or $-1$, with probability $1/2$ each. Hence,
+\[
+\expc[X_{n+1} - X_n \mid X_n] = (+1)(1/2) + (-1)(1/2) = 0,
+\]
+so $\{X_n\}$ stays the same on average and is a martingale. (Note that we will never actually have $X_{n+1} - X_n = 0$. However, \emph{on average} we will have $X_{n+1} - X_n = 0$.)
+\end{example}
+
+\begin{example}
+\label{ex:11.4.2}
+Let $\{X_n\}$ be simple random walk with $p = 2/3$. Then $X_{n+1} - X_n$ is equal to either $+1$ or $-1$, with probabilities $2/3$ and $1/3$ respectively. Hence,
+\[
+\expc[X_{n+1} - X_n \mid X_n] = (+1)(2/3) + (-1)(1/3) = 1/3 \neq 0.
+\]
+Thus, $\{X_n\}$ is not a martingale in this case.
+\end{example}
+
+\begin{example}
+\label{ex:11.4.3}
+Suppose we start with the number 5 and then repeatedly do the following. We either add 3 to the number (with probability $1/4$), or subtract 1 from the number (with probability $3/4$). Let $X_n$ be the number obtained after repeating this procedure $n$ times. Then, given the value of $X_n$, we see that $X_{n+1} - X_n = 3$ with probability $1/4$, while $X_{n+1} - X_n = -1$ with probability $3/4$. Hence,
+\[
+\expc[X_{n+1} - X_n \mid X_n] = (3)(1/4) + (-1)(3/4) = 3/4 - 3/4 = 0
+\]
+and $\{X_n\}$ is a martingale.
+\end{example}
+
+It is sometimes possible to create martingales in subtle ways, as follows.
+
+\begin{example}
+\label{ex:11.4.4}
+Let $\{X_n\}$ again be simple random walk, but this time for general $p$. Then $X_{n+1} - X_n$ is equal to $+1$ with probability $p$, and to $-1$ with probability $q = 1 - p$. Hence,
+\[
+\expc[X_{n+1} - X_n \mid X_n] = (+1)p + (-1)q = p - q = 2p - 1.
+\]
+If $p \neq 1/2$, then this is not equal to 0. Hence, $\{X_n\}$ does not stay the same on average, so $\{X_n\}$ is not a martingale.
+
+On the other hand, let
+\[
+Z_n = \left(\frac{1-p}{p}\right)^{X_n},
+\]
+i.e., $Z_n$ equals the constant $(1-p)/p$ raised to the power of $X_n$. Then increasing $X_n$ by 1 corresponds to multiplying $Z_n$ by $(1-p)/p$, while decreasing $X_n$ by 1 corresponds to dividing $Z_n$ by $(1-p)/p$, i.e., multiplying by $p/(1-p)$. But $X_{n+1} - X_n = 1$ with probability $p$, while $X_{n+1} - X_n = -1$ with probability $q = 1 - p$. Therefore, we see that, given the value of $Z_n$, we have
+\begin{align*}
+\expc[Z_{n+1} - Z_n \mid Z_n] &= \left(\frac{1-p}{p} Z_n - Z_n\right) p + \left(\frac{p}{1-p} Z_n - Z_n\right)(1-p) \\
+&= (1-p) Z_n - p Z_n + p Z_n - (1-p) Z_n = 0.
+\end{align*}
+Accordingly, $\expc[Z_{n+1} - Z_n \mid Z_n] = 0$, so that $\{Z_n\}$ stays the same on average, i.e., $\{Z_n\}$ is a martingale.
+\end{example}
+
+%------------------------------------------------------------------------------
+\subsection{Expected Values}
+\label{ssec:11.4.2}
+%------------------------------------------------------------------------------
+
+Because martingales stay the same on average, we immediately have the following.
+
+\begin{theorem}
+\label{thm:11.4.1}
+Let $\{X_n\}$ be a martingale with $X_0 = a$. Then $\expc[X_n] = a$ for all $n$.
+\end{theorem}
+
+This theorem sometimes provides very useful information, as the following examples demonstrate.
+
+\begin{example}
+\label{ex:11.4.5}
+Let $\{X_n\}$ again be simple random walk with $p = 1/2$. Then we have already seen that $\{X_n\}$ is a martingale. Hence, if $X_0 = a$, then we will have $\expc[X_n] = a$ for all $n$. That is, for a fair game (i.e., for $p = 1/2$), no matter how long you have been gambling, your average fortune will always be equal to your initial fortune $a$.
+\end{example}
+
+\begin{example}
+\label{ex:11.4.6}
+Suppose we start with the number 10 and then repeatedly do the following. We either add 2 to the number (with probability $1/3$), or subtract 1 from the number (with probability $2/3$). Suppose we repeat this process 25 times. What is the expected value of the number we end up with?
+
+Without martingale theory, this problem appears to be difficult, requiring lengthy computations of various possibilities for what could happen on each of the 25 steps. However, with martingale theory, it is very easy.
+
+Indeed, let $X_n$ be the number after $n$ steps, so that $X_0 = 10$, $X_1 = 12$ (with probability $1/3$) or $X_1 = 9$ (with probability $2/3$), etc. Then, because $X_{n+1} - X_n$ equals either $+2$ (with probability $1/3$) or $-1$ (with probability $2/3$), we have
+\[
+\expc[X_{n+1} - X_n \mid X_n] = (+2)(1/3) + (-1)(2/3) = 2/3 - 2/3 = 0.
+\]
+Hence, $\{X_n\}$ is a martingale.
+
+It then follows that $\expc[X_n] = X_0 = 10$, for any $n$. In particular, $\expc[X_{25}] = 10$. That is, after 25 steps, on average the number will be equal to 10.
+\end{example}
+
+%------------------------------------------------------------------------------
+\subsection{Stopping Times}
+\label{ssec:11.4.3}
+%------------------------------------------------------------------------------
+
+If $\{X_n\}$ is a martingale with $X_0 = a$, then it is very helpful to know that $\expc[X_n] = a$ for all $n$. However, it is sometimes even more helpful to know that $\expc[X_T] = a$, where $T$ is a \emph{random} time. Now, this is not always true; however, it is often true, as we shall see. We begin with another definition.
+
+\begin{definition}
+\label{def:11.4.2}
+Let $\{X_n\}$ be a stochastic process, and let $T$ be a random variable taking values in $\{0, 1, 2, \ldots\}$. Then $T$ is a \emph{stopping time} if for all $m = 0, 1, 2, \ldots$, the event $\{T = m\}$ is independent of the values $X_{m+1}, X_{m+2}, \ldots$. That is, when deciding whether or not $T = m$ (i.e., whether or not to ``stop'' at time $m$), we are not allowed to look at the future values $X_{m+1}, X_{m+2}, \ldots$.
+\end{definition}
+
+\begin{example}
+\label{ex:11.4.7}
+Let $\{X_n\}$ be simple random walk, let $b$ be any integer, and let $\tau_b = \min\{n \geqslant 0 : X_n = b\}$ be the first time we hit the value $b$. Then $\tau_b$ is a stopping time because the event $\{\tau_b = n\}$ depends only on $X_0, \ldots, X_n$, not on $X_{n+1}, X_{n+2}, \ldots$.
+
+On the other hand, let $T = \tau_b - 1$, so that $T$ corresponds to stopping just before we hit $b$. Then $T$ is \emph{not} a stopping time because it must look at the future value $X_{m+1}$ to decide whether or not to stop at time $m$.
+\end{example}
+
+A key result about martingales and stopping times is the \emph{optional stopping theorem}, as follows.
+
+\begin{theorem}[Optional stopping theorem]
+\label{thm:11.4.2}
+Suppose $\{X_n\}$ is a martingale with $X_0 = a$, and $T$ is a stopping time. Suppose further that either
+\begin{enumerate}[(a)]
+\item the martingale is bounded up to time $T$, i.e., for some $M > 0$ we have $|X_n| \leqslant M$ for all $n \leqslant T$; or
+\item the stopping time is bounded, i.e., for some $M > 0$ we have $T \leqslant M$.
+\end{enumerate}
+Then $\expc[X_T] = a$, i.e., on average the value of the process at the random time $T$ is equal to the starting value $a$.
+\end{theorem}
+
+\begin{proof}
+For a proof and further discussion, see, e.g., page 273 of \emph{Probability: Theory and Examples}, 2nd ed., by R.\ Durrett (Duxbury Press, New York, 1996).
+\end{proof}
+
+Consider a simple application of this.
+
+\begin{example}
+\label{ex:11.4.8}
+Let $\{X_n\}$ be simple random walk with initial value $a$ and with $p = 1/2$. Let $r < a < s$ be integers. Let $T = \min(\tau_r, \tau_s)$ be the first time the process hits either $r$ or $s$. Then $r \leqslant X_n \leqslant s$ for $n \leqslant T$, so that condition (a) of the optional stopping theorem applies. We conclude that $\expc[X_T] = a$, i.e., at time $T$, the walk will on average be equal to $a$.
+\end{example}
+
+We shall see that the optional stopping theorem is useful in many ways.
+
+\begin{example}
+\label{ex:11.4.9}
+We can use the optional stopping theorem to find the probability that the simple random walk with $p = 1/2$ will hit $r$ before hitting another value $s$.
+
+Indeed, again let $\{X_n\}$ be simple random walk with initial value $a$ and $p = 1/2$, with $r < a < s$ integers and $T = \min(\tau_r, \tau_s)$. Then as earlier, $\expc[X_T] = a$. We can use this to solve for $\prb(X_T = r)$, i.e., for the probability that the walk hits $r$ before hitting $s$.
+
+Clearly, we always have either $X_T = r$ or $X_T = s$. Let $h = \prb(X_T = r)$. Then $\expc[X_T] = hr + (1 - h)s$. Because $\expc[X_T] = a$, we must have $a = hr + (1 - h)s$. Solving for $h$, we see that
+\[
+\prb(X_T = r) = \frac{a - s}{r - s}.
+\]
+We conclude that the probability that the process will hit $r$ before it hits $s$ is equal to $(a - s)/(r - s)$. Note that absolutely no difficult computations were required to obtain this result.
+\end{example}
+
+A special case of the previous example is particularly noteworthy.
+
+\begin{example}
+\label{ex:11.4.10}
+In the previous example, suppose $r = c$ and $s = 0$. Then the value $h = \prb(X_T = r)$ is precisely the same as the probability of success in the gambler's ruin problem. The previous example shows that $h = (a - s)/(r - s) = a/c$. This gives the same answer as Theorem~\ref{thm:11.1.2}, but with far less effort.
+\end{example}
+
+It is impressive that, in the preceding example, martingale theory can solve the gambler's ruin problem so easily in the case $p = 1/2$. Our previous solution, without using martingale theory, was much more difficult (see Section~\ref{sec:11.7}). Even more surprising, martingale theory can also solve the gambler's ruin problem when $p \neq 1/2$, as follows.
+
+\begin{example}
+\label{ex:11.4.11}
+Let $\{X_n\}$ be simple random walk with initial value $a$ and with $p \neq 1/2$. Let $0 < a < c$ be integers. Let $T = \min(\tau_c, \tau_0)$ be the first time the process hits either $c$ or 0. To solve the gambler's ruin problem in this case, we are interested in $g = \prb(X_T = c)$. We can use the optional stopping theorem to solve for the gambler's ruin probability $g$, as follows.
+
+Now, $\{X_n\}$ is not a martingale, so we cannot apply martingale theory to it. However, let
+\[
+Z_n = \left(\frac{1-p}{p}\right)^{X_n}.
+\]
+Then $\{Z_n\}$ has initial value $Z_0 = ((1-p)/p)^a$. Also, we know from Example~\ref{ex:11.4.4} that $\{Z_n\}$ is a martingale. Furthermore,
+\[
+0 < Z_n \leqslant \max\left(\left(\frac{1-p}{p}\right)^c, \left(\frac{1-p}{p}\right)^c\right)
+\]
+for $n \leqslant T$, so that condition (a) of the optional stopping theorem applies. We conclude that
+\[
+\expc[Z_T] = Z_0 = \left(\frac{1-p}{p}\right)^a.
+\]
+
+Now, clearly, we always have either $X_T = c$ (with probability $g$) or $X_T = 0$ (with probability $1 - g$). In the former case, $Z_T = ((1-p)/p)^c$, while in the latter case, $Z_T = 1$. Hence, $\expc[Z_T] = g((1-p)/p)^c + (1 - g) \cdot 1$. Because $\expc[Z_T] = ((1-p)/p)^a$, we must have
+\[
+\left(\frac{1-p}{p}\right)^a = g \left(\frac{1-p}{p}\right)^c + (1 - g) \cdot 1.
+\]
+Solving for $g$, we see that
+\[
+g = \frac{((1-p)/p)^a - 1}{((1-p)/p)^c - 1}.
+\]
+This again gives the same answer as Theorem~\ref{thm:11.1.2}, this time for $p \neq 1/2$, but again with far less effort.
+\end{example}
+
+Martingale theory can also tell us other surprising facts.
+
+\begin{example}
+\label{ex:11.4.12}
+Let $\{X_n\}$ be simple random walk with $p = 1/2$ and with initial value $a = 0$. Will the walk hit the value $-1$ some time during the first million steps? Probably yes, but not for sure. Furthermore, conditional on not hitting $-1$, it will probably be extremely large, as we now discuss.
+
+Let $T = \min(10^6, \tau_{-1})$. That is, $T$ is the first time the process hits $-1$, unless that takes more than one million steps, in which case $T = 10^6$.
+
+Now, $\{X_n\}$ is a martingale. Also $T$ is a stopping time (because it does not look into the future when deciding whether or not to stop). Furthermore, we always have $T \leqslant 10^6$, so condition (b) of the optional stopping theorem applies. We conclude that $\expc[X_T] = a = 0$.
+
+On the other hand, by the law of total expectation, we have
+\[
+\expc[X_T] = \expc[X_T \mid X_T = -1] \prb(X_T = -1) + \expc[X_T \mid X_T \neq -1] \prb(X_T \neq -1).
+\]
+Also, clearly $\expc[X_T \mid X_T = -1] = -1$. Let $u = \prb(X_T = -1)$, so that $\prb(X_T \neq -1) = 1 - u$. Then we conclude that $0 = (-1)u + \expc[X_T \mid X_T \neq -1](1 - u)$, so that
+\[
+\expc[X_T \mid X_T \neq -1] = \frac{u}{1 - u}.
+\]
+
+Now, clearly, $u$ will be very close to 1, i.e., it is very likely that within $10^6$ steps the process will have hit $-1$. Hence, $\expc[X_T \mid X_T \neq -1]$ is extremely large.
+
+We may summarize this discussion as follows. Nearly always we have $X_T = -1$. However, very occasionally we will have $X_T \neq -1$. Furthermore, the average value of $X_T$ when $X_T \neq -1$ is so large that overall (i.e., counting both the case $X_T = -1$ and the case $X_T \neq -1$), the average value of $X_T$ is 0 (as it must be because $\{X_n\}$ is a martingale)!
+\end{example}
+
+If one is not careful, then it is possible to be tricked by martingale theory, as follows.
+
+\begin{example}
+\label{ex:11.4.13}
+Suppose again that $\{X_n\}$ is simple random walk with $p = 1/2$ and with initial value $a = 0$. Let $T = \tau_{-1}$, i.e., $T$ is the first time the process hits $-1$ (no matter how long that takes).
+
+Because the process will always wait until it hits $-1$, we always have $X_T = -1$. Because this is true with probability 1, we also have $\expc[X_T] = -1$.
+
+On the other hand, again $\{X_n\}$ is a martingale, so again it appears that we should have $\expc[X_T] = 0$. What is going on?
+
+The answer, of course, is that neither condition (a) nor condition (b) of the optional stopping theorem is satisfied in this case. That is, there is no limit to how large $T$ might have to be or how large $X_n$ might get for some $n \leqslant T$. Hence, the optional stopping theorem does not apply in this case, and we cannot conclude that $\expc[X_T] = 0$. Instead, $\expc[X_T] = -1$ here.
+\end{example}
+
+\subsection*{Summary of Section~\ref{sec:11.4}}
+
+A Markov chain $\{X_n\}$ is a \emph{martingale} if it stays the same on average, i.e., if $\expc[X_{n+1} - X_n \mid X_n] = 0$ for all $n$. There are many examples.
+
+A \emph{stopping time} $T$ for the chain is a nonnegative integer-valued random variable that does not look into the future of $\{X_n\}$. For example, perhaps $T = \tau_b$ is the first time the chain hits some state $b$.
+
+If $\{X_n\}$ is a martingale with stopping time $T$, and if either $T$ or $\{X_n : n \leqslant T\}$ is bounded, then $\expc[X_T] = X_0$. This can be used to solve many problems, e.g., gambler's ruin.
+
+%------------------------------------------------------------------------------
+\subsection*{Exercises}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.4.1}
+Suppose we define a process $\{X_n\}$ as follows. Given $X_n$, with probability $3/8$ we let $X_{n+1} = X_n + 4$, while with probability $5/8$ we let $X_{n+1} = X_n - C$. What value of $C$ will make $\{X_n\}$ be a martingale?
+\end{exercise}
+
+\begin{solution}
+Here $\expc(X_{n+1} \mid X_n) = (3/8)(X_n - 4) + (5/8)(X_n + C) = X_n + (5C - 12)/8$. This equals $X_n$ if $C = 12/5$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.4.2}
+Suppose we define a process $\{X_n\}$ as follows. Given $X_n$, with probability $p$ we let $X_{n+1} = X_n + 7$, while with probability $1 - p$ we let $X_{n+1} = X_n - 2$. What value of $p$ will make $\{X_n\}$ be a martingale?
+\end{exercise}
+
+\begin{solution}
+Here $\expc(X_{n+1} \mid X_n) = (p)(X_n + 7) + (1 - p)(X_n - 2) = X_n + (9p - 2)$. This equals $X_n$ if $p = 2/9$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.4.3}
+Suppose we define a process $\{X_n\}$ as follows. Given $X_n$, with probability $p$ we let $X_{n+1} = 2X_n$, while with probability $1 - p$ we let $X_{n+1} = X_n/2$. What value of $p$ will make $\{X_n\}$ be a martingale?
+\end{exercise}
+
+\begin{solution}
+Here $\expc(X_{n+1} \mid X_n) = (p)(2X_n) + (1 - p)(X_n/2) = X_n(2p + (1 - p)/2) = X_n((3p/2) + (1/2))$. This equals $X_n$ if $(3p/2) + (1/2) = 1$, i.e.\ if $p = 1/3$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.4.4}
+Let $\{X_n\}$ be a martingale, with initial value $X_0 = 14$. Suppose for some $n$, we know that $\prb(X_n = 8) + \prb(X_n = 12) + \prb(X_n = 17) = 1$, i.e., $X_n$ is always either 8, 12, or 17. Suppose further that $\prb(X_n = 8) = 0.1$. Compute $\prb(X_n = 14)$.
+\end{exercise}
+
+\begin{solution}
+Let $p = \prb(X_n = 14)$. Then $\expc(X_n) = (0.1)(8) + (0.9 - p)(12) + (p)(14) = 2p + 11.6$. But $\{X_n\}$ is a martingale, so we know that $\expc(X_n) = X_0 = 14$. Hence, $2p + 11.6 = 14$, so $p = 1.2$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.4.5}
+Let $\{X_n\}$ be a martingale, with initial value $X_0 = 5$. Suppose we know that $\prb(X_8 = 3) + \prb(X_8 = 4) + \prb(X_8 = 6) = 1$, i.e., $X_8$ is always either 3, 4, or 6. Suppose further that $\prb(X_8 = 3) = 2 \prb(X_8 = 6)$. Compute $\prb(X_8 = 4)$.
+\end{exercise}
+
+\begin{solution}
+Let $p = \prb(X_n = 4)$. Then $\expc(X_n) = (2/3)(1 - p)(3) + (1/3)(1 - p)(4) + (p)(6) = (8p + 10)/3$. But $\{X_n\}$ is a martingale, so we know that $\expc(X_n) = X_0 = 5$. Hence, $(8p + 10)/3 = 5$, so $p = 5/8$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.4.6}
+Suppose you start with 175 pennies. You repeatedly flip a fair coin. Each time the coin comes up heads, you win a penny; each time the coin comes up tails, you lose a penny.
+\begin{enumerate}[(a)]
+\item After repeating this procedure 20 times, how many pennies will you have on average?
+\item Suppose you continue until you have either 100 or 200 pennies, and then you stop. What is the probability you will have 200 pennies when you stop?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Let $X_n$ be the number of pennies at time $n$. Then $\{X_n\}$ is a martingale. Hence, $\expc(X_{20}) = X_0 = 175$.
+    \item Let $p$ be the probability you have 200 pennies when you stop. Then let $T$ be the time at which you stop. Then $\expc(X_T) = (p)(200) + (1 - p)(100) = 100 + 100p$. But $\{X_n\}$ is a bounded martingale, so $\expc(X_T) = X_0 = 175$. Hence, $100 + 100p = 175$, so $p = 3/4$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.4.7}
+Define a process $\{X_n\}$ by $X_0 = 27$, and $X_{n+1} = 3X_n$ with probability $1/4$, or $X_{n+1} = X_n/3$ with probability $3/4$. Let $T = \min(\tau_1, \tau_{81})$ be the first time the process hits either 1 or 81.
+\begin{enumerate}[(a)]
+\item Show that $\{X_n\}$ is a martingale.
+\item Show that $T$ is a stopping time.
+\item Compute $\expc[X_T]$.
+\item Compute the probability $\prb(X_T = 1)$ that the process hits 1 before hitting 81.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Here $\expc(X_{n+1} \mid X_n) = (1/4)(3X_n) + (3/4)(X_n/3) = X_n$, so $\{X_n\}$ is a martingale.
+    \item $T$ is non-negative integer-valued and does not look into the future, so it is a stopping time.
+    \item Since $\{X_n\}_{n \leqslant T}$ is bounded between 1 and 81, we have $\expc(X_T) = X_0 = 27$.
+    \item Let $p = \prb(X_T = 1)$. Then $\expc(X_T) = (p)(1) + (1 - p)(81) = 81 - 80p$. Hence, $81 - 80p = 27$, so $p = 54/80 = 27/40$.
+\end{enumerate}
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Problems}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.4.8}
+Let $\{X_n\}$ be a stochastic process, and let $T_1$ be a stopping time. Let $T_2 = T_1 + i$ and $T_3 = T_1 - i$, for some positive integer $i$. Which of $T_2$ and $T_3$ is necessarily a stopping time, and which is not? (Explain your reasoning.)
+\end{exercise}
+
+\begin{solution}
+Since $T_2$ happens later than $T_1$, it also does not look into the future, so it also must be a stopping time. However, since $T_3$ happens earlier, it is possible that $T_3$ looks into the future, so $T_3$ may not be a stopping time.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.4.9}
+Let $\{X_n\}$ be a stochastic process, and let $T_1$ and $T_2$ be two different stopping times. Let $T_3 = \min(T_1, T_2)$, and $T_4 = \max(T_1, T_2)$.
+\begin{enumerate}[(a)]
+\item Is $T_3$ necessarily a stopping time? (Explain your reasoning.)
+\item Is $T_4$ necessarily a stopping time? (Explain your reasoning.)
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Since $\{T_3 \leqslant n\} = \{T_1 \leqslant n\} \cup \{T_2 \leqslant n\}$ and $T_1$ and $T_2$ are stopping times, then $\{T_3 \leqslant n\}$ is also a function of $X_0, X_1, \ldots, X_n$ alone, so that $T_3$ is also a stopping time.
+    \item Since $\{T_4 \leqslant n\} = \{T_1 \leqslant n\} \cap \{T_2 \leqslant n\}$ and $T_1$ and $T_2$ are stopping times, then $\{T_4 \leqslant n\}$ is also a function of $X_0, X_1, \ldots, X_n$ alone, so that $T_4$ is also a stopping time.
+\end{enumerate}
+\end{solution}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Brownian Motion}
+\label{sec:11.5}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The simple random walk model of Section~\ref{ssec:11.1.2} (with $p = 1/2$) can be extended to an interesting continuous-time model, called \emph{Brownian motion}, as follows. Roughly, the idea is to speed up time faster and faster by a factor of $M$ (for very large $M$), while simultaneously shrinking space smaller and smaller by a factor of $1/\sqrt{M}$. The factors of $M$ and $1/\sqrt{M}$ are chosen just right so that, using the central limit theorem, we can derive properties of Brownian motion. Indeed, using the central limit theorem, we shall see that various distributions related to Brownian motion are in fact normal distributions.
+
+Historically, Brownian motion gets its name from Robert Brown, a botanist, who in 1828 observed the motions of tiny particles in solution, under a microscope, as they were bombarded from random directions by many unseen molecules. Brownian motion was proposed as a model for the observed chaotic, random movement of such particles. In fact, Brownian motion turns out not to be a very good model for such movement (for example, Brownian motion has infinite derivative, which would only make sense if the particles moved infinitely quickly!). However, Brownian motion has many useful mathematical properties and is also very important in the theory of finance because it is often used as a model of stock price fluctuations. A proper mathematical theory of Brownian motion was developed in 1923 by Norbert Wiener\footnote{Wiener was such an absent-minded professor that he once got lost and could not find his house. In his confusion, he asked a young girl for directions, without recognizing the girl as his daughter!}; as a result, Brownian motion is also sometimes called the \emph{Wiener process}.
+
+We shall construct Brownian motion in two steps. First, we construct faster and faster random walks, to be called $\{Y^{(M)}_t\}$ where $M$ is large. Then, we take the limit as $M \to \infty$ to get Brownian motion.
+
+%------------------------------------------------------------------------------
+\subsection{Faster and Faster Random Walks}
+\label{ssec:11.5.1}
+%------------------------------------------------------------------------------
+
+To begin, we let $Z_1, Z_2, \ldots$ be i.i.d.\ with $\prb(Z_i = +1) = \prb(Z_i = -1) = 1/2$. For each $M = 1, 2, \ldots$, define a discrete-time random process
+\[
+\{Y^{(M)}_{i/M} : i = 0, 1, \ldots\},
+\]
+by $Y^{(M)}_0 = 0$, and
+\[
+Y^{(M)}_{(i+1)/M} = Y^{(M)}_{i/M} + \frac{1}{\sqrt{M}} Z_{i+1},
+\]
+for $i = 0, 1, 2, \ldots$, so that
+\[
+Y^{(M)}_{i/M} = \frac{1}{\sqrt{M}} (Z_1 + Z_2 + \cdots + Z_i).
+\]
+
+Intuitively, then, $Y^{(M)}_{i/M}$ is like an ordinary (discrete-time) random walk (with $p = 1/2$), except that time has been sped up by a factor of $M$ and space has been shrunk by a factor of $\sqrt{M}$ (each step in the new walk moves a distance $1/\sqrt{M}$). That is, this process takes lots and lots of very small steps.
+
+To make $\{Y^{(M)}_{i/M}\}$ into a continuous-time process, we can then ``fill in'' the missing values by making the function linear on the intervals $[i/M, (i+1)/M]$. In this way, we obtain a continuous-time process
+\[
+\{Y^{(M)}_t : t \geqslant 0\}
+\]
+which agrees with $Y^{(M)}_{i/M}$ whenever $t = 1/M$. In Figure 11.5.1, we have plotted
+\[
+\{Y^{(10)}_{i/10} : i = 0, 1, \ldots, 20\}
+\]
+(the dots) and the corresponding values of
+\[
+\{Y^{(10)}_t : 0 \leqslant t \leqslant 20\}
+\]
+(the solid line), arising from the realization
+\[
+(Z_1, \ldots, Z_{20}) = (1, -1, 1, 1, -1, 1, \ldots),
+\]
+where we have taken $1/\sqrt{10} \approx 0.316$.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig11_5_1.pdf}
+\caption{Plot of some values of $Y^{(10)}_{i/10}$ and $\{Y^{(10)}_t\}$}
+\label{fig:11.5.1}
+\end{figure}
+
+The collection of variables $\{Y^{(M)}_t : t \geqslant 0\}$ is then a stochastic process but is now indexed by the continuous time parameter $t \geqslant 0$. This is an example of a \emph{continuous-time stochastic process}.
+
+Now, the factors $M$ and $\sqrt{M}$ have been chosen carefully, as the following theorem illustrates.
+
+\begin{theorem}
+\label{thm:11.5.1}
+Let $\{Y^{(M)}_t : t \geqslant 0\}$ be as defined earlier. Then for large $M$:
+\begin{enumerate}[(a)]
+\item For $t > 0$, the distribution of $Y^{(M)}_t$ is approximately $\text{N}(0, t)$, i.e., normally distributed with mean $t$.
+\item For $s, t > 0$, the covariance $\cov(Y^{(M)}_t, Y^{(M)}_t)$ is approximately equal to $\min(s, t)$.
+\item For $t > s > 0$, the distribution of the increment $Y^{(M)}_t - Y^{(M)}_s$ is approximately $\text{N}(0, t - s)$, i.e., normally distributed with mean 0 and variance $t - s$, and is approximately independent of $Y^{(M)}_s$.
+\item $Y^{(M)}_t$ is a continuous function of $t$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+See Section~\ref{sec:11.7} for the proof of this result.
+\end{proof}
+
+We shall use this limit theorem to construct Brownian motion.
+
+%------------------------------------------------------------------------------
+\subsection{Brownian Motion as a Limit}
+\label{ssec:11.5.2}
+%------------------------------------------------------------------------------
+
+We have now developed the faster and faster processes $\{Y^{(M)}_t : t \geqslant 0\}$, and some of their properties. Brownian motion is then defined as the limit as $M \to \infty$ of the processes $\{Y^{(M)}_t : t \geqslant 0\}$. That is, we define Brownian motion $\{B_t : t \geqslant 0\}$ by saying that the distribution of $\{B_t : t \geqslant 0\}$ is equal to the limit as $M \to \infty$ of the distribution of $\{Y^{(M)}_t : t \geqslant 0\}$. A graph of a typical run of Brownian motion is in Figure 11.5.2.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig11_5_2.pdf}
+\caption{A typical outcome from Brownian motion.}
+\label{fig:11.5.2}
+\end{figure}
+
+In this way, all the properties of $\{Y^{(M)}_t\}$ for large $M$, as developed in Theorem~\ref{thm:11.5.1}, will apply to Brownian motion, as follows.
+
+\begin{theorem}
+\label{thm:11.5.2}
+Let $\{B_t : t \geqslant 0\}$ be Brownian motion. Then
+\begin{enumerate}[(a)]
+\item $B_t$ is normally distributed: $B_t \sim \text{N}(0, t)$ for any $t > 0$;
+\item $\cov(B_s, B_t) = \expc[B_s B_t] = \min(s, t)$ for $s, t > 0$;
+\item if $0 < s < t$, then the increment $B_t - B_s$ is normally distributed: $B_t - B_s \sim \text{N}(0, t - s)$, and furthermore $B_t - B_s$ is independent of $B_s$;
+\item the function $\{B_t : t \geqslant 0\}$ is a continuous function.
+\end{enumerate}
+\end{theorem}
+
+This theorem can be used to compute many things about Brownian motion.
+
+\begin{example}
+\label{ex:11.5.1}
+Let $\{B_t\}$ be Brownian motion. What is $\prb(B_5 < 3)$?
+
+We know that $B_5 \sim \text{N}(0, 5)$. Hence, $B_5/\sqrt{5} \sim \text{N}(0, 1)$. We conclude that
+\[
+\prb(B_5 < 3) = \prb(B_5/\sqrt{5} < 3/\sqrt{5}) = \Phi(3/\sqrt{5}) \approx 0.910,
+\]
+where
+\[
+\Phi(x) = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-s^2/2} \,\mathrm{d}s
+\]
+is the cdf of a standard normal distribution, and we have found the numerical value from Table D.2. Thus, about 91\% of the time, Brownian motion will be less than 3 at time 5.
+\end{example}
+
+\begin{example}
+\label{ex:11.5.2}
+Let $\{B_t\}$ be Brownian motion. What is $\prb(B_7 \geqslant -4)$?
+
+We know that $B_7 \sim \text{N}(0, 7)$. Hence, $B_7/\sqrt{7} \sim \text{N}(0, 1)$. We conclude that
+\[
+\prb(B_7 \geqslant -4) = 1 - \prb(B_7 < -4) = 1 - \prb(B_7/\sqrt{7} < -4/\sqrt{7}) = 1 - \Phi(-4/\sqrt{7}) \approx 1 - 0.065 = 0.935.
+\]
+Thus, over 93\% of the time, Brownian motion will be at least $-4$ at time 7.
+\end{example}
+
+\begin{example}
+\label{ex:11.5.3}
+Let $\{B_t\}$ be Brownian motion. What is $\prb(B_8 - B_6 \leqslant -1.5)$?
+
+We know that $B_8 - B_6 \sim \text{N}(0, 8 - 6) = \text{N}(0, 2)$. Hence, $(B_8 - B_6)/\sqrt{2} \sim \text{N}(0, 1)$. We conclude that
+\[
+\prb(B_8 - B_6 \leqslant -1.5) = \prb((B_8 - B_6)/\sqrt{2} \leqslant -1.5/\sqrt{2}) = \Phi(-1.5/\sqrt{2}) \approx 0.144.
+\]
+Thus, about 14\% of the time, Brownian motion will decrease by at least 1.5 between time 6 and time 8.
+\end{example}
+
+\begin{example}
+\label{ex:11.5.4}
+Let $\{B_t\}$ be Brownian motion. What is $\prb(B_2 \leqslant 0.5, B_5 - B_2 \geqslant 1.5)$?
+
+By Theorem~\ref{thm:11.5.2}, we see that $B_5 - B_2$ and $B_2$ are independent. Hence,
+\[
+\prb(B_2 \leqslant 0.5, B_5 - B_2 \geqslant 1.5) = \prb(B_2 \leqslant 0.5) \cdot \prb(B_5 - B_2 \geqslant 1.5).
+\]
+Now, we know that $B_2 \sim \text{N}(0, 2)$. Hence, $B_2/\sqrt{2} \sim \text{N}(0, 1)$, and
+\[
+\prb(B_2 \leqslant 0.5) = \prb(B_2/\sqrt{2} \leqslant 0.5/\sqrt{2}) = \Phi(0.5/\sqrt{2}).
+\]
+Similarly, $B_5 - B_2 \sim \text{N}(0, 3)$, so $(B_5 - B_2)/\sqrt{3} \sim \text{N}(0, 1)$, and
+\[
+\prb(B_5 - B_2 \geqslant 1.5) = \prb((B_5 - B_2)/\sqrt{3} \geqslant 1.5/\sqrt{3}) = 1 - \prb((B_5 - B_2)/\sqrt{3} < 1.5/\sqrt{3}) = 1 - \Phi(1.5/\sqrt{3}).
+\]
+We conclude that
+\[
+\prb(B_2 \leqslant 0.5, B_5 - B_2 \geqslant 1.5) = \prb(B_2 \leqslant 0.5) \cdot \prb(B_5 - B_2 \geqslant 1.5) = \Phi(0.5/\sqrt{2}) \cdot (1 - \Phi(1.5/\sqrt{3})) \approx 0.292.
+\]
+Thus, about 29\% of the time, Brownian motion will be no more than $1/2$ at time 2 and will then increase by at least 1.5 between time 2 and time 5.
+\end{example}
+
+We note also that, because Brownian motion was created from simple random walks with $p = 1/2$, it follows that Brownian motion is a martingale. This implies that $\expc[B_t] = 0$ for all $t$, but of course, we already knew that because $B_t \sim \text{N}(0, t)$. On the other hand, we can now use the optional stopping theorem (Theorem~\ref{thm:11.4.2}) to conclude that $\expc[B_T] = 0$ where $T$ is a stopping time (provided, as usual, that either $T$ or $\{B_t : t \leqslant T\}$ is bounded). This allows us to compute certain probabilities, as follows.
+
+\begin{example}
+\label{ex:11.5.5}
+Let $\{B_t\}$ be Brownian motion. Let $c > 0 > b$. What is the probability the process will hit $c$ before it hits $b$?
+
+To solve this problem, we let $\tau_c$ be the first time the process hits $c$, and $\tau_b$ be the first time the process hits $b$. We then let $T = \min(\tau_c, \tau_b)$ be the first time the process either hits $c$ or hits $b$. The question becomes, what is $\prb(\tau_c < \tau_b)$? Equivalently, what is $\prb(B_T = c)$?
+
+To solve this, we note that we must have $\expc[B_T] = B_0 = 0$. But if $h = \prb(B_T = c)$, then $B_T = c$ with probability $h$, and $B_T = b$ with probability $1 - h$. Hence, we must have $0 = \expc[B_T] = hc + (1 - h)b$, so that $h = -b/(b - c)$. We conclude that
+\[
+\prb(B_T = c) = \prb(\tau_c < \tau_b) = \frac{-b}{b - c}.
+\]
+(Recall that $c > 0$, so that $b - c = |b| - c$ here.)
+\end{example}
+
+Finally, we note that although Brownian motion is a continuous function, it turns out that, with probability one, Brownian motion is not differentiable anywhere at all! This is part of the reason that Brownian motion is not a good model for the movement of real particles. (See Challenge~\ref{exer:11.5.15} for a result related to this.) However, Brownian motion has many other uses, including as a model for stock prices, which we now describe.
+
+%------------------------------------------------------------------------------
+\subsection{Diffusions and Stock Prices}
+\label{ssec:11.5.3}
+%------------------------------------------------------------------------------
+
+Brownian motion is used to construct various \emph{diffusion} processes, as follows.
+
+Given Brownian motion $\{B_t\}$, we can let
+\[
+X_t = a + \mu t + \sigma B_t,
+\]
+where $a$ and $\mu$ are any real numbers, and $\sigma > 0$. Then $\{X_t\}$ is a \emph{diffusion}.
+
+Here, $a$ is the \emph{initial value}, $\mu$ (called the \emph{drift}) is the average rate of increase, and $\sigma$ (called the \emph{volatility parameter}) represents the amount of randomness of the diffusion. Intuitively, $X_t$ is approximately equal to the linear function $a + \mu t$, but due to the randomness of Brownian motion, $X_t$ takes on random values around this linear function.
+
+The precise distribution of $X_t$ can be computed, as follows.
+
+\begin{theorem}
+\label{thm:11.5.3}
+Let $\{B_t\}$ be Brownian motion, and let $X_t = a + \mu t + \sigma B_t$ be a diffusion. Then
+\begin{enumerate}[(a)]
+\item $\expc[X_t] = a + \mu t$,
+\item $\var(X_t) = \sigma^2 t$,
+\item $X_t \sim \text{N}(a + \mu t, \sigma^2 t)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+We know $B_t \sim \text{N}(0, 1)$, so $\expc[B_t] = 0$ and $\var(B_t) = t$. Also, $a + \mu t$ is not random (i.e., is a constant from the point of view of random variables). Hence,
+\[
+\expc[X_t] = \expc[a + \mu t + \sigma B_t] = a + \mu t + \expc[\sigma B_t] = a + \mu t,
+\]
+proving part (a).
+
+Similarly,
+\[
+\var(X_t) = \var(a + \mu t + \sigma B_t) = \var(\sigma B_t) = \sigma^2 \var(B_t) = \sigma^2 t,
+\]
+proving part (b).
+
+Finally, because $X_t$ is a linear function of the normally distributed random variable $B_t$, $X_t$ must be normally distributed by Theorem \ref{thm:4.6.1}. This proves part (c).
+\end{proof}
+
+Diffusions are often used as models for stock prices. That is, it is often assumed that the price $X_t$ of a stock at time $t$ is given by $X_t = a + \mu t + \sigma B_t$ for appropriate values of $a$, $\mu$, and $\sigma$.
+
+\begin{example}
+\label{ex:11.5.6}
+Suppose a stock has initial price \$20, drift of \$3 per year, and volatility parameter $1/4$. What is the probability that the stock price will be over \$30 after two and a half years?
+
+Here, the stock price after $t$ years is given by $X_t = 20 + 3t + (1/4)B_t$ and is thus a diffusion.
+
+So, after 2.5 years, we have $X_{2.5} = 20 + 7.5 + (1/4)B_{2.5} = 27.5 + (1/4)B_{2.5}$. Hence,
+\[
+\prb(X_{2.5} > 30) = \prb(27.5 + (1/4)B_{2.5} > 30) = \prb(B_{2.5} > (30 - 27.5)/(1/4)) = \prb(B_{2.5} > 1.79).
+\]
+But like before,
+\[
+\prb(B_{2.5} > 1.79) = 1 - \prb(B_{2.5} \leqslant 1.79) = 1 - \prb(B_{2.5}/\sqrt{2.5} \leqslant 1.79/\sqrt{2.5}) = 1 - \Phi(1.79/\sqrt{2.5}) \approx 0.129.
+\]
+We conclude that $\prb(X_{2.5} > 30) \approx 0.129$.
+
+Hence, there is just under a 13\% chance that the stock will be worth more than \$30 after two and a half years.
+\end{example}
+
+\begin{example}
+\label{ex:11.5.7}
+Suppose a stock has initial price \$100, drift of \$2 per year, and volatility parameter 5.5. What is the probability that the stock price will be under \$90 after just half a year?
+
+Here, the stock price after $t$ years is given by $X_t = 100 - 2t + 5.5B_t$ and is again a diffusion. So, after 0.5 years, we have $X_{0.5} = 100 - 1.0 + 5.5B_{0.5} = 99 + 5.5B_{0.5}$. Hence,
+\begin{align*}
+\prb(X_{0.5} < 90) &= \prb(99 + 5.5B_{0.5} < 90) = \prb(B_{0.5} < (90 - 99)/5.5) \\
+&= \prb(B_{0.5} < -1.64) = \prb(B_{0.5}/\sqrt{0.5} < -1.64/\sqrt{0.5}) \\
+&= \Phi(-1.64/\sqrt{0.5}) = \Phi(-2.32) \approx 0.010.
+\end{align*}
+Therefore, there is about a 1\% chance that the stock will be worth less than \$90 after half a year.
+\end{example}
+
+More generally, the drift $\mu$ and volatility $\sigma$ could be functions of the value $X_t$, leading to more complicated diffusions $\{X_t\}$, though we do not pursue this here.
+
+\subsection*{Summary of Section~\ref{sec:11.5}}
+
+Brownian motion $\{B_t : t \geqslant 0\}$ is created from simple random walk with $p = 1/2$, by speeding up time by a large factor $M$, and shrinking space by a factor $1/\sqrt{M}$.
+
+Hence, $B_0 = 0$, $B_t \sim \text{N}(0, t)$, and $\{B_t\}$ has independent normal increments with $B_t - B_s \sim \text{N}(0, t - s)$ for $0 < s < t$, and $\cov(B_s, B_t) = \min(s, t)$, and $\{B_t\}$ is a continuous function.
+
+Diffusions (often used to model stock prices) are of the form $X_t = a + \mu t + \sigma B_t$.
+
+%------------------------------------------------------------------------------
+\subsection*{Exercises}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.5.1}
+Consider the speeded-up processes $\{Y^{(M)}_{i/M}\}$ used to construct Brownian motion. Compute the following quantities.
+\begin{enumerate}[(a)]
+\item $\prb(Y^{(1)}_1 = 1)$
+\item $\prb(Y^{(2)}_1 = 1)$
+\item $\prb(Y^{(2)}_1 = \sqrt{2})$ (Hint: Don't forget that $\sqrt{2}/\sqrt{2} = 2$.)
+\item $\prb(Y^{(M)}_1 = 1)$ for $M = 1$, $M = 2$, $M = 3$, and $M = 4$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(Y_1^{(1)} = 1) = 1/2$.
+    \item $\prb(Y_1^{(2)} = 1) = 0$.
+    \item $\prb(Y_1^{(2)} = \sqrt{2}) = \prb(Y_{2/2}^{(2)} = 2/\sqrt{2}) = (1/2)(1/2) = 1/4$.
+    \item We have $\prb(Y_1^{(M)} \geqslant 1) = \prb(Y_{M/M}^{(M)} \geqslant \sqrt{M}/\sqrt{M})$. Hence, $\prb(Y_1^{(1)} \geqslant 1) = 1/2$. Also, $\prb(Y_1^{(2)} \geqslant 1) = (1/2)(1/2) = 1/4$. Also, $\prb(Y_1^{(3)} \geqslant 1) = (1/2)(1/2)(1/2) + (1/2)(1/2)(1/2) + (1/2)(1/2)(1/2) = 3/8$. Also, $\prb(Y_1^{(4)} \geqslant 1) = (1/2)(1/2)(1/2)(1/2) + (1/2)(1/2)(1/2)(1/2) + (1/2)(1/2)(1/2)(1/2) + (1/2)(1/2)(1/2)(1/2) + (1/2)(1/2)(1/2)(1/2) = 5/16$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.2}
+Let $\{B_t\}$ be Brownian motion. Compute $\prb(B_1 < 1)$.
+\end{exercise}
+
+\begin{solution}
+Since $B_1 \sim N(0, 1)$, $\prb(B_1 \geqslant 1) = \prb(B_1 \leqslant -1) = \Phi(-1) = 0.1587$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.3}
+Let $\{B_t\}$ be Brownian motion. Compute each of the following quantities.
+\begin{enumerate}[(a)]
+\item $\prb(B_2 < 1)$
+\item $\prb(B_3 \geqslant -4)$
+\item $\prb(B_9 - B_5 \leqslant 2.4)$
+\item $\prb(B_{26} - B_{11} \geqslant -9.8)$
+\item $\prb(B_{26} \leqslant -3.6)$
+\item $\prb(B_{26} \geqslant -3.0)$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(B_2 \geqslant 1) = \prb((1/\sqrt{2})B_2 \geqslant 1/\sqrt{2}) = \Phi(-1/\sqrt{2}) = 0.2397$.
+    \item $\prb(B_3 \leqslant -4) = \prb((1/\sqrt{3})B_2 \leqslant -4/\sqrt{3}) = \Phi(-4/\sqrt{3}) = 0.0105$.
+    \item $\prb(B_9 - B_5 \leqslant 2.4) = \prb(B_4 \leqslant 2.4) = \prb((1/2)B_4 \leqslant 2.4/2) = \Phi(2.4/2) = 1 - \Phi(-2.4/2) = 0.8849$.
+    \item $\prb(B_{26} - B_{11} > 9.8) = \prb(B_{15} > 9.8) = \prb((1/\sqrt{15})B_{15} > 9.8/\sqrt{15}) = \Phi(-9.8/\sqrt{15}) = 0.0057$.
+    \item $\prb(B_{26.3} \leqslant -6) = \prb((1/\sqrt{26.3})B_{26.3} \leqslant -6/\sqrt{26.3}) = \Phi(-6/\sqrt{26.3}) = 0.1210$.
+    \item $\prb(B_{26.3} \leqslant 0) = \prb((1/\sqrt{26.3})B_{26.3} \leqslant 0/\sqrt{26.3}) = \Phi(0/\sqrt{26.3}) = 1/2$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.4}
+Let $\{B_t\}$ be Brownian motion. Compute each of the following quantities.
+\begin{enumerate}[(a)]
+\item $\prb(B_2 \leqslant 1, B_5 - B_2 \geqslant 2)$
+\item $\prb(B_5 \leqslant 2, B_{13} - B_5 \geqslant 4)$
+\item $\prb(B_8 \leqslant 4.32, B_{18.6} - B_8 \leqslant 4.09)$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(B_2 \geqslant 1, B_5 - B_2 \geqslant 2) = \prb(B_2 \geqslant 1)\prb(B_5 - B_2 \geqslant 2) = \prb((1/\sqrt{2})B_2 \geqslant 1/\sqrt{2})\prb((1/\sqrt{3})(B_5 - B_2) \geqslant 2/\sqrt{3}) = \Phi(-1/\sqrt{2})\Phi(-2/\sqrt{3}) = 0.02975$.
+    \item $\prb(B_5 < -2, B_{13} - B_5 \geqslant 4) = \prb(B_5 < -2)\prb(B_{13} - B_5 \geqslant 4) = \prb((1/\sqrt{5})B_5 < -2/\sqrt{5})\prb((1/\sqrt{8})(B_{13} - B_5) \geqslant 4/\sqrt{8}) = \Phi(-2/\sqrt{5})\Phi(-4/\sqrt{8}) = 0.01459$.
+    \item $\prb(B_{8.4} > 3.2, B_{18.6} - B_{8.4} \geqslant 0.9) = \prb(B_{8.4} > 3.2)\prb(B_{18.6} - B_{8.4} \geqslant 0.9) = \prb((1/\sqrt{8.4})B_{8.4} > 3.2/\sqrt{8.4})\prb((1/\sqrt{10.2})(B_{18.6} - B_{8.4}) \geqslant 0.9/\sqrt{10.2}) = \Phi(-3.2/\sqrt{8.4})\Phi(-0.9/\sqrt{10.2}) = 0.05243$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.5}
+Let $\{B_t\}$ be Brownian motion. Compute $\expc[B_{13} B_8]$. (Hint: Do not forget part (b) of Theorem~\ref{thm:11.5.2}.)
+\end{exercise}
+
+\begin{solution}
+$\expc(B_{13} B_8) = \min(13, 8) = 8$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.6}
+Let $\{B_t\}$ be Brownian motion. Compute $\expc[(B_{17} - B_{14})^2]$ in two ways.
+\begin{enumerate}[(a)]
+\item Use the fact that $B_{17} - B_{14} \sim \text{N}(0, 3)$.
+\item Square it out, and compute $\expc[B_{17}^2] - 2\expc[B_{17} B_{14}] + \expc[B_{14}^2]$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Since $B_{17} - B_{14} \sim N(0, 3)$, $\expc((B_{17} - B_{14})^2) = 3 + 0^2 = 3$.
+    \item $\expc((B_{17} - B_{14})^2) = \expc(B_{17}^2) - 2\expc(B_{17} B_{14}) + \expc(B_{14}^2) = 17 + 0^2 - 2\min(17, 14) + 14 + 0^2 = 17 - 2 \cdot 14 + 14 = 3$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.7}
+Let $\{B_t\}$ be Brownian motion.
+\begin{enumerate}[(a)]
+\item Compute the probability that the process hits $-5$ before it hits $15$.
+\item Compute the probability that the process hits $15$ before it hits $-5$.
+\item Which of the answers to Part (a) or (b) is larger? Why is this so?
+\item Compute the probability that the process hits $15$ before it hits $5$.
+\item What is the sum of the answers to parts (a) and (d)? Why is this so?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Let $p = \prb(\text{hit } {-5} \text{ before } 15)$ and let $T$ be the first time we hit either. Then $0 = \expc(B_T) = p(-5) + (1 - p)(15) = 15 - 20p$, so that $p = 15/20 = 3/4$.
+    \item Let $p = \prb(\text{hit } {-15} \text{ before } 5)$ and let $T$ be the first time we hit either. Then $0 = \expc(B_T) = p(-15) + (1 - p)(5) = 5 - 20p$, so that $p = 5/20 = 1/4$.
+    \item The answer in (a) is larger because $-5$ is closer to $B_0 = 0$ than 15 is, while $-15$ is farther than 5 is.
+    \item Let $p = \prb(\text{hit } 15 \text{ before } {-5})$ and let $T$ be the first time we hit either. Then $0 = \expc(B_T) = p(15) + (1 - p)(-5) = -5 + 20p$, so that $p = 5/20 = 1/4$.
+    \item We have $3/4 + 1/4 = 1$, which it must since the events in parts (a) and (d) are complementary events.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.8}
+Let $X_t = 5 + 3t + 2B_t$ be a diffusion (so that $a = 5$, $\mu = 3$, and $\sigma = 2$). Compute each of the following quantities.
+\begin{enumerate}[(a)]
+\item $\expc[X_7]$
+\item $\var(X_{8.1})$
+\item $\prb(X_{2.5} > 12)$
+\item $\prb(X_{17} < 50)$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\expc(X_7) = \expc(5 + 3 \cdot 7 + 2B_7) = 5 + 3 \cdot 7 + 2 \cdot 0 = 26$.
+    \item $\var(X_{8.1}) = \var(5 + 3 \cdot 8.1 + 2B_{8.1}) = 4\var(B_{8.1}) = 4 \cdot 8.1 = 32.4$.
+    \item $\prb(X_{2.5} < 12) = \prb(5 + 3 \cdot 2.5 + 2B_{2.5} < 12) = \prb(B_{2.5} < -1/4) = \prb((1/\sqrt{2.5})B_{2.5} < -1/4\sqrt{2.5}) = \Phi(-1/4\sqrt{2.5}) = 0.4372$.
+    \item $\prb(X_{17} > 50) = \prb(5 + 3 \cdot 17 + 2B_{17} > 50) = \prb(B_{17} > -3) = \prb((1/\sqrt{17})B_{17} > -3\sqrt{17}) = \Phi(-3/\sqrt{17}) = 0.2334$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.9}
+Let $X_t = 10 + 1.5t + 4B_t$. Compute $\expc[X_3 X_5]$.
+\end{exercise}
+
+\begin{solution}
+$\expc(X_3 X_5) = \expc((10 - 1.5 \cdot 3 + 4B_3)(10 - 1.5 \cdot 5 + 4B_5)) = \expc((5.5 + 4B_3)(2.5 + 4B_5)) = \expc(5.5 \cdot 2.5 + 4 \cdot 2.5 \cdot B_3 + 4 \cdot 5.5 \cdot B_5 + 4 \cdot 4 \cdot B_3 \cdot B_5) = 5.5 \cdot 2.5 + 4 \cdot 2.5 \cdot 0 + 4 \cdot 5.5 \cdot 0 + 4 \cdot 4 \cdot \min(3, 5) = 61.75$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.10}
+Suppose a stock has initial price \$400 and has volatility parameter equal to 9. Compute the probability that the stock price will be over \$500 after 8 years, if the drift per year is equal to
+\begin{enumerate}[(a)]
+\item \$0.
+\item \$5.
+\item \$10.
+\item \$20.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(X_8 > 500) = \prb(400 + 0 \cdot 8 + 9B_8 > 500) = \prb(B_8 > 100/9) = \prb((1/\sqrt{8})B_8 > 100/9\sqrt{8}) = \Phi(-100/9\sqrt{8}) = 0.00004276$.
+    \item $\prb(X_8 > 500) = \prb(400 + 5 \cdot 8 + 9B_8 > 500) = \prb(B_8 > 60/9) = \prb((1/\sqrt{8})B_8 > 60/9\sqrt{8}) = \Phi(-60/9\sqrt{8}) = 0.009211$.
+    \item $\prb(X_8 > 500) = \prb(400 + 10 \cdot 8 + 9B_8 > 500) = \prb(B_8 > 20/9) = \prb((1/\sqrt{8})B_8 > 20/9\sqrt{8}) = \Phi(-20/9\sqrt{8}) = 0.2160$.
+    \item $\prb(X_8 > 500) = \prb(400 + 20 \cdot 8 + 9B_8 > 500) = \prb(B_8 > -60/9) = \prb((1/\sqrt{8})B_8 > -60/9\sqrt{8}) = 1 - \Phi(-60/9\sqrt{8}) = 0.9908$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.11}
+Suppose a stock has initial price \$200 and drift of \$3 per year. Compute the probability that the stock price will be over \$250 after 10 years, if the volatility parameter is equal to
+\begin{enumerate}[(a)]
+\item 1.
+\item 4.
+\item 10.
+\item 100.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(X_{10} > 250) = \prb(200 + 3 \cdot 10 + 1 \cdot B_{10} > 250) = \prb(B_{10} > 20/1) = \prb((1/\sqrt{10})B_{10} > 20/1\sqrt{10}) = \Phi(-20/1\sqrt{10}) = 1.27 \times 10^{-10}$.
+    \item $\prb(X_{10} > 250) = \prb(200 + 3 \cdot 10 + 4B_{10} > 250) = \prb(B_{10} > 20/4) = \prb((1/\sqrt{10})B_{10} > 20/4\sqrt{10}) = \Phi(-20/4\sqrt{10}) = 0.05692$.
+    \item $\prb(X_{10} > 250) = \prb(200 + 3 \cdot 10 + 10B_{10} > 250) = \prb(B_{10} > 20/10) = \prb((1/\sqrt{10})B_{10} > 20/10\sqrt{10}) = \Phi(-20/10\sqrt{10}) = 0.2635$.
+    \item $\prb(X_{10} > 250) = \prb(200 + 3 \cdot 10 + 100B_{10} > 250) = \prb(B_{10} > 20/100) = \prb((1/\sqrt{10})B_{10} > 20/100\sqrt{10}) = \Phi(-20/100\sqrt{10}) = 0.4748$.
+\end{enumerate}
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Problems}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.5.12}
+Let $\{B_t\}$ be Brownian motion, and let $X = 2B_3 + 7B_5$. Compute the mean and variance of $X$.
+\end{exercise}
+
+\begin{solution}
+We have that $\expc(X) = \expc(2B_3 - 7B_5) = 2 \cdot 0 - 7 \cdot 0 = 0$. Also, $\expc(X^2) = \expc((2B_3 - 7B_5)^2) = \expc(4B_3^2 + 49B_5^2 - 28B_3 B_5) = 4 \cdot 3 + 49 \cdot 5 - 28\min(3, 5) = 173$. Hence, $\var(X) = 173$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.13}
+Prove that $\prb(B_t > x) = \prb(B_t < -x)$ for any $t > 0$ and any $x \in \mathbb{R}^1$.
+\end{exercise}
+
+\begin{solution}
+We have that $\prb(B_t < x) = \prb((1/\sqrt{t})B_t < x/\sqrt{t}) = \Phi(x/\sqrt{5})$, while $\prb(B_t > -x) = \prb((1/\sqrt{t})B_t > -x/\sqrt{t}) = 1 - \Phi(-x/\sqrt{5}) = \Phi(x/\sqrt{5}) = \prb(B_t < x)$.
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Challenges}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.5.14}
+Compute $\prb(B_s < x, B_t < y)$, where $0 < s < t$, and $x, y \in \mathbb{R}^1$. (Hint: You will need to use conditional densities.)
+\end{exercise}
+
+\begin{solution}
+Let $g(x, y) = f_{B_s B_t}(x, y)$ be the joint density function of $B_s$ and $B_t - B_s$. Since $B_s \sim N(0, s)$ and $B_t - B_s \sim N(0, t - s)$ and they are independent, then $g(x, y) = (1/2\pi\sqrt{s(t - s)})e^{-x^2/2s}e^{-y^2/2(t-s)}$. Then let $h(x, y) = f_{B_s, B_t}(x, y)$ be the joint density function of $B_s$ and $B_t$. Then by the two-dimensional change-of-variable theorem $h(x, y) = g(x, y - x) = (1/2\pi\sqrt{s(t - s)})e^{-x^2/2s}e^{-(y-x)^2/2(t-s)}$. Then the conditional density of $B_s$ given $B_t$ is equal to
+\begin{align*}
+    h(x \mid y) &= h(x, y)/f_{B_t}(y) \\
+    &= (1/2\pi\sqrt{s(t - s)})e^{-x^2/2s}e^{-(y-x)^2/2(t-s)} / (1/\sqrt{2\pi t})e^{-y^2/2t} \\
+    &= \sqrt{t/2\pi s(t - s)}e^{-x^2/2s}e^{-y^2/2(t-s)}e^{+y^2/2t} = \sqrt{t/2\pi s(t - s)}e^{-(tx-sy)^2/2st(t-s)} \\
+    &= \sqrt{1/2\pi[s(t - s)/t]}e^{-(x-sy/t)^2/2[s(t-s)/t]}.
+\end{align*}
+We conclude that, conditional on $B_t = y$, the conditional distribution of $B_s$ is normally distributed with mean $sy/t$ and variance $s(t - s)/t$. Hence, choosing $Z \sim N(sy/t, s(t - s)/t)$, we have $\prb(B_s \leqslant x \mid B_t = y) = \prb(Z \leqslant x) = \prb((Z - sy/t)/\sqrt{s(t - s)/t} \leqslant (x - sy/t)/\sqrt{s(t - s)/t}) = \Phi((x - sy/t)/\sqrt{s(t - s)/t})$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.5.15}
+\begin{enumerate}[(a)]
+\item Let $f : \mathbb{R}^1 \to \mathbb{R}^1$ be a Lipschitz function, i.e., a function for which there exists $K$ such that $|f(x) - f(y)| \leqslant K|x - y|$ for all $x, y \in \mathbb{R}^1$. Compute
+\[
+\lim_{h \to 0} \frac{(f(t+h) - f(t))^2}{h}
+\]
+for any $t \in \mathbb{R}^1$.
+\item Let $\{B_t\}$ be Brownian motion. Compute
+\[
+\lim_{h \to 0} \expc\left[\frac{(B_{t+h} - B_t)^2}{h}\right]
+\]
+for any $t > 0$.
+\item What do parts (a) and (b) seem to imply about Brownian motion?
+\item It is a known fact that all functions that are continuously differentiable on a closed interval are Lipschitz. In light of this, what does part (c) seem to imply about Brownian motion?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\lim_{h \searrow 0} |(f(t + h) - f(t))^2/h| \leqslant \lim_{h \searrow 0} |(Kh)^2/h| = \lim_{h \searrow 0} |Kh| = 0$, so $\lim_{h \searrow 0}(f(t + h) - f(t))^2/h = 0$.
+    \item $\lim_{h \searrow 0} \expc((B_{t+h} - B_t)^2/h) = \lim_{h \searrow 0} h/h = 1 \neq 0$.
+    \item They imply that Brownian motion is not always a Lipschitz function. (In fact, it never is.)
+    \item This implies that Brownian motion is not always a differentiable function. (In fact, it never is.)
+\end{enumerate}
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Discussion Topics}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.5.16}
+Diffusions such as those discussed here (and more complicated, varying coefficient versions) are very often used by major investors and stock traders to model stock prices.
+\begin{enumerate}[(a)]
+\item Do you think that diffusions provide good models for stock prices?
+\item Even if diffusions did not provide good models for stock prices, why might investors still need to know about them?
+\end{enumerate}
+\end{exercise}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Poisson Processes}
+\label{sec:11.6}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Finally, we turn our attention to \emph{Poisson processes}. These processes are models for events that happen at random times $T_n$. For example, $T_n$ could be the time of the $n$th fire in a city, or the detection of the $n$th particle by a Geiger counter, or the $n$th car passing a checkpoint on a road. Poisson processes provide a model for the probabilities for when these events might take place.
+
+More formally, we let $a > 0$, and let $R_1, R_2, \ldots$ be i.i.d.\ random variables, each having the $\text{Exponential}(a)$ distribution. We let $T_0 = 0$, and for $n \geqslant 1$,
+\[
+T_n = R_1 + R_2 + \cdots + R_n.
+\]
+The value $T_n$ thus corresponds to the (random) time of the $n$th event.
+
+We also define a collection of \emph{counting variables} $\{N_t\}$, as follows. For $t \geqslant 0$, we let
+\[
+N_t = \max\{n : T_n \leqslant t\}.
+\]
+That is, $N_t$ counts the number of events that have happened by time $t$. (In particular, $N_0 = 0$. Furthermore, $N_t = 0$ for all $t < T_1$, i.e., before the first event occurs.)
+
+We can think of the collection of variables $\{N_t\}$ for $t \geqslant 0$ as being a stochastic process, indexed by the continuous time parameter $t \geqslant 0$. The process $\{N_t : t \geqslant 0\}$ is thus another example, like Brownian motion, of a continuous-time stochastic process. In fact, $\{N_t : t \geqslant 0\}$ is called a \emph{Poisson process} (with intensity $a$). This name comes from the following.
+
+\begin{theorem}
+\label{thm:11.6.1}
+For any $t > 0$, the distribution of $N_t$ is $\text{Poisson}(at)$.
+\end{theorem}
+
+\begin{proof}
+See Section~\ref{sec:11.7} for the proof of this result.
+\end{proof}
+
+In fact, even more is true.
+
+\begin{theorem}
+\label{thm:11.6.2}
+Let $0 = t_0 < t_1 < t_2 < t_3 < \cdots < t_d$. Then for $i = 1, 2, \ldots, d$, the distribution of $N_{t_i} - N_{t_{i-1}}$ is $\text{Poisson}(a(t_i - t_{i-1}))$. Furthermore, the random variables $N_{t_i} - N_{t_{i-1}}$ for $i = 1, \ldots, d$ are independent.
+\end{theorem}
+
+\begin{proof}
+See Section~\ref{sec:11.7} for the proof of this result.
+\end{proof}
+
+\begin{example}
+\label{ex:11.6.1}
+Let $\{N_t\}$ be a Poisson process with intensity $a = 5$. What is $\prb(N_3 = 12)$?
+
+Here, $N_3 \sim \text{Poisson}(3a) = \text{Poisson}(15)$. Hence, from the definition of the Poisson distribution, we have
+\[
+\prb(N_3 = 12) = e^{-15} \cdot 15^{12} / 12! \approx 0.083,
+\]
+which is a little more than 8\%.
+\end{example}
+
+\begin{example}
+\label{ex:11.6.2}
+Let $\{N_t\}$ be a Poisson process with intensity $a = 2$. What is $\prb(N_6 = 11)$?
+
+Here $N_6 \sim \text{Poisson}(6a) = \text{Poisson}(12)$. Hence,
+\[
+\prb(N_6 = 11) = e^{-12} \cdot 12^{11} / 11! \approx 0.114,
+\]
+or just over 11\%.
+\end{example}
+
+\begin{example}
+\label{ex:11.6.3}
+Let $\{N_t\}$ be a Poisson process with intensity $a = 4$. What is $\prb(N_2 = 3, N_5 = 4)$? (Recall that here the comma means ``and'' in probability statements.)
+
+We begin by writing $\prb(N_2 = 3, N_5 = 4) = \prb(N_2 = 3, N_5 - N_2 = 1)$. This is just rewriting the question. However, it puts it into a context where we can use Theorem~\ref{thm:11.6.2}.
+
+Indeed, by that theorem, $N_2$ and $N_5 - N_2$ are independent, with $N_2 \sim \text{Poisson}(8)$ and $N_5 - N_2 \sim \text{Poisson}(12)$. Hence,
+\begin{align*}
+\prb(N_2 = 3, N_5 = 4) &= \prb(N_2 = 3, N_5 - N_2 = 1) \\
+&= \prb(N_2 = 3) \cdot \prb(N_5 - N_2 = 1) \\
+&= \left(e^{-8} \cdot \frac{8^3}{3!}\right) \left(e^{-12} \cdot \frac{12^1}{1!}\right) \approx 0.0000021.
+\end{align*}
+We thus see that the event $\{N_2 = 3, N_5 = 4\}$ is very unlikely in this case.
+\end{example}
+
+\subsection*{Summary of Section~\ref{sec:11.6}}
+
+Poisson processes are models of events that happen at random times $T_n$.
+
+It is assumed that the time $R_n = T_n - T_{n-1}$ between consecutive events in $\text{Exponential}(a)$ for some $a > 0$. Then $N_t$ represents the total number of events by time $t$.
+
+It follows that $N_t \sim \text{Poisson}(at)$, and in fact the process $\{N_t : t \geqslant 0\}$ has independent increments, with $N_t - N_s \sim \text{Poisson}(a(t - s))$ for $0 \leqslant s < t$.
+
+%------------------------------------------------------------------------------
+\subsection*{Exercises}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.6.1}
+Let $\{N(t) : t \geqslant 0\}$ be a Poisson process with intensity $a = 7$. Compute the following probabilities.
+\begin{enumerate}[(a)]
+\item $\prb(N_2 = 13)$
+\item $\prb(N_5 = 3)$
+\item $\prb(N_6 = 20)$.
+\item $\prb(N_{50} = 340)$
+\item $\prb(N_2 = 13, N_5 = 3)$.
+\item $\prb(N_2 = 13, N_6 = 20)$
+\item $\prb(N_2 = 13, N_5 = 3, N_6 = 20)$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $N_2 \sim \text{Poisson}(14)$, so $\prb(N_2 = 13) = e^{-14}14^{13}/13! = 0.1060$.
+    \item $\prb(N_5 = 3) = e^{-35}35^3/3! = 4.5 \times 10^{-12}$.
+    \item $\prb(N_6 = 20) = e^{-42}42^{20}/20! = 6.9 \times 10^{-5}$.
+    \item $\prb(N_{50} = 340) = e^{-350}350^{340}/340! = 0.01873$.
+    \item We have that $\prb(N_2 = 13, N_5 = 3) = 0$ since we always have $N_5 \geqslant N_2$.
+    \item We have that $\prb(N_2 = 13, N_5 = 20) = \prb(N_2 = 13, N_5 - N_2 = 7) = \prb(N_2 = 13)\prb(N_5 - N_2 = 7) = (e^{-14}14^{13}/13!)(e^{-21}21^7/7!) = 2.9 \times 10^{-5}$.
+    \item $\prb(N_2 = 13, N_5 = 3, N_6 = 20) = 0$ since we always have $N_5 \geqslant N_2$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.6.2}
+Let $\{N(t) : t \geqslant 0\}$ be a Poisson process with intensity $a = 3$. Compute $\prb(N_{1.2} = 6)$ and $\prb(N_{0.3} = 5)$.
+\end{exercise}
+
+\begin{solution}
+We have that $\prb(N_{1/2} = 6) = e^{-3/2}(3/2)^6/6! = 0.00353$. Also, $\prb(N_{0.3} = 5) = e^{-0.9}(0.9)^5/5! = 0.00200$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.6.3}
+Let $\{N(t) : t \geqslant 0\}$ be a Poisson process with intensity $a = 1/3$. Compute $\prb(N_2 = 6)$ and $\prb(N_3 = 5)$.
+\end{exercise}
+
+\begin{solution}
+We have that $\prb(N_2 = 6) = e^{-2/3}(2/3)^6/6! = 6.26 \times 10^{-5}$. Also, $\prb(N_3 = 5) = e^{-3/3}(3/3)^5/5! = 0.00307$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.6.4}
+Let $\{N(t) : t \geqslant 0\}$ be a Poisson process with intensity $a = 3$. Compute $\prb(N_2 = 6, N_3 = 5)$. Explain your answer.
+\end{exercise}
+
+\begin{solution}
+We have that $\prb(N_2 = 6, N_3 = 5) = 0$ since we always have $N_3 \geqslant N_2$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.6.5}
+Let $\{N(t) : t \geqslant 0\}$ be a Poisson process with intensity $a > 0$. Compute (with explanation) the conditional probability $\prb(N_{2.6} = 2 \mid N_{2.9} = 2)$.
+\end{exercise}
+
+\begin{solution}
+$\prb(N_{2.6} = 2 \mid N_{2.9} = 2) = \prb(N_{2.6} = 2, N_{2.9} = 2)/\prb(N_{2.9} = 2) = \prb(N_{2.6} = 2, N_{2.9} - N_{2.6} = 0)/\prb(N_{2.9} = 2) = \prb(N_{2.6} = 2)\prb(N_{2.9} - N_{2.6} = 0)/\prb(N_{2.9} = 2) = (e^{-2.6a}2.6^2/2!)(e^{-0.3a}0.3^0/0!)/(e^{-2.9a}2.9^2/2!) = (2.6/2.9)^2 = 0.8038$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.6.6}
+Let $\{N(t) : t \geqslant 0\}$ be a Poisson process with intensity $a = 1/3$. Compute (with explanation) the following conditional probabilities.
+\begin{enumerate}[(a)]
+\item $\prb(N_6 = 5 \mid N_9 = 5)$
+\item $\prb(N_6 = 5 \mid N_9 = 7)$
+\item $\prb(N_9 = 5 \mid N_6 = 7)$
+\item $\prb(N_9 = 7 \mid N_6 = 7)$
+\item $\prb(N_9 = 12 \mid N_6 = 7)$
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(N_6 = 5 \mid N_9 = 5) = \prb(N_6 = 5, N_9 = 5)/\prb(N_9 = 5) = \prb(N_6 = 5, N_9 - N_6 = 0)/\prb(N_9 = 5) = \prb(N_6 = 5)\prb(N_9 - N_6 = 0)/\prb(N_9 = 5) = (e^{-6/3}(6/3)^5/5!)(e^{-3/3}(3/3)^0/0!)/(e^{-9/3}(9/3)^5/5!) = 0.1317$.
+    \item $\prb(N_6 = 5 \mid N_9 = 7) = \prb(N_6 = 5, N_9 = 7)/\prb(N_9 = 7) = \prb(N_6 = 5, N_9 - N_6 = 2)/\prb(N_9 = 7) = \prb(N_6 = 5)\prb(N_9 - N_6 = 2)/\prb(N_9 = 7) = (e^{-6/3}(6/3)^5/5!)(e^{-3/3}(3/3)^2/2!)/(e^{-9/3}(9/3)^7/7!) = 0.6145$.
+    \item We have that $\prb(N_9 = 5 \mid N_6 = 7) = 0$ since we always have $N_9 \geqslant N_6$.
+    \item $\prb(N_9 = 7 \mid N_6 = 7) = \prb(N_9 - N_6 = 0 \mid N_6 = 7) = \prb(N_9 - N_6 = 0) = e^{-3/3}(3/3)^0/0! = 1/e = 0.3679$.
+    \item $\prb(N_9 = 12 \mid N_6 = 7) = \prb(N_9 - N_6 = 5 \mid N_6 = 7) = \prb(N_9 - N_6 = 5) = e^{-3/3}(3/3)^5/5! = 0.00307$.
+\end{enumerate}
+\end{solution}
+
+%------------------------------------------------------------------------------
+\subsection*{Problems}
+%------------------------------------------------------------------------------
+
+\begin{exercise}
+\label{exer:11.6.7}
+Let $\{N_t : t \geqslant 0\}$ be a Poisson process with intensity $a > 0$. Let $0 < s < t$, and let $j$ be a positive integer.
+\begin{enumerate}[(a)]
+\item Compute (with explanation) the conditional probability $\prb(N_s = j \mid N_t = j)$.
+\item Does the answer in part (a) depend on the value of the intensity $a$? Intuitively, why or why not?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(N_s = j \mid N_t = j) = \prb(N_s = j, N_t = j)/\prb(N_t = j) = \prb(N_s = j, N_t - N_s = 0)/\prb(N_t = j) = \prb(N_s = j)\prb(N_t - N_s = 0)/\prb(N_t = j) = (e^{-as}(as)^j/j!)(e^{-a(t-s)}(as)^0/0!)/(e^{-at}(at)^j/j!) = (s/t)^j$.
+    \item No, the answer does not depend on $a$. Intuitively, once we condition on knowing that we have exactly $j$ events between time 0 and time $t$, then we no longer care what was the intensity which produced them.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:11.6.8}
+Let $\{N_t : t \geqslant 0\}$ be a Poisson process with intensity $a > 0$. Let $T_1$ be the time of the first event, as usual. Let $0 < s < t$.
+\begin{enumerate}[(a)]
+\item Compute $\prb(N_s = 1 \mid N_t = 1)$. (If you wish, you may use the previous problem, with $j = 1$.)
+\item Suppose $t$ is fixed, but $s$ is allowed to vary in the interval $(0, t)$. What does the answer to part (b) say about the ``conditional distribution'' of $T_1$, conditional on knowing that $N_t = 1$?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(N_s = 1 \mid N_t = 1) = (s/t)^1 = s/t$.
+    \item This says that $\prb(T_1 \leqslant s \mid N_t = 1) = s/t$. It follows that, conditional on $N_t = 1$, the distribution of $T_1$ is uniform on the interval $[0, t]$.
+\end{enumerate}
+\end{solution}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Further Proofs}
+\label{sec:11.7}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{Proof of Theorem~\ref{thm:11.1.1}}
+
+We want to prove that when $\{X_n\}$ is a simple random walk, $n$ is a positive integer, and if $k$ is an integer such that $-n \leqslant k \leqslant n$ and $n + k$ is even, then
+\[
+\prb(X_n = a + k) = \binom{n}{\frac{n+k}{2}} p^{(n+k)/2} q^{(n-k)/2}.
+\]
+For all other values of $k$, we have $\prb(X_n = a + k) = 0$. Furthermore,
+\[
+\expc[X_n] = a + n(2p - 1).
+\]
+
+Of the first $n$ bets, let $W_n$ be the number won, and let $L_n$ be the number lost. Then $n = W_n + L_n$. Also, $X_n - a = W_n - L_n$.
+
+Adding these two equations together, we conclude that $n + X_n = W_n + L_n + a + W_n - L_n = a + 2W_n$. Solving for $W_n$, we see that $W_n = (n + X_n - a)/2$. Because $W_n$ must be an integer, it follows that $n + X_n - a$ must be even. We conclude that $\prb(X_n = a + k) = 0$ unless $n + k$ is even.
+
+On the other hand, solving for $X_n$, we see that $X_n - a = 2W_n - n$, or $X_n = a + 2W_n - n$. Because $0 \leqslant W_n \leqslant n$, it follows that $-n \leqslant X_n - a \leqslant n$, i.e., that $\prb(X_n = a + k) = 0$ if $k < -n$ or $k > n$.
+
+Suppose now that $k + n$ is even, and $-n \leqslant k \leqslant n$. Then from the above, $\prb(X_n = a + k) = \prb(W_n = (n + k)/2)$. But the distribution of $W_n$ is clearly $\text{Binomial}(n, p)$. We conclude that
+\[
+\prb(X_n = a + k) = \binom{n}{\frac{n+k}{2}} p^{(n+k)/2} q^{(n-k)/2},
+\]
+provided that $k + n$ is even and $-n \leqslant k \leqslant n$.
+
+Finally, because $W_n \sim \text{Binomial}(n, p)$, therefore $\expc[W_n] = np$. Hence, because $X_n = a + 2W_n - n$, therefore $\expc[X_n] = a + 2\expc[W_n] - n = a + 2np - n = a + n(2p - 1)$, as claimed.
+
+\subsection*{Proof of Theorem~\ref{thm:11.1.2}}
+
+We want to prove that when $\{X_n\}$ is a simple random walk, with some initial fortune $a$ and probability $p$ of winning each bet, and $0 < a < c$, then the probability $\prb(\tau_c < \tau_0)$ of hitting $c$ before $0$ is given by
+\[
+\prb(\tau_c < \tau_0) = \begin{cases}
+a/c & p = 1/2 \\[6pt]
+\displaystyle\frac{1 - \left(\dfrac{q}{p}\right)^a}{1 - \left(\dfrac{q}{p}\right)^c} & p \neq 1/2.
+\end{cases}
+\]
+
+To begin, let us write $s(b)$ for the probability $\prb(\tau_c < \tau_0)$ when starting at the initial fortune $b$, for any $0 \leqslant b \leqslant c$. We are interested in computing $s(a)$. However, it turns out to be easier to solve for all of the values $s(0), s(1), s(2), \ldots, s(c)$ simultaneously, and this is the trick we use.
+
+We have by definition that $s(0) = 0$ (i.e., if we start with \$0, then we can never win) and $s(c) = 1$ (i.e., if we start with \$$c$, then we have already won). So, those two cases are easy. However, the values of $s(b)$ for $1 \leqslant b \leqslant c - 1$ are not obtained as easily.
+
+Our trick will be to develop equations that relate the values $s(b)$ for different values of $b$. Indeed, suppose $1 \leqslant b \leqslant c - 1$. It is difficult to compute $s(b)$ directly. However, it is easy to understand what will happen on the first bet --- we will either lose \$1 with probability $p$, or win \$1 with probability $q$. That leads to the following result.
+
+\begin{lemma}
+\label{lem:11.7.1}
+For $1 \leqslant b \leqslant c - 1$, we have
+\begin{equation}
+\label{eq:11.7.1}
+s(b) = p s(b + 1) + q s(b - 1).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Suppose first that we win the first bet, i.e., that $Z_1 = 1$. After this first bet, we will have fortune $b + 1$. We then get to ``start over'' in our quest to reach $c$ before reaching 0, except this time starting with fortune $b + 1$ instead of $b$. Hence, after winning this first bet, our chance of reaching $c$ before reaching 0 is now $s(b + 1)$. (We still do not know what $s(b + 1)$ is, but at least we are making a connection between $s(b)$ and $s(b + 1)$.)
+
+Suppose instead that we lose this first bet, i.e., that $Z_1 = -1$. After this first bet, we will have fortune $b - 1$. We then get to ``start over'' with fortune $b - 1$ instead of $b$. Hence, after this first bet, our chance of reaching $c$ before reaching 0 is now $s(b - 1)$.
+
+We can combine all of the preceding information, as follows.
+\begin{align*}
+s(b) &= \prb(\tau_c < \tau_0) \\
+&= \prb(Z_1 = 1, \tau_c < \tau_0) + \prb(Z_1 = -1, \tau_c < \tau_0) \\
+&= p \cdot s(b + 1) + q \cdot s(b - 1).
+\end{align*}
+That is, $s(b) = p \cdot s(b + 1) + q \cdot s(b - 1)$, as claimed.
+\end{proof}
+
+So, where are we? We had $c + 1$ unknowns, $s(0), s(1), \ldots, s(c)$. We now know the two equations $s(0) = 0$ and $s(c) = 1$, plus the $c - 1$ equations of the form $s(b) = p \cdot s(b + 1) + q \cdot s(b - 1)$ for $b = 1, 2, \ldots, c - 1$. In other words, we have $c + 1$ equations in $c + 1$ unknowns, so we can now solve our problem!
+
+The solution still requires several algebraic steps, as follows.
+
+\begin{lemma}
+\label{lem:11.7.2}
+For $1 \leqslant b \leqslant c - 1$, we have
+\[
+s(b + 1) - s(b) = \frac{q}{p} (s(b) - s(b - 1)).
+\]
+\end{lemma}
+
+\begin{proof}
+Recalling that $p + q = 1$, we rearrange \eqref{eq:11.7.1} as follows.
+\begin{align*}
+s(b) &= p \cdot s(b + 1) + q \cdot s(b - 1) \\
+(p + q) s(b) &= p \cdot s(b + 1) + q \cdot s(b - 1) \\
+q(s(b) - s(b - 1)) &= p(s(b + 1) - s(b)).
+\end{align*}
+And finally,
+\[
+s(b + 1) - s(b) = \frac{q}{p} (s(b) - s(b - 1)),
+\]
+which gives the result.
+\end{proof}
+
+\begin{lemma}
+\label{lem:11.7.3}
+For $0 \leqslant b \leqslant c$, we have
+\begin{equation}
+\label{eq:11.7.2}
+s(b) = \sum_{i=0}^{b-1} \left(\frac{q}{p}\right)^i s(1).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Applying the equation of Lemma~\ref{lem:11.7.2} with $b = 1$, we obtain
+\[
+s(2) - s(1) = \frac{q}{p} (s(1) - s(0)) = \frac{q}{p} s(1)
+\]
+(because $s(0) = 0$). Applying it again with $b = 2$, we obtain
+\[
+s(3) - s(2) = \frac{q}{p} (s(2) - s(1)) = \left(\frac{q}{p}\right)^2 (s(1) - s(0)) = \left(\frac{q}{p}\right)^2 s(1).
+\]
+By induction, we see that
+\[
+s(b + 1) - s(b) = \left(\frac{q}{p}\right)^b s(1),
+\]
+for $b = 0, 1, 2, \ldots, c - 1$. Hence, we compute that for $b = 0, 1, 2, \ldots, c$,
+\begin{align*}
+s(b) &= (s(b) - s(b - 1)) + (s(b - 1) - s(b - 2)) + (s(b - 2) - s(b - 3)) + \cdots + (s(1) - s(0)) \\
+&= \sum_{i=0}^{b-1} (s(i + 1) - s(i)) \\
+&= \sum_{i=0}^{b-1} \left(\frac{q}{p}\right)^i s(1).
+\end{align*}
+This gives the result.
+\end{proof}
+
+We are now able to finish the proof of Theorem~\ref{thm:11.1.2}.
+
+If $p = 1/2$, then $q/p = 1$, so \eqref{eq:11.7.2} becomes $s(b) = b \cdot s(1)$. But $s(c) = 1$, so we must have $c \cdot s(1) = 1$, i.e., $s(1) = 1/c$. Then $s(b) = b \cdot s(1) = b/c$. Hence, $s(a) = a/c$ in this case.
+
+If $p \neq 1/2$, then $q/p \neq 1$, so \eqref{eq:11.7.2} is a geometric series, and becomes
+\[
+s(b) = \frac{(q/p)^b - 1}{(q/p) - 1} s(1).
+\]
+Because $s(c) = 1$, we must have
+\[
+1 = \frac{(q/p)^c - 1}{(q/p) - 1} s(1),
+\]
+so
+\[
+s(1) = \frac{(q/p) - 1}{(q/p)^c - 1}.
+\]
+Then
+\[
+s(b) = \frac{(q/p)^b - 1}{(q/p) - 1} \cdot s(1) = \frac{(q/p)^b - 1}{(q/p) - 1} \cdot \frac{(q/p) - 1}{(q/p)^c - 1} = \frac{(q/p)^b - 1}{(q/p)^c - 1}.
+\]
+Hence,
+\[
+s(a) = \frac{(q/p)^a - 1}{(q/p)^c - 1}
+\]
+in this case.
+
+\subsection*{Proof of Theorem~\ref{thm:11.1.3}}
+
+We want to prove that when $\{X_n\}$ is a simple random walk, with initial fortune $a > 0$ and probability $p$ of winning each bet, then the probability $\prb(\tau_0 < \infty)$ that the walk will ever hit 0 is given by
+\[
+\prb(\tau_0 < \infty) = \begin{cases}
+1 & p \leqslant 1/2 \\[6pt]
+(q/p)^a & p > 1/2.
+\end{cases}
+\]
+
+By continuity of probabilities, we see that
+\[
+\prb(\tau_0 < \infty) = \lim_{c \to \infty} \prb(\tau_0 < \tau_c) = \lim_{c \to \infty} (1 - \prb(\tau_c < \tau_0)).
+\]
+Hence, if $p = 1/2$, then $\prb(\tau_0 < \infty) = \lim_{c \to \infty} (1 - a/c) = 1$.
+
+Now, if $p \neq 1/2$, then
+\[
+\prb(\tau_0 < \infty) = \lim_{c \to \infty} \left(1 - \frac{1 - (q/p)^a}{1 - (q/p)^c}\right).
+\]
+If $p < 1/2$ then $q/p > 1$, so $\lim_{c \to \infty} (q/p)^c = \infty$, and $\prb(\tau_0 < \infty) = 1$. If $p > 1/2$ then $q/p < 1$, so $\lim_{c \to \infty} (q/p)^c = 0$, and $\prb(\tau_0 < \infty) = (q/p)^a$.
+
+\subsection*{Proof of Theorem~\ref{thm:11.3.3}}
+
+We want to prove that the Metropolis--Hastings algorithm results in a Markov chain $X_0, X_1, X_2, \ldots$ which has $\{\pi_i\}$ as a stationary distribution.
+
+We shall prove that the resulting Markov chain is reversible with respect to $\{\pi_i\}$, i.e., that
+\begin{equation}
+\label{eq:11.7.3}
+\pi_i \prb(X_{n+1} = j \mid X_n = i) = \pi_j \prb(X_{n+1} = i \mid X_n = j),
+\end{equation}
+for $i \neq j \in \mathcal{S}$. It will then follow from Theorem~\ref{thm:11.2.6} that $\{\pi_i\}$ is a stationary distribution for the chain.
+
+We thus have to prove \eqref{eq:11.7.3}. Now, \eqref{eq:11.7.3} is clearly true if $i = j$, so we can assume that $i \neq j$.
+
+But if $i \neq j$, and $X_n = i$, then the only way we can have $X_{n+1} = j$ is if $Y_{n+1} = j$ (i.e., we propose the state $j$, which we will do with probability $p_{ij}$). Also we accept this proposal (which we will do with probability $\alpha(i,j)$). Hence,
+\[
+\prb(X_{n+1} = j \mid X_n = i) = q_{ij} \alpha(i,j) = q_{ij} \min\left(1, \frac{\pi_j q_{ji}}{\pi_i q_{ij}}\right) = \min\left(q_{ij}, \frac{\pi_j q_{ji}}{\pi_i}\right).
+\]
+It follows that $\pi_i \prb(X_{n+1} = j \mid X_n = i) = \min(\pi_i q_{ij}, \pi_j q_{ji})$.
+
+Similarly, we compute that $\pi_j \prb(X_{n+1} = i \mid X_n = j) = \min(\pi_j q_{ji}, \pi_i q_{ij})$. It follows that \eqref{eq:11.7.3} is true.
+
+\subsection*{Proof of Theorem~\ref{thm:11.5.1}}
+
+We want to prove that when $\{Y^{(M)}_t : t \geqslant 0\}$ is as defined earlier, then for large $M$:
+\begin{enumerate}[(a)]
+\item For $t > 0$, the distribution of $Y^{(M)}_t$ is approximately $\text{N}(0, t)$, i.e., normally distributed with mean $t$.
+\item For $s, t > 0$, the covariance $\cov(Y^{(M)}_t, Y^{(M)}_t)$ is approximately equal to $\min(s, t)$.
+\item For $t > s > 0$, the distribution of the increment $Y^{(M)}_t - Y^{(M)}_s$ is approximately $\text{N}(0, t - s)$, i.e., normally distributed with mean 0 and variance $t - s$, and is approximately independent of $Y^{(M)}_s$.
+\item $Y^{(M)}_t$ is a continuous function of $t$.
+\end{enumerate}
+
+Write $\lfloor r \rfloor$ for the greatest integer not exceeding $r$, so that, e.g., $\lfloor 7.6 \rfloor = 7$. Then we see that for large $M$, $t$ is very close to $\lfloor tM \rfloor / M$, so that $Y^{(M)}_t$ is very close (formally, within $O(1/\sqrt{M})$ in probability) to
+\[
+A = Y^{(M)}_{\lfloor tM \rfloor / M} = \frac{1}{\sqrt{M}} (Z_1 + Z_2 + \cdots + Z_{\lfloor tM \rfloor}).
+\]
+
+Now, $A$ is equal to $1/\sqrt{M}$ times the sum of $\lfloor tM \rfloor$ different i.i.d.\ random variables, each having mean 0 and variance 1. It follows from the central limit theorem that $A$ converges in distribution to the distribution $\text{N}(0, t)$ as $M \to \infty$. This proves part (a).
+
+For part (b), note that also $Y^{(M)}_s$ is very close to
+\[
+B = Y^{(M)}_{\lfloor sM \rfloor / M} = \frac{1}{\sqrt{M}} (Z_1 + Z_2 + \cdots + Z_{\lfloor sM \rfloor}).
+\]
+Because $\expc[Z_i] = 0$, we must have $\expc[A] = \expc[B] = 0$, so that $\cov(A, B) = \expc[AB]$. For simplicity, assume $s \leqslant t$; the case $s > t$ is similar. Then we have
+\begin{align*}
+\cov(A, B) &= \expc[AB] = \frac{1}{M} \expc[(Z_1 + Z_2 + \cdots + Z_{\lfloor sM \rfloor})(Z_1 + Z_2 + \cdots + Z_{\lfloor tM \rfloor})] \\
+&= \frac{1}{M} \expc\left[\sum_{i=1}^{\lfloor sM \rfloor} \sum_{j=1}^{\lfloor tM \rfloor} Z_i Z_j\right] = \frac{1}{M} \sum_{i=1}^{\lfloor sM \rfloor} \sum_{j=1}^{\lfloor tM \rfloor} \expc[Z_i Z_j].
+\end{align*}
+Now, we have $\expc[Z_i Z_j] = 0$ unless $i = j$, in which case $\expc[Z_i Z_j] = 1$. There will be precisely $\lfloor sM \rfloor$ terms in the sum for which $i = j$, namely, one for each value of $i$ (since $t \geqslant s$). Hence,
+\[
+\cov(A, B) = \frac{\lfloor sM \rfloor}{M},
+\]
+which converges to $s$ as $M \to \infty$. This proves part (b).
+
+Part (c) follows very similarly to part (a). Finally, part (d) follows because the function $Y^{(M)}_t$ was constructed in a continuous manner (as in Figure~\ref{fig:11.5.1}).
+
+\subsection*{Proof of Theorem~\ref{thm:11.6.1}}
+
+We want to prove that for any $t > 0$, the distribution of $N_t$ is $\text{Poisson}(at)$.
+
+We first require a technical lemma.
+
+\begin{lemma}
+\label{lem:11.7.4}
+Let $g_n(t) = e^{-at} a^n t^{n-1} / (n-1)!$ be the density of the $\text{Gamma}(n, a)$ distribution. Then for $n \geqslant 1$,
+\begin{equation}
+\label{eq:11.7.4}
+\int_0^t g_n(s) \,\mathrm{d}s = \sum_{i=n}^{\infty} \frac{e^{-at} (at)^i}{i!}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+If $t = 0$, then both sides are 0. For other $t$, differentiating with respect to $t$, we see (setting $j = i - 1$) that
+\begin{align*}
+\frac{\partial}{\partial t} \sum_{i=n}^{\infty} \frac{e^{-at} (at)^i}{i!} &= \sum_{i=n}^{\infty} \left(-a e^{-at} \frac{(at)^i}{i!} + e^{-at} \frac{a \cdot i \cdot t^{i-1}}{i!}\right) \\
+&= \sum_{i=n}^{\infty} e^{-at} a^{i+1} \frac{t^i}{i!} + \sum_{j=n-1}^{\infty} e^{-at} a^{j+1} \frac{t^j}{j!} \\
+&= e^{-at} a^n \frac{t^{n-1}}{(n-1)!} = g_n(t) = \frac{\partial}{\partial t} \int_0^t g_n(s) \,\mathrm{d}s.
+\end{align*}
+Because this is true for all $t > 0$, we see that \eqref{eq:11.7.4} is satisfied for any $n \geqslant 0$.
+\end{proof}
+
+Recall (see Example \ref{ex:2.4.6}) that the Exponential distribution is the same as the $\text{Gamma}(1, \cdot)$ distribution. Furthermore, (see Problem \ref{exer:2.9.15}) if $X \sim \text{Gamma}(\alpha_1, \cdot)$ and $Y \sim \text{Gamma}(\alpha_2, \cdot)$ are independent, then $X + Y \sim \text{Gamma}(\alpha_1 + \alpha_2, \cdot)$.
+
+Now, in our case, we have $T_n = R_1 + R_2 + \cdots + R_n$, where $R_i \sim \text{Exponential}(a) = \text{Gamma}(1, a)$. It follows that $T_n \sim \text{Gamma}(n, a)$. Hence, the density of $T_n$ is $g_n(t) = e^{-at} a^n t^{n-1} / (n-1)!$.
+
+Now, the event that $N_t \geqslant n$ (i.e., that the number of events by time $t$ is at least $n$) is the same as the event that $T_n \leqslant t$ (i.e., that the $n$th event occurs before time $n$). Hence,
+\[
+\prb(N_t \geqslant n) = \prb(T_n \leqslant t) = \int_0^t g_n(s) \,\mathrm{d}s.
+\]
+Then by Lemma~\ref{lem:11.7.4},
+\begin{equation}
+\label{eq:11.7.5}
+\prb(N_t \geqslant n) = \sum_{i=n}^{\infty} \frac{e^{-at} (at)^i}{i!}
+\end{equation}
+for any $n \geqslant 1$. If $n = 0$ then both sides are 1, so in fact \eqref{eq:11.7.5} holds for any $n \geqslant 0$.
+
+Using this, we see that
+\[
+\prb(N_t = j) = \prb(N_t \geqslant j) - \prb(N_t \geqslant j + 1) = \sum_{i=j}^{\infty} \frac{e^{-at} (at)^i}{i!} - \sum_{i=j+1}^{\infty} \frac{e^{-at} (at)^i}{i!} = \frac{e^{-at} (at)^j}{j!}.
+\]
+It follows that $N_t \sim \text{Poisson}(at)$, as claimed.
+
+\subsection*{Proof of Theorem~\ref{thm:11.6.2}}
+
+We want to prove that when $0 = t_0 < t_1 < t_2 < t_3 < \cdots < t_d$, then for $i = 1, 2, \ldots, d$, the distribution of $N_{t_i} - N_{t_{i-1}}$ is $\text{Poisson}(a(t_i - t_{i-1}))$. Furthermore, the random variables $N_{t_i} - N_{t_{i-1}}$ for $i = 1, \ldots, d$ are independent.
+
+From the memoryless property of the exponential distributions (see Problem \ref{exer:2.4.14}), it follows that regardless of the values of $N_s$ for $s \leqslant t_{i-1}$, this will have no effect on the distribution of the increments $N_t - N_{t_{i-1}}$ for $t > t_{i-1}$. That is, the process $\{N_t\}$ starts fresh at each time $t_{i-1}$, except from a different initial value $N_{t_{i-1}}$ instead of from $N_0 = 0$.
+
+Hence, the distribution of $N_{t_{i-1}+u} - N_{t_{i-1}}$ for $u \geqslant 0$ is identical to the distribution of $N_u - N_0 = N_u$ and is independent of the values of $N_s$ for $s \leqslant t_{i-1}$. Because we already know that $N_u \sim \text{Poisson}(au)$, it follows that $N_{t_{i-1}+u} - N_{t_{i-1}} \sim \text{Poisson}(au)$ as well. In particular, $N_{t_i} - N_{t_{i-1}} \sim \text{Poisson}(a(t_i - t_{i-1}))$ as well, with $N_{t_i} - N_{t_{i-1}}$ independent of $\{N_s : s \leqslant t_{i-1}\}$. The result follows.
+

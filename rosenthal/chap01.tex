@@ -1,0 +1,1887 @@
+\chapter{Probability Models}
+\label{ch:1}
+
+\section*{Chapter Outline}
+\begin{itemize}
+\item Section 1 \quad Probability: A Measure of Uncertainty
+\item Section 2 \quad Probability Models
+\item Section 3 \quad Properties of Probability Models
+\item Section 4 \quad Uniform Probability on Finite Spaces
+\item Section 5 \quad Conditional Probability and Independence
+\item Section 6 \quad Continuity of $\prb$
+\item Section 7 \quad Further Proofs (Advanced)
+\end{itemize}
+
+This chapter introduces the basic concept of the entire course, namely, probability. We discuss why probability was introduced as a scientific concept and how it has been formalized mathematically in terms of a probability model. Following this we develop some of the basic mathematical results associated with the probability model.
+
+\section{Probability: A Measure of Uncertainty}
+\label{sec:1.1}
+
+Often in life we are confronted by our own ignorance. Whether we are pondering tonight's traffic jam, tomorrow's weather, next week's stock prices, an upcoming election, or where we left our hat, often we do not know an outcome with certainty. Instead, we are forced to guess, to estimate, to hedge our bets.
+
+Probability is the science of uncertainty. It provides precise mathematical rules for understanding and analyzing our own ignorance. It does not tell us tomorrow's weather or next week's stock prices; rather, it gives us a framework for working with our limited knowledge and for making sensible decisions based on what we do and do not know.
+
+To say there is a 40\% chance of rain tomorrow is not to know tomorrow's weather. Rather, it is to know what we do not know about tomorrow's weather.
+
+In this text, we will develop a more precise understanding of what it means to say there is a 40\% chance of rain tomorrow. We will learn how to work with ideas of randomness, probability, expected value, prediction, estimation, etc., in ways that are sensible and mathematically clear.
+
+There are also other sources of randomness besides uncertainty. For example, computers often use pseudorandom numbers to make games fun, simulations accurate, and searches efficient. Also, according to the modern theory of quantum mechanics, the makeup of atomic matter is in some sense truly random. All such sources of randomness can be studied using the techniques of this text.
+
+Another way of thinking about probability is in terms of relative frequency. For example, to say a coin has a 50\% chance of coming up heads can be interpreted as saying that, if we flipped the coin many, many times, then approximately half of the time it would come up heads. This interpretation has some limitations. In many cases (such as tomorrow's weather or next week's stock prices), it is impossible to repeat the experiment many, many times. Furthermore, what precisely does ``approximately'' mean in this case? However, despite these limitations, the relative frequency interpretation is a useful way to think of probabilities and to develop intuition about them.
+
+Uncertainty has been with us forever, of course, but the mathematical theory of probability originated in the seventeenth century. In 1654, the Paris gambler Le Chevalier de Méré asked Blaise Pascal about certain probabilities that arose in gambling (such as, if a game of chance is interrupted in the middle, what is the probability that each player would have won had the game continued?). Pascal was intrigued and corresponded with the great mathematician and lawyer Pierre de Fermat about these questions. Pascal later wrote the book \textit{Traité du Triangle Arithmetique}, discussing binomial coefficients (Pascal's triangle) and the binomial probability distribution.
+
+At the beginning of the twentieth century, Russians such as Andrei Andreyevich Markov, Andrey Nikolayevich Kolmogorov, and Pafnuty L.\ Chebychev (and American Norbert Wiener) developed a more formal mathematical theory of probability. In the 1950s, Americans William Feller and Joe Doob wrote important books about the mathematics of probability theory. They popularized the subject in the western world, both as an important area of pure mathematics and as having important applications in physics, chemistry, and later in computer science, economics, and finance.
+
+\subsection{Why Do We Need Probability Theory?}
+\label{ssec:1.1.1}
+
+Probability theory comes up very often in our daily lives. We offer a few examples here.
+
+Suppose you are considering buying a ``Lotto 6/49'' lottery ticket. In this lottery, you are to pick six distinct integers between 1 and 49. Another six distinct integers between 1 and 49 are then selected at random by the lottery company. If the two sets of six integers are identical, then you win the jackpot.
+
+After mastering Section~\ref{sec:1.4}, you will know how to calculate that the probability of the two sets matching is equal to one chance in 13,983,816. That is, it is about 14 million times more likely that you will not win the jackpot than that you will. (These are not very good odds!)
+
+Suppose the lottery tickets cost \$1 each. After mastering expected values in Chapter~\ref{ch:3}, you will know that you should not even consider buying a lottery ticket unless the jackpot is more than \$14 million (which it usually is not). Furthermore, if the jackpot is ever more than \$14 million, then likely many other people will buy lottery tickets that week, leading to a larger probability that you will have to share the jackpot with other winners even if you do win --- so it is probably not in your favor to buy a lottery ticket even then.
+
+Suppose instead that a ``friend'' offers you a bet. He has three cards, one red on both sides, one black on both sides, and one red on one side and black on the other. He mixes the three cards in a hat, picks one at random, and places it flat on the table with only one side showing. Suppose that one side is red. He then offers to bet his \$4 against your \$3 that the other side of the card is also red.
+
+At first you might think it sounds like the probability that the other side is also red is 50\%; thus, a good bet. However, after mastering conditional probability (Section~\ref{sec:1.5}), you will know that, conditional on one side being red, the conditional probability that the other side is also red is equal to 2/3. So, by the theory of expected values (Chapter~\ref{ch:3}), you will know that you should not accept your ``friend's'' bet.
+
+Finally, suppose he suggests that you flip a coin one thousand times. Your ``friend'' says that if the coin comes up heads at least six hundred times, then he will pay you \$100; otherwise, you have to pay him just \$1.
+
+At first you might think that, while 500 heads is the most likely, there is still a reasonable chance that 600 heads will appear --- at least good enough to justify accepting your friend's \$100 to \$1 bet. However, after mastering the laws of large numbers (Chapter~\ref{ch:4}), you will know that as the number of coin flips gets large, it becomes more and more likely that the number of heads is very close to half of the total number of coin flips. In fact, in this case, there is less than one chance in ten billion of getting more than 600 heads! Therefore, you should not accept this bet, either.
+
+As these examples show, a good understanding of probability theory will allow you to correctly assess probabilities in everyday situations, which will in turn allow you to make wiser decisions. It might even save you money!
+
+Probability theory also plays a key role in many important applications of science and technology. For example, the design of a nuclear reactor must be such that the escape of radioactivity into the environment is an extremely rare event. Of course, we would like to say that it is categorically impossible for this to ever happen, but reactors are complicated systems, built up from many interconnected subsystems, each of which we know will fail to function properly at some time. Furthermore, we can never definitely say that a natural event like an earthquake cannot occur that would damage the reactor sufficiently to allow an emission. The best we can do is try to quantify our uncertainty concerning the failures of reactor components or the occurrence of natural events that would lead to such an event. This is where probability enters the picture. Using probability as a tool to deal with the uncertainties, the reactor can be designed to ensure that an unacceptable emission has an extremely small probability --- say, once in a billion years --- of occurring.
+
+The gambling and nuclear reactor examples deal essentially with the concept of risk --- the risk of losing money, the risk of being exposed to an injurious level of radioactivity, etc. In fact, we are exposed to risk all the time. When we ride in a car, or take an airplane flight, or even walk down the street, we are exposed to risk. We know that the risk of injury in such circumstances is never zero, yet we still engage in these activities. This is because we intuitively realize that the probability of an accident occurring is extremely low.
+
+So we are using probability every day in our lives to assess risk. As the problems we face, individually or collectively, become more complicated, we need to refine and develop our rough, intuitive ideas about probability to form a clear and precise approach. This is why probability theory has been developed as a subject. In fact, the insurance industry has been developed to help us cope with risk. Probability is the tool used to determine what you pay to reduce your risk or to compensate you or your family in case of a personal injury.
+
+\bigskip
+\noindent\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\textbf{Summary of Section~\ref{sec:1.1}}\\[0.5ex]
+Probability theory provides us with a precise understanding of uncertainty.\\
+This understanding can help us make predictions, make better decisions, assess risk, and even make money.}}
+
+\bigskip
+\subsection*{Discussion Topics}
+
+\begin{exercise}
+\label{exer:1.1.1}
+Do you think that tomorrow's weather and next week's stock prices are ``really'' random, or is this just a convenient way to discuss and analyze them?
+\end{exercise}
+
+\begin{exercise}
+\label{exer:1.1.2}
+Do you think it is possible for probabilities to depend on who is observing them, or at what time?
+\end{exercise}
+
+\begin{exercise}
+\label{exer:1.1.3}
+Do you find it surprising that probability theory was not discussed as a mathematical subject until the seventeenth century? Why or why not?
+\end{exercise}
+
+\begin{exercise}
+\label{exer:1.1.4}
+In what ways is probability important for such subjects as physics, computer science, and finance? Explain.
+\end{exercise}
+
+\begin{exercise}
+\label{exer:1.1.5}
+What are examples from your own life where thinking about probabilities did save --- or could have saved --- you money or helped you to make a better decision? (List as many as you can.)
+\end{exercise}
+
+\begin{exercise}
+\label{exer:1.1.6}
+Probabilities are often depicted in popular movies and television programs. List as many examples as you can. Do you think the probabilities were portrayed there in a ``reasonable'' way?
+\end{exercise}
+
+\section{Probability Models}
+\label{sec:1.2}
+
+A formal definition of probability begins with a \emph{sample space}, often written $S$. This sample space is any set that lists all possible \emph{outcomes} (or, \emph{responses}) of some unknown experiment or situation. For example, perhaps
+\[
+S = \{\text{rain}, \text{snow}, \text{clear}\}
+\]
+when predicting tomorrow's weather. Or perhaps $S$ is the set of all positive real numbers, when predicting next week's stock price. The point is, $S$ can be any set at all, even an infinite set. We usually write $s$ for an element of $S$, so that $s \in S$. Note that $S$ describes only those things that we are interested in; if we are studying weather, then rain and snow are in $S$, but tomorrow's stock prices are not.
+
+A probability model also requires a collection of \emph{events}, which are subsets of $S$ to which probabilities can be assigned. For the above weather example, the subsets $\{\text{rain}\}$, $\{\text{snow}\}$, $\{\text{rain}, \text{snow}\}$, $\{\text{rain}, \text{clear}\}$, $\{\text{rain}, \text{snow}, \text{clear}\}$, and even the empty set $\varnothing$, are all examples of subsets of $S$ that could be events. Note that here the comma means ``or''; thus, $\{\text{rain}, \text{snow}\}$ is the event that it will rain or snow. We will generally assume that all subsets of $S$ are events. (In fact, in complicated situations there are some technical restrictions on what subsets can or cannot be events, according to the mathematical subject of \emph{measure theory}. But we will not concern ourselves with such technicalities here.)
+
+Finally, and most importantly, a probability model requires a \emph{probability measure}, usually written $P$. This probability measure must assign, to each event $A$, a probability $\prb(A)$. We require the following properties:
+\begin{enumerate}[(1)]
+\item $\prb(A)$ is always a nonnegative real number, between 0 and 1 inclusive.
+\item $\prb(\varnothing) = 0$, i.e., if $A$ is the empty set $\varnothing$, then $\prb(A) = 0$.
+\item $\prb(S) = 1$, i.e., if $A$ is the entire sample space $S$, then $\prb(A) = 1$.
+\item $P$ is \emph{(countably) additive}, meaning that if $A_1, A_2, \ldots$ is a finite or countable sequence of disjoint events, then
+\begin{equation}
+\label{eq:1.2.1}
+\prb(A_1 \cup A_2 \cup \cdots) = \prb(A_1) + \prb(A_2) + \cdots
+\end{equation}
+\end{enumerate}
+
+The first of these properties says that we shall measure all probabilities on a scale from 0 to 1, where 0 means impossible and 1 (or 100\%) means certain. The second property says the probability that nothing happens is 0; in other words, it is impossible that no outcome will occur. The third property says the probability that something happens is 1; in other words, it is certain that some outcome must occur.
+
+The fourth property is the most subtle. It says that we can calculate probabilities of complicated events by adding up the probabilities of smaller events, provided those smaller events are disjoint and together contain the entire complicated event. Note that events are \emph{disjoint} if they contain no outcomes in common. For example, $\{\text{rain}\}$ and $\{\text{snow}, \text{clear}\}$ are disjoint, whereas $\{\text{rain}\}$ and $\{\text{rain}, \text{clear}\}$ are not disjoint. (We are assuming for simplicity that it cannot both rain and snow tomorrow.) Thus, we should have $\prb(\{\text{rain}\}) + \prb(\{\text{snow}, \text{clear}\}) = \prb(\{\text{rain}, \text{snow}, \text{clear}\})$, but do not expect to have $\prb(\{\text{rain}\}) + \prb(\{\text{rain}, \text{clear}\}) = \prb(\{\text{rain}\} \cup \{\text{rain}, \text{clear}\})$ (the latter being the same as $\prb(\{\text{rain}, \text{clear}\})$).
+
+We now formalize the definition of a probability model.
+
+\begin{definition}
+\label{def:1.2.1}
+A \emph{probability model} consists of a nonempty set called the \emph{sample space} $S$; a collection of \emph{events} that are subsets of $S$; and a \emph{probability measure} $P$ assigning a probability between 0 and 1 to each event, with $\prb(\varnothing) = 0$ and $\prb(S) = 1$ and with $P$ additive as in \eqref{eq:1.2.1}.
+\end{definition}
+
+\begin{example}
+\label{ex:1.2.1}
+Consider again the weather example, with $S = \{\text{rain}, \text{snow}, \text{clear}\}$. Suppose that the probability of rain is 40\%, the probability of snow is 15\%, and the probability of a clear day is 45\%. We can express this as $\prb(\{\text{rain}\}) = 0.40$, $\prb(\{\text{snow}\}) = 0.15$, and $\prb(\{\text{clear}\}) = 0.45$.
+
+For this example, of course $\prb(\varnothing) = 0$, i.e., it is impossible that nothing will happen tomorrow. Also $\prb(\{\text{rain}, \text{snow}, \text{clear}\}) = 1$, because we are assuming that exactly one of rain, snow, or clear must occur tomorrow. (To be more realistic, we might say that we are predicting the weather at exactly 11:00 A.M.\ tomorrow.) Now, what is the probability that it will rain or snow tomorrow? Well, by the additivity property, we see that
+\[
+\prb(\{\text{rain}\} \cup \{\text{snow}\}) = \prb(\{\text{rain}\}) + \prb(\{\text{snow}\}) = 0.40 + 0.15 = 0.55.
+\]
+We thus conclude that, as expected, there is a 55\% chance of rain or snow tomorrow.
+\end{example}
+
+\begin{example}
+\label{ex:1.2.2}
+Suppose your candidate has a 60\% chance of winning an election in progress. Then $S = \{\text{win}, \text{lose}\}$, with $\prb(\{\text{win}\}) = 0.6$ and $\prb(\{\text{lose}\}) = 0.4$. Note that $\prb(\{\text{win}\}) + \prb(\{\text{lose}\}) = 1$.
+\end{example}
+
+\begin{example}
+\label{ex:1.2.3}
+Suppose we flip a fair coin, which can come up either heads (H) or tails (T) with equal probability. Then $S = \{H, T\}$, with $\prb(\{H\}) = \prb(\{T\}) = 0.5$. Of course, $\prb(\{H\}) + \prb(\{T\}) = 1$.
+\end{example}
+
+\begin{example}
+\label{ex:1.2.4}
+Suppose we flip three fair coins in a row and keep track of the sequence of heads and tails that result. Then
+\[
+S = \{HHH, HHT, HTH, HTT, THH, THT, TTH, TTT\}.
+\]
+Furthermore, each of these eight outcomes is equally likely. Thus, $\prb(\{HHH\}) = 1/8$, $\prb(\{TTT\}) = 1/8$, etc. Also, the probability that the first coin is heads and the second coin is tails, but the third coin can be anything, is equal to the sum of the probabilities of the events $\{HTH\}$ and $\{HTT\}$, i.e., $\prb(\{HTH\}) + \prb(\{HTT\}) = 1/8 + 1/8 = 1/4$.
+\end{example}
+
+\begin{example}
+\label{ex:1.2.5}
+Suppose we flip three fair coins in a row but care only about the number of heads that result. Then $S = \{0, 1, 2, 3\}$. However, the probabilities of these four outcomes are not all equally likely; we will see later that in fact $\prb(\{0\}) = \prb(\{3\}) = 1/8$, while $\prb(\{1\}) = \prb(\{2\}) = 3/8$.
+\end{example}
+
+We note that it is possible to define probability models on more complicated (e.g., uncountably infinite) sample spaces as well.
+
+\begin{example}
+\label{ex:1.2.6}
+Suppose that $S = [0,1]$ is the unit interval. We can define a probability measure $P$ on $S$ by saying that
+\begin{equation}
+\label{eq:1.2.2}
+\prb([a,b]) = b - a \quad \text{whenever } 0 \leqslant a \leqslant b \leqslant 1.
+\end{equation}
+In words, for any\footnote{For the uniform distribution on $[0,1]$, it turns out that not all subsets of $[0,1]$ can properly be regarded as events for this model. However, this is merely a technical property, and any subset that we can explicitly write down will always be an event. See more advanced probability books, e.g., page~3 of \textit{A First Look at Rigorous Probability Theory}, Second Edition, by J.~S.\ Rosenthal (World Scientific Publishing, Singapore, 2006).} subinterval $[a,b]$ of $[0,1]$, the probability of the interval is simply the length of that interval. This example is called the \emph{uniform distribution} on $[0,1]$.
+
+The uniform distribution is just the first of many distributions on uncountable state spaces. Many further examples will be given in Chapter~\ref{ch:2}.
+\end{example}
+
+\subsection{Venn Diagrams and Subsets}
+\label{ssec:1.2.1}
+
+Venn diagrams provide a very useful graphical method for depicting the sample space $S$ and subsets of it. For example, in Figure~\ref{fig:1.2.1} we have a Venn diagram showing the subset $A \subseteq S$ and the \emph{complement}
+\[
+A^c = \{s : s \notin A\}
+\]
+of $A$. The rectangle denotes the entire sample space $S$. The circle (and its interior) denotes the subset $A$; the region outside the circle, but inside $S$, denotes $A^c = \{1\} \setminus A$.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig1_2_1.pdf}
+\caption{Venn diagram of the subsets $A$ and $A^c$ of the sample space $S$.}
+\label{fig:1.2.1}
+\end{figure}
+
+Two subsets $A \subseteq S$ and $B \subseteq S$ are depicted as two circles, as in Figure~\ref{fig:1.2.2} on the next page. The \emph{intersection}
+\[
+A \cap B = \{s : s \in A \text{ and } s \in B\}
+\]
+of the subsets $A$ and $B$ is the set of elements common to both sets and is depicted by the region where the two circles overlap. The set
+\[
+A \cap B^c = A \setminus B = \{s : s \in A \text{ and } s \notin B\}
+\]
+is called the \emph{complement of $B$ in $A$} and is depicted as the region inside the $A$ circle, but not inside the $B$ circle. This is the set of elements in $A$ but not in $B$. Similarly, we have the complement of $A$ in $B$, namely, $A^c \cap B$. Observe that the sets $A \cap B$, $A \cap B^c$, and $A^c \cap B$ are mutually disjoint.
+
+The \emph{union}
+\[
+A \cup B = \{s : s \in A \text{ or } s \in B\}
+\]
+of the sets $A$ and $B$ is the set of elements that are in either $A$ or $B$. In Figure~\ref{fig:1.2.2}, it is depicted by the region covered by both circles. Notice that $A \cup B = (A \cap B^c) \cup (A \cap B) \cup (A^c \cap B)$.
+
+There is one further region in Figure~\ref{fig:1.2.2}. This is the complement of $A \cup B$, namely, the set of elements that are in neither $A$ nor $B$. So we immediately have
+\[
+(A \cup B)^c = A^c \cap B^c.
+\]
+Similarly, we can show that
+\[
+(A \cap B)^c = A^c \cup B^c,
+\]
+namely, the subset of elements that are not in both $A$ and $B$ is given by the set of elements not in $A$ or not in $B$.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig1_2_2.pdf}
+\caption{Venn diagram depicting the subsets $A$, $B$, $A \cap B$, $A \cap B^c$, $A^c \cap B$, $A^c \cap B^c$, and $A \cup B$.}
+\label{fig:1.2.2}
+\end{figure}
+
+Finally, we note that if $A$ and $B$ are disjoint subsets, then it makes sense to depict these as drawn in Figure~\ref{fig:1.2.3}, i.e., as two nonoverlapping circles because they have no elements in common.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig1_2_3.pdf}
+\caption{Venn diagram of the disjoint subsets $A$ and $B$.}
+\label{fig:1.2.3}
+\end{figure}
+
+\bigskip
+\noindent\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\textbf{Summary of Section~\ref{sec:1.2}}\\[0.5ex]
+A probability model consists of a sample space $S$ and a probability measure $P$ assigning probabilities to each event.\\[0.5ex]
+Different sorts of sets can arise as sample spaces.\\[0.5ex]
+Venn diagrams provide a convenient method for representing sets and the relationships among them.}}
+
+\bigskip
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:1.2.1}
+Suppose $S = \{1, 2, 3\}$, with $\prb(\{1\}) = 1/2$, $\prb(\{2\}) = 1/3$, and $\prb(\{3\}) = 1/6$.
+\begin{enumerate}[(a)]
+\item What is $\prb(\{1, 2\})$?
+\item What is $\prb(\{1, 2, 3\})$?
+\item List all events $A$ such that $\prb(A) = 1/2$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(\{1, 2\}) = \prb(\{1\}) + \prb(\{2\}) = 1/2 + 1/3 = 5/6$.
+    \item $\prb(\{1, 2, 3\}) = \prb(\{1\}) + \prb(\{2\}) + \prb(\{3\}) = 1/2 + 1/3 + 1/6 = 1$.
+    \item $\prb(\{1\}) = \prb(\{2, 3\}) = 1/2$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.2}
+Suppose $S = \{1, 2, 3, 4, 5, 6, 7, 8\}$, with $\prb(\{s\}) = 1/8$ for $1 \leqslant s \leqslant 8$.
+\begin{enumerate}[(a)]
+\item What is $\prb(\{1, 2\})$?
+\item What is $\prb(\{1, 2, 3\})$?
+\item How many events $A$ are there such that $\prb(A) = 1/2$?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(\{1, 2\}) = \prb(\{1\}) + \prb(\{2\}) = 1/8 + 1/8 = 1/4$.
+    \item $\prb(\{1, 2, 3\}) = \prb(\{1\}) + \prb(\{2\}) + \prb(\{3\}) = 1/8 + 1/8 + 1/8 = 3/8$.
+    \item There are $\binom{8}{4} = 8!/4!4! = 70$ such events.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.3}
+Suppose $S = \{1, 2, 3\}$, with $\prb(\{1\}) = 1/2$ and $\prb(\{1, 2\}) = 2/3$. What must $\prb(\{2\})$ be?
+\end{exercise}
+
+\begin{solution}
+$\prb(\{2\}) = \prb(\{1, 2\}) - \prb(\{1\}) = 2/3 - 1/2 = 1/6$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.4}
+Suppose $S = \{1, 2, 3\}$, and we try to define $P$ by $\prb(\{1, 2, 3\}) = 1$, $\prb(\{1, 2\}) = 0.7$, $\prb(\{1, 3\}) = 0.5$, $\prb(\{2, 3\}) = 0.7$, $\prb(\{1\}) = 0.2$, $\prb(\{2\}) = 0.5$, $\prb(\{3\}) = 0.3$. Is $P$ a valid probability measure? Why or why not?
+\end{exercise}
+
+\begin{solution}
+No, since $\prb(\{2, 3\}) \neq \prb(\{2\}) + \prb(\{3\})$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.5}
+Consider the uniform distribution on $[0,1]$. Let $s \in [0,1]$ be any outcome. What is $\prb(\{s\})$? Do you find this result surprising?
+\end{exercise}
+
+\begin{solution}
+Here $\prb(\{s\}) = \prb([s, s]) = s - s = 0$ for any $s \in [0, 1]$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.6}
+Label the subregions in the Venn diagram in Figure~\ref{fig:1.2.4} using the sets $A$, $B$, and $C$ and their complements (just as we did in Figure~\ref{fig:1.2.2}).
+\end{exercise}
+
+\begin{solution}
+We have that $a = A \cap B^c \cap C^c$, $b = A \cap B \cap C^c$, $c = A^c \cap B \cap C^c$, $d = A \cap B^c \cap C$, $e = A \cap B \cap C$, $f = A^c \cap B \cap C$, and $g = A^c \cap B^c \cap C$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.7}
+On a Venn diagram, depict the set of elements that are in subsets $A$ or $B$ but not in both. Also write this as a subset involving unions and intersections of $A$, $B$, and their complements.
+\end{exercise}
+
+\begin{solution}
+This is the subset $(A \cap B^c) \cup (A^c \cap B)$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.8}
+Suppose $S = \{1, 2, 3\}$, and $\prb(\{1, 2\}) = 1/3$, and $\prb(\{2, 3\}) = 2/3$. Compute $\prb(\{1\})$, $\prb(\{2\})$, and $\prb(\{3\})$.
+\end{exercise}
+
+\begin{solution}
+$\prb(\{1\}) = \prb(S - \{2, 3\}) = \prb(S) - \prb(\{2, 3\}) = 1 - 2/3 = 1/3$, $\prb(\{2\}) = \prb(\{1, 2\}) + \prb(\{2, 3\}) - \prb(S) = 1/3 + 2/3 - 1 = 0$, and $\prb(\{3\}) = \prb(S - \{1, 2\}) = \prb(S) - \prb(\{1, 2\}) = 1 - 1/3 = 2/3$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.9}
+Suppose $S = \{1, 2, 3, 4\}$, and $\prb(\{1\}) = 1/12$, and $\prb(\{1, 2\}) = 1/6$, and $\prb(\{1, 2, 3\}) = 1/3$. Compute $\prb(\{1\})$, $\prb(\{2\})$, $\prb(\{3\})$, and $\prb(\{4\})$.
+\end{exercise}
+
+\begin{solution}
+$\prb(\{1\}) = 1/12$, $\prb(\{2\}) = \prb(\{1, 2\}) - \prb(\{1\}) = 1/6 - 1/12 = 1/12$, $\prb(\{3\}) = \prb(\{1, 2, 3\}) - \prb(\{1, 2\}) = 1/3 - 1/6 = 1/6$, and $\prb(\{4\}) = \prb(\{1, 2, 3, 4\}) - \prb(\{1, 2, 3\}) = 1 - 1/3 = 2/3$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.10}
+Suppose $S = \{1, 2, 3\}$, and $\prb(\{1\}) = \prb(\{3\}) = 2\,\prb(\{2\})$. Compute $\prb(\{1\})$, $\prb(\{2\})$, and $\prb(\{3\})$.
+\end{exercise}
+
+\begin{solution}
+From the totality, $1 = \prb(S) = \prb(\{1\}) + \prb(\{2\}) + \prb(\{3\}) = 5\prb(\{2\})$. Hence, $\prb(\{2\}) = 1/5$, $\prb(\{1\}) = 2\prb(\{2\}) = 2/5$, and $\prb(\{3\}) = \prb(\{1\}) = 2/5$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.11}
+Suppose $S = \{1, 2, 3\}$, and $\prb(\{1\}) = \prb(\{2\}) = 1/6$, and $\prb(\{3\}) = 2\,\prb(\{2\})$. Compute $\prb(\{1\})$, $\prb(\{2\})$, and $\prb(\{3\})$.
+\end{exercise}
+
+\begin{solution}
+From the totality, $1 = \prb(S) = \prb(\{1\}) + \prb(\{2\}) + \prb(\{3\}) = 4\prb(\{2\}) + 1/6$. Hence, $\prb(\{2\}) = 5/24$, $\prb(\{1\}) = \prb(\{2\}) + 1/6 = 3/8$, and $\prb(\{3\}) = 2\prb(\{2\}) = 5/12$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.12}
+Suppose $S = \{1, 2, 3, 4\}$, and $\prb(\{1\}) = 1/8 = \prb(\{2\}) = 3\,\prb(\{3\}) = 4\,\prb(\{4\})$. Compute $\prb(\{1\})$, $\prb(\{2\})$, $\prb(\{3\})$, and $\prb(\{4\})$.
+\end{exercise}
+
+\begin{solution}
+From the totality, $1 = \prb(S) = \prb(\{1\}) + \prb(\{2\}) + \prb(\{3\}) + \prb(\{4\}) = (31/12)\prb(\{2\}) + 1/8$. Hence, $\prb(\{2\}) = 21/62$, $\prb(\{1\}) = \prb(\{2\}) + 1/8 = 115/248$, $\prb(\{3\}) = \prb(\{2\})/3 = 7/62$ and $\prb(\{4\}) = \prb(\{2\})/4 = 21/248$.
+\end{solution}
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig1_2_4.pdf}
+\caption{Venn diagram of subsets $A$, $B$, and $C$.}
+\label{fig:1.2.4}
+\end{figure}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:1.2.13}
+Consider again the uniform distribution on $[0,1]$. Is it true that
+\[
+\prb([0,1]) = \sum_{s \in [0,1]} \prb(\{s\})?
+\]
+How does this relate to the additivity property of probability measures?
+\end{exercise}
+
+\begin{solution}
+No, since $\prb([0, 1]) = 1$, while $\sum_{s \in [0,1]} \prb(\{s\}) = \sum_{s \in [0,1]} 0 = 0$. Here additivity fails because $[0, 1]$ is not countable.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.14}
+Suppose $S$ is a finite or countable set. Is it possible that $\prb(\{s\}) = 0$ for every single $s \in S$? Why or why not?
+\end{exercise}
+
+\begin{solution}
+No, since for countable $S$ we would then have $\prb(S) = \sum_{s \in S} \prb(\{s\}) = \sum_{s \in [0,1]} 0 = 0$, contradicting the fact that $\prb(S) = 1$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.2.15}
+Suppose $S$ is an uncountable set. Is it possible that $\prb(\{s\}) = 0$ for every single $s \in S$? Why or why not?
+\end{exercise}
+
+\begin{solution}
+Yes. For example, this is true for the uniform distribution on $[0, 1]$. Since $[0, 1]$ is not countable, there is no contradiction.
+\end{solution}
+
+\subsection*{Discussion Topics}
+
+\begin{exercise}
+\label{exer:1.2.16}
+Does the additivity property make sense intuitively? Why or why not?
+\end{exercise}
+
+\begin{exercise}
+\label{exer:1.2.17}
+Is it important that we always have $\prb(S) = 1$? How would probability theory change if this were not the case?
+\end{exercise}
+
+\section{Properties of Probability Models}
+\label{sec:1.3}
+
+The additivity property of probability measures automatically implies certain basic properties. These are true for any probability model at all.
+
+If $A$ is any event, we write $A^c$ (read ``$A$ complement'') for the event that $A$ does not occur. In the weather example, if $A = \{\text{rain}\}$, then $A^c = \{\text{snow}, \text{clear}\}$. In the coin examples, if $A$ is the event that the first coin is heads, then $A^c$ is the event that the first coin is tails.
+
+Now, $A$ and $A^c$ are always disjoint. Furthermore, their union is always the entire sample space: $A \cup A^c = S$. Hence, by the additivity property, we must have $\prb(A) + \prb(A^c) = \prb(S)$. But we always have $\prb(S) = 1$. Thus, $\prb(A) + \prb(A^c) = 1$, or
+\begin{equation}
+\label{eq:1.3.1}
+\prb(A^c) = 1 - \prb(A).
+\end{equation}
+In words, the probability that any event does not occur is equal to one minus the probability that it does occur. This is a very helpful fact that we shall use often.
+
+Now suppose that $A_1, A_2, \ldots$ are events that form a \emph{partition} of the sample space $S$. This means that $A_1, A_2, \ldots$ are disjoint and, furthermore, that their union is equal to $S$, i.e., $A_1 \cup A_2 \cup \cdots = S$. We have the following basic theorem that allows us to decompose the calculation of the probability of $B$ into the sum of the probabilities of the sets $A_i \cap B$. Often these are easier to compute.
+
+\begin{theorem}[Law of total probability, unconditioned version]
+\label{thm:1.3.1}
+Let $A_1, A_2, \ldots$ be events that form a partition of the sample space $S$. Let $B$ be any event. Then
+\[
+\prb(B) = \prb(A_1 \cap B) + \prb(A_2 \cap B) + \cdots
+\]
+\end{theorem}
+
+\begin{proof}
+The events $A_1 \cap B, A_2 \cap B, \ldots$ are disjoint, and their union is $B$. Hence, the result follows immediately from the additivity property \eqref{eq:1.2.1}.
+\end{proof}
+
+A somewhat more useful version of the law of total probability, and applications of its use, are provided in Section~\ref{sec:1.5}.
+
+Suppose now that $A$ and $B$ are two events such that $A$ contains $B$ (in symbols, $A \supseteq B$). In words, all outcomes in $B$ are also in $A$. Intuitively, $A$ is a ``larger'' event than $B$, so we would expect its probability to be larger. We have the following result.
+
+\begin{theorem}
+\label{thm:1.3.2}
+Let $A$ and $B$ be two events with $A \supseteq B$. Then
+\begin{equation}
+\label{eq:1.3.2}
+\prb(A) = \prb(B) + \prb(A \cap B^c).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+We can write $A = B \cup (A \cap B^c)$, where $B$ and $A \cap B^c$ are disjoint. Hence, $\prb(A) = \prb(B) + \prb(A \cap B^c)$ by additivity.
+\end{proof}
+
+Because we always have $\prb(A \cap B^c) \geqslant 0$, we conclude the following.
+
+\begin{corollary}[Monotonicity]
+\label{cor:1.3.1}
+Let $A$ and $B$ be two events, with $A \supseteq B$. Then
+\[
+\prb(A) \geqslant \prb(B).
+\]
+\end{corollary}
+
+On the other hand, rearranging \eqref{eq:1.3.2}, we obtain the following.
+
+\begin{corollary}
+\label{cor:1.3.2}
+Let $A$ and $B$ be two events, with $A \supseteq B$. Then
+\begin{equation}
+\label{eq:1.3.3}
+\prb(A \cap B^c) = \prb(A) - \prb(B).
+\end{equation}
+\end{corollary}
+
+More generally, even if we do not have $A \supseteq B$, we have the following property.
+
+\begin{theorem}[Principle of inclusion--exclusion, two-event version]
+\label{thm:1.3.3}
+Let $A$ and $B$ be two events. Then
+\begin{equation}
+\label{eq:1.3.4}
+\prb(A \cup B) = \prb(A) + \prb(B) - \prb(A \cap B).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+We can write $A \cup B = (A \cap B^c) \cup (B \cap A^c) \cup (A \cap B)$, where $A \cap B^c$, $B \cap A^c$, and $A \cap B$ are disjoint. By additivity, we have
+\begin{equation}
+\label{eq:1.3.5}
+\prb(A \cup B) = \prb(A \cap B^c) + \prb(B \cap A^c) + \prb(A \cap B).
+\end{equation}
+On the other hand, using Corollary~\ref{cor:1.3.2} (with $B$ replaced by $A \cap B$), we have
+\begin{equation}
+\label{eq:1.3.6}
+\prb(A \cap B^c) = \prb(A \setminus (A \cap B)^c) = \prb(A) - \prb(A \cap B)
+\end{equation}
+and similarly,
+\begin{equation}
+\label{eq:1.3.7}
+\prb(B \cap A^c) = \prb(B) - \prb(A \cap B).
+\end{equation}
+Substituting \eqref{eq:1.3.6} and \eqref{eq:1.3.7} into \eqref{eq:1.3.5}, the result follows.
+\end{proof}
+
+A more general version of the principle of inclusion--exclusion is developed in Challenge~\ref{exer:1.3.10}.
+
+Sometimes we do not need to evaluate the probability content of a union; we need only know it is bounded above by the sum of the probabilities of the individual events. This is called \emph{subadditivity}.
+
+\begin{theorem}[Subadditivity]
+\label{thm:1.3.4}
+Let $A_1, A_2, \ldots$ be a finite or countably infinite sequence of events, not necessarily disjoint. Then
+\[
+\prb(A_1 \cup A_2 \cup \cdots) \leqslant \prb(A_1) + \prb(A_2) + \cdots
+\]
+\end{theorem}
+
+\begin{proof}
+See Section~\ref{sec:1.7} for the proof of this result.
+\end{proof}
+
+We note that some properties in the definition of a probability model actually follow from other properties. For example, once we know the probability $P$ is additive and that $\prb(S) = 1$, it follows that we must have $\prb(\varnothing) = 0$. Indeed, because $S$ and $\varnothing$ are disjoint, $\prb(S \cup \varnothing) = \prb(S) + \prb(\varnothing)$. But of course, $\prb(S \cup \varnothing) = \prb(S) = 1$, so we must have $\prb(\varnothing) = 0$.
+
+Similarly, once we know $P$ is additive on countably infinite sequences of disjoint events, it follows that $P$ must be additive on finite sequences of disjoint events, too. Indeed, given a finite disjoint sequence $A_1, \ldots, A_n$, we can just set $A_i = \varnothing$ for all $i > n$, to get a countably infinite disjoint sequence with the same union and the same sum of probabilities.
+
+\bigskip
+\noindent\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\textbf{Summary of Section~\ref{sec:1.3}}\\[0.5ex]
+The probability of the complement of an event equals one minus the probability of the event.\\[0.5ex]
+Probabilities always satisfy the basic properties of total probability, subadditivity, and monotonicity.\\[0.5ex]
+The principle of inclusion--exclusion allows for the computation of $\prb(A \cup B)$ in terms of simpler events.}}
+
+\bigskip
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:1.3.1}
+Suppose $S = \{1, 2, \ldots, 100\}$. Suppose further that $\prb(\{1\}) = 0.1$.
+\begin{enumerate}[(a)]
+\item What is the probability $\prb(\{2, 3, 4, \ldots, 100\})$?
+\item What is the smallest possible value of $\prb(\{1, 2, 3\})$?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(\{2, 3, 4, \ldots, 100\}) = \prb(\{1, 2, 3, 4, \ldots, 100\}) - \prb(\{1\}) = 1 - 0.1 = 0.9$.
+    \item $\prb(\{1, 2, 3\}) = \prb(\{1\}) + \prb(\{2\}) + \prb(\{3\}) \geqslant \prb(\{1\}) = 0.1$. And, $\prb(\{1, 2, 3\}) = 0.1$ if $\prb(\{2\}) = \prb(\{3\}) = 0$. So, $0.1$ is the smallest possible value of $\prb(\{1\})$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.3.2}
+Suppose that Al watches the six o'clock news 2/3 of the time, watches the eleven o'clock news 1/2 of the time, and watches both the six o'clock and eleven o'clock news 1/3 of the time. For a randomly selected day, what is the probability that Al watches only the six o'clock news? For a randomly selected day, what is the probability that Al watches neither news?
+\end{exercise}
+
+\begin{solution}
+Let $A$ be the event ``Al watches the six o'clock news'' and $B$ be the event ``Al watches the eleven o'clock news.'' Then $\prb(A) = 2/3$, $\prb(B) = 1/2$ and $\prb(A \cap B) = 1/3$. Therefore, the probability that Al only watches the six o'clock news is $\prb(A \setminus (A \cap B)) = \prb(A) - \prb(A \cap B) = 2/3 - 1/3 = 1/3$. The probability that Al watches neither news is given by $\prb((A \cup B)^c) = 1 - \prb(A \cup B) = 1 - \prb(A) - \prb(B) + \prb(A \cap B) = 1 - 2/3 - 1/2 + 1/3 = 1/6$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.3.3}
+Suppose that an employee arrives late 10\% of the time, leaves early 20\% of the time, and both arrives late and leaves early 5\% of the time. What is the probability that on a given day that employee will either arrive late or leave early (or both)?
+\end{exercise}
+
+\begin{solution}
+$\prb(\text{late or early or both}) = \prb(\text{late}) + \prb(\text{early}) - \prb(\text{both}) = 10\% + 20\% - 5\% = 25\%$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.3.4}
+Suppose your right knee is sore 15\% of the time, and your left knee is sore 10\% of the time. What is the largest possible percentage of time that at least one of your knees is sore? What is the smallest possible percentage of time that at least one of your knees is sore?
+\end{exercise}
+
+\begin{solution}
+$\prb(\text{at least one knee sore}) = \prb(\text{right knee sore}) + \prb(\text{left knee sore}) - \prb(\text{both knees sore}) = 25\% - \prb(\text{both knees sore})$. The maximum is when $\prb(\text{both knees sore}) = 0$, where $\prb(\text{at least one knee sore}) = 25\%$. The minimum is when $\prb(\text{both knees sore}) = 10\%$ (so the right knee is always sore whenever the left one is), where $\prb(\text{at least one knee sore}) = 15\%$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.3.5}
+Suppose a fair coin is tossed five times in a row.
+\begin{enumerate}[(a)]
+\item What is the probability of getting all five heads?
+\item What is the probability of getting at least one tail?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item There are $2^5 = 32$ possibilities and the size of the event having all five heads is $1$. Thus, the probability of getting all five heads is $1/32 = 0.03125$.
+    \item Let $A$ be the event having at least one tail and $B$ be the event having all five heads. There will be at least one tail unless five heads are observed. Thus, $A = B^c$ and the probability of $A$ is
+    \[
+        \prb(A) = \prb(B^c) = 1 - \prb(B) = 1 - (1/32) = 31/32 = 0.96875.
+    \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.3.6}
+Suppose a card is chosen uniformly at random from a standard 52-card deck.
+\begin{enumerate}[(a)]
+\item What is the probability that the card is a jack?
+\item What is the probability that the card is a club?
+\item What is the probability that the card is both a jack and a club?
+\item What is the probability that the card is either a jack or a club (or both)?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item There are only $4$ Jacks in a standard $52$-card deck. Hence, the probability having a Jack from a standard $52$-card deck is $4/52 = 1/13 = 0.0769$.
+    \item There are $13$ Clubs $\clubsuit$. Thus, the probability having a Club is $13/52 = 1/4 = 0.25$.
+    \item There is only one card showing a Jack and a Club. So, the probability having a Club Jack is $1/52 = 0.01923$.
+    \item There are $4$ Jacks and $13$ Clubs. Among $52$ cards, only one card is both Club and Jack. By Theorem \ref{thm:1.3.3}, the probability having either a Jack or a Club is $4/52 + 13/52 - 1/52 = 16/52 = 4/13 = 0.3077$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.3.7}
+Suppose your team has a 40\% chance of winning or tying today's game and has a 30\% chance of winning today's game. What is the probability that today's game will be a tie?
+\end{exercise}
+
+\begin{solution}
+The event tying the game is the remainder part of the event winning or tying the game after subtracting the event winning the game. Thus, the probability of tying is $40\% - 30\% = 10\%$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.3.8}
+Suppose 55\% of students are female, of which 4/5 (44\%) have long hair, and 45\% are male, of which 1/3 (15\% of all students) have long hair. What is the probability that a student chosen at random will either be female or have long hair (or both)?
+\end{exercise}
+
+\begin{solution}
+Suppose a student was chosen. The probability of being a female is $55\%$, the probability of having long hair is $44\% + 15\% = 59\%$, and the probability that the student is a long haired female is $44\%$. By Theorem \ref{thm:1.3.3}, the probability of either being female or having long hair is $55\% + 59\% - 44\% = 70\%$.
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:1.3.9}
+Suppose we choose a positive integer at random, according to some unknown probability distribution. Suppose we know that $\prb(\{1, 2, 3, 4, 5\}) = 0.3$, that $\prb(\{4, 5, 6\}) = 0.4$, and that $\prb(\{1\}) = 0.1$. What are the largest and smallest possible values of $\prb(\{2\})$?
+\end{exercise}
+
+\begin{solution}
+We see that $\prb(\{2, 3, 4, 5\}) = \prb(\{1, 2, 3, 4, 5\}) - \prb(\{1\}) = 0.3 - 0.1 = 0.2$. Hence, the largest is $\prb(\{2\}) = 0.2$ (with $\prb(\{6\}) = 0.4$). The smallest is $\prb(\{2\}) = 0$ (with, e.g., $\prb(\{3\}) = 0.2$ and $\prb(\{6\}) = 0.4$).
+\end{solution}
+
+\subsection*{Challenges}
+
+\begin{exercise}
+\label{exer:1.3.10}
+Generalize the principle of inclusion--exclusion, as follows.
+\begin{enumerate}[(a)]
+\item Suppose there are three events $A$, $B$, and $C$. Prove that
+\begin{align*}
+\prb(A \cup B \cup C) &= \prb(A) + \prb(B) + \prb(C) - \prb(A \cap B) - \prb(A \cap C) \\
+&\quad - \prb(B \cap C) + \prb(A \cap B \cap C).
+\end{align*}
+\item Suppose there are $n$ events $A_1, A_2, \ldots, A_n$. Prove that
+\begin{align*}
+\prb(A_1 \cup \cdots \cup A_n) &= \sum_{i=1}^{n} \prb(A_i) - \sum_{\substack{i,j=1 \\ i < j}}^{n} \prb(A_i \cap A_j) + \sum_{\substack{i,j,k=1 \\ i < j < k}}^{n} \prb(A_i \cap A_j \cap A_k) \\
+&\quad - \cdots + (-1)^{n+1} \prb(A_1 \cap \cdots \cap A_n).
+\end{align*}
+(Hint: Use induction.)
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Let $D = B \cup C$. Then 
+    \begin{align*}
+        \prb(A \cup B \cup C) &= \prb(A \cup D) = \prb(A) + \prb(D) - \prb(A \cap D) \\
+        &= \prb(A) + \prb(B \cup C) - \prb((A \cap B) \cup (A \cap C)) \\
+        &= \prb(A) + (\prb(B) + \prb(C) - \prb(B \cap C)) \\
+        &\quad - (\prb(A \cap B) + \prb(A \cap C) - \prb((A \cap B) \cap (A \cap C))) \\
+        &= \prb(A) + (\prb(B) + \prb(C) - \prb(B \cap C)) - \prb(A \cap B) - \prb(A \cap C) + \prb(A \cap B \cap C),
+    \end{align*}
+    which gives the result.
+    
+    \item We use induction on $n$. We know the result is true for $n = 2$ from the text (and for $n = 3$ from part (a)). Assume it is true for $n - 1$, so that
+    \[
+        \prb(B_1 \cup \cdots \cup B_{n-1}) = \sum_{i=1}^{n-1} \prb(B_i) - \sum_{\substack{i,j=1 \\ i<j}}^{n-1} \prb(B_i \cap B_j) + \sum_{\substack{i,j,k=1 \\ i<j<k}}^{n-1} \prb(B_i \cap B_j \cap B_k) - \cdots \pm \prb(B_1 \cap \cdots \cap B_{n-1})
+    \]
+    for any events $B_1, \ldots, B_{n-1}$. Let $D = A_1 \cup \cdots \cup A_{n-1}$. Then $\prb(A_1 \cup \cdots \cup A_n) = \prb(D \cup A_n) = \prb(D) + \prb(A_n) - \prb(D \cap A_n)$. Now, by the induction hypothesis,
+    \[
+        \prb(D) = \prb(A_1 \cup \cdots \cup A_{n-1}) = \sum_{i=1}^{n-1} \prb(A_i) - \sum_{\substack{i,j=1 \\ i<j}}^{n-1} \prb(A_i \cap A_j) + \sum_{\substack{i,j,k=1 \\ i<j<k}}^{n-1} \prb(A_i \cap A_j \cap A_k) - \cdots \pm \prb(A_1 \cap \cdots \cap A_{n-1}).
+    \]
+    Also, $\prb(D \cap A_n) = \prb((A_1 \cap A_n) \cup (A_2 \cap A_n) \cup \cdots \cup (A_{n-1} \cap A_n))$, so by the induction hypothesis this equals
+    \[
+        \sum_{i=1}^{n-1} \prb(A_i \cap A_n) - \sum_{\substack{i,j=1 \\ i<j}}^{n-1} \prb(A_i \cap A_j \cap A_n) + \sum_{\substack{i,j,k=1 \\ i<j<k}}^{n-1} \prb(A_i \cap A_j \cap A_k \cap A_n) - \cdots \pm \prb(A_1 \cap \cdots \cap A_{n-1} \cap A_n).
+    \]
+    Putting this all together, we see that
+    \[
+        \prb(A_1 \cup \cdots \cup A_n) = \sum_{i=1}^{n} \prb(A_i) - \sum_{\substack{i,j=1 \\ i<j}}^{n} \prb(A_i \cap A_j) + \sum_{\substack{i,j,k=1 \\ i<j<k}}^{n} \prb(A_i \cap A_j \cap A_k) - \cdots \pm \prb(A_1 \cap \cdots \cap A_n).
+    \]
+    This proves the statement for this value of $n$. The general result then follows by induction.
+\end{enumerate}
+\end{solution}
+
+\subsection*{Discussion Topics}
+
+\begin{exercise}
+\label{exer:1.3.11}
+Of the various theorems presented in this section, which ones do you think are the most important? Which ones do you think are the least important? Explain the reasons for your choices.
+\end{exercise}
+
+\section{Uniform Probability on Finite Spaces}
+\label{sec:1.4}
+
+If the sample space $S$ is finite, then one possible probability measure on $S$ is the \emph{uniform probability measure}, which assigns probability $1/|S|$ to each outcome. Here $|S|$ is the number of elements in the sample space $S$. By additivity, it then follows that for any event $A$ we have
+\begin{equation}
+\label{eq:1.4.1}
+\prb(A) = \frac{|A|}{|S|}.
+\end{equation}
+
+\begin{example}
+\label{ex:1.4.1}
+Suppose we roll a six-sided die. The possible outcomes are $S = \{1, 2, 3, 4, 5, 6\}$, so that $|S| = 6$. If the die is fair, then we believe each outcome is equally likely. We thus set $\prb(\{i\}) = 1/6$ for each $i \in S$ so that $\prb(\{3\}) = 1/6$, $\prb(\{4\}) = 1/6$, etc. It follows from \eqref{eq:1.4.1} that, for example, $\prb(\{3, 4\}) = 2/6 = 1/3$, $\prb(\{1, 5, 6\}) = 3/6 = 1/2$, etc. This is a good model of rolling a fair six-sided die once.
+\end{example}
+
+\begin{example}
+\label{ex:1.4.2}
+For a second example, suppose we flip a fair coin once. Then $S = \{\text{heads}, \text{tails}\}$, so that $|S| = 2$, and $\prb(\{\text{heads}\}) = \prb(\{\text{tails}\}) = 1/2$.
+\end{example}
+
+\begin{example}
+\label{ex:1.4.3}
+Suppose now that we flip three different fair coins. The outcome can be written as a sequence of three letters, with each letter being H (for heads) or T (for tails). Thus,
+\[
+S = \{HHH, HHT, HTH, HTT, THH, THT, TTH, TTT\}.
+\]
+Here $|S| = 8$, and each of the events is equally likely. Hence, $\prb(\{HHH\}) = 1/8$, $\prb(\{HHH, TTT\}) = 2/8 = 1/4$, etc. Note also that, by additivity, we have, for example, that $\prb(\text{exactly two heads}) = \prb(\{HHT, HTH, THH\}) = 1/8 + 1/8 + 1/8 = 3/8$, etc.
+\end{example}
+
+\begin{example}
+\label{ex:1.4.4}
+For a final example, suppose we roll a fair six-sided die and flip a fair coin. Then we can write
+\[
+S = \{1H, 2H, 3H, 4H, 5H, 6H, 1T, 2T, 3T, 4T, 5T, 6T\}.
+\]
+Hence, $|S| = 12$ in this case, and $\prb(\{s\}) = 1/12$ for each $s \in S$.
+\end{example}
+
+\subsection{Combinatorial Principles}
+\label{ssec:1.4.1}
+
+Because of \eqref{eq:1.4.1}, problems involving uniform distributions on finite sample spaces often come down to being able to compute the sizes $|A|$ and $|S|$ of the sets involved. That is, we need to be good at counting the number of elements in various sets. The science of counting is called \emph{combinatorics}, and some aspects of it are very sophisticated. In the remainder of this section, we consider a few simple combinatorial rules and their application in probability theory when the uniform distribution is appropriate.
+
+\begin{example}[Counting Sequences: The Multiplication Principle]
+\label{ex:1.4.5}
+Suppose we flip three fair coins and roll two fair six-sided dice. What is the probability that all three coins come up heads and that both dice come up 6? Each coin has two possible outcomes (heads and tails), and each die has six possible outcomes $\{1, 2, 3, 4, 5, 6\}$. The total number of possible outcomes of the three coins and two dice is thus given by multiplying three 2's and two 6's, i.e., $2 \times 2 \times 2 \times 6 \times 6 = 288$. This is sometimes referred to as the \emph{multiplication principle}. There are thus 288 possible outcomes of our experiment (e.g., $HHH66$, $HTH24$, $TTH15$, etc.). Of these outcomes, only one (namely, $HHH66$) counts as a success. Thus, the probability that all three coins come up heads and both dice come up 6 is equal to $1/288$.
+
+Notice that we can obtain this result in an alternative way. The chance that any one of the coins comes up heads is $1/2$, and the chance that any one die comes up 6 is $1/6$. Furthermore, these events are all independent (see the next section). Under independence, the probability that they all occur is given by the product of their individual probabilities, namely,
+\[
+(1/2)(1/2)(1/2)(1/6)(1/6) = 1/288.
+\]
+\end{example}
+
+More generally, suppose we have $k$ finite sets $S_1, \ldots, S_k$ and we want to count the number of sequences of length $k$ where the $i$th element comes from $S_i$, i.e., count the number of elements in
+\[
+S = \{(s_1, \ldots, s_k) : s_i \in S_i\} = S_1 \times \cdots \times S_k.
+\]
+The multiplication principle says that the number of such sequences is obtained by multiplying together the number of elements in each set $S_i$, i.e.,
+\[
+|S| = |S_1| \cdots |S_k|.
+\]
+
+\begin{example}
+\label{ex:1.4.6}
+Suppose we roll two fair six-sided dice. What is the probability that the sum of the numbers showing is equal to 10? By the above multiplication principle, the total number of possible outcomes is equal to $6 \times 6 = 36$. Of these outcomes, there are three that sum to 10, namely, $(4,6)$, $(5,5)$, and $(6,4)$. Thus, the probability that the sum is 10 is equal to $3/36$, or $1/12$.
+\end{example}
+
+\begin{example}[Counting Permutations]
+\label{ex:1.4.7}
+Suppose four friends go to a restaurant, and each checks his or her coat. At the end of the meal, the four coats are randomly returned to the four people. What is the probability that each of the four people gets his or her own coat? Here the total number of different ways the coats can be returned is equal to $4 \times 3 \times 2 \times 1$, or $4!$ (i.e., four factorial). This is because the first coat can be returned to any of the four friends, the second coat to any of the three remaining friends, and so on. Only one of these assignments is correct. Hence, the probability that each of the four people gets his or her own coat is equal to $1/4!$, or $1/24$.
+
+Here we are counting \emph{permutations}, or sequences of elements from a set where no element appears more than once. We can use the multiplication principle to count permutations more generally. For example, suppose $|S| = n$ and we want to count the number of permutations of length $k \leqslant n$ obtained from $S$, i.e., we want to count the number of elements of the set
+\[
+\{(s_1, \ldots, s_k) : s_i \in S, s_i \neq s_j \text{ when } i \neq j\}.
+\]
+Then we have $n$ choices for the first element $s_1$, $n - 1$ choices for the second element, and finally $n - k + 1 = (n - k) + 1$ choices for the last element. So there are $n(n-1)\cdots(n-k+1)$ permutations of length $k$ from a set of $n$ elements. This can also be written as $n!/(n-k)!$. Notice that when $k = n$ there are
+\[
+n! = n(n-1) \cdots 2 \cdot 1
+\]
+permutations of length $n$.
+\end{example}
+
+\begin{example}[Counting Subsets]
+\label{ex:1.4.8}
+Suppose 10 fair coins are flipped. What is the probability that exactly seven of them are heads? Here each possible sequence of 10 heads or tails (e.g., $HHHTTTHTTT$, $THTTTTHHHT$, etc.) is equally likely, and by the multiplication principle the total number of possible outcomes is equal to 2 multiplied by itself 10 times, or $2^{10} = 1024$. Hence, the probability of any particular sequence occurring is $1/1024$. But of these sequences, how many have exactly seven heads?
+
+To answer this, notice that we may specify such a sequence by giving the positions of the seven heads, which involves choosing a subset of size 7 from the set of possible indices $\{1, \ldots, 10\}$. There are $10!/(3!) = 10 \times 9 \times \cdots \times 5 \times 4$ different permutations of length 7 from $\{1, \ldots, 10\}$, and each such permutation specifies a sequence of seven heads and three tails. But we can permute the indices specifying where the heads go in $7!$ different ways without changing the sequence of heads and tails. So the total number of outcomes with exactly seven heads is equal to $10!/(3! \cdot 7!) = 120$. The probability that exactly seven of the 10 coins are heads is therefore equal to $120/1024$, or just under 12\%.
+\end{example}
+
+In general, if we have a set $S$ of $n$ elements, then the number of different subsets of size $k$ that we can construct by choosing elements from $S$ is
+\[
+\binom{n}{k} = \frac{n!}{k!(n-k)!}
+\]
+which is called the \emph{binomial coefficient}. This follows by the same argument, namely, there are $n!/(n-k)!$ permutations of length $k$ obtained from the set; each such permutation, and the $k!$ permutations obtained by permuting it, specify a unique subset of $S$.
+
+It follows, for example, that the probability of obtaining exactly $k$ heads when flipping a total of $n$ fair coins is given by
+\[
+\binom{n}{k} 2^{-n} = \frac{n!}{k!(n-k)!} 2^{-n}.
+\]
+This is because there are $\binom{n}{k}$ different patterns of $k$ heads and $n - k$ tails, and a total of $2^n$ different sequences of $n$ heads and tails.
+
+More generally, if each coin has probability $\theta$ of being heads (and probability $1 - \theta$ of being tails), where $0 < \theta < 1$, then the probability of obtaining exactly $k$ heads when flipping a total of $n$ such coins is given by
+\begin{equation}
+\label{eq:1.4.2}
+\binom{n}{k} \theta^k (1 - \theta)^{n-k} = \frac{n!}{k!(n-k)!} \theta^k (1 - \theta)^{n-k}
+\end{equation}
+because each of the $\binom{n}{k}$ different patterns of $k$ heads and $n - k$ tails has probability $\theta^k (1 - \theta)^{n-k}$ of occurring (this follows from the discussion of independence in Section~\ref{ssec:1.5.2}). If $\theta = 1/2$, then this reduces to the previous formula.
+
+\begin{example}[Counting Sequences of Subsets and Partitions]
+\label{ex:1.4.9}
+Suppose we have a set $S$ of $n$ elements and we want to count the number of elements of
+\[
+\{(S_1, S_2, \ldots, S_l) : S_i \subseteq S, |S_i| = k_i, S_i \cap S_j = \varnothing \text{ when } i \neq j\},
+\]
+namely, we want to count the number of sequences of $l$ subsets of a set where no two subsets have any elements in common and the $i$th subset has $k_i$ elements. By the multiplication principle, this equals
+\begin{equation}
+\label{eq:1.4.3}
+\binom{n}{k_1} \binom{n - k_1}{k_2} \cdots \binom{n - k_1 - \cdots - k_{l-1}}{k_l} = \frac{n!}{k_1! \cdots k_{l-1}! k_l! (n - k_1 - \cdots - k_l)!}
+\end{equation}
+because we can choose the elements of $S_1$ in $\binom{n}{k_1}$ ways, choose the elements of $S_2$ in $\binom{n - k_1}{k_2}$ ways, etc.
+
+When we have that $S = S_1 \cup S_2 \cup \cdots \cup S_l$, in addition to the individual sets being mutually disjoint, then we are counting the number of \emph{ordered partitions} of a set of $n$ elements with $k_1$ elements in the first set, $k_2$ elements in the second set, etc. In this case, \eqref{eq:1.4.3} equals
+\begin{equation}
+\label{eq:1.4.4}
+\binom{n}{k_1 \; k_2 \; \cdots \; k_l} = \frac{n!}{k_1! k_2! \cdots k_l!}
+\end{equation}
+which is called the \emph{multinomial coefficient}.
+
+For example, how many different bridge hands are there? By this we mean how many different ways can a deck of 52 cards be divided up into four hands of 13 cards each, with the hands labelled North, East, South, and West, respectively. By \eqref{eq:1.4.4}, this equals
+\[
+\binom{52}{13 \; 13 \; 13 \; 13} = \frac{52!}{13! \cdot 13! \cdot 13! \cdot 13!} \approx 5.364474 \times 10^{28}
+\]
+which is a very large number.
+\end{example}
+
+\bigskip
+\noindent\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\textbf{Summary of Section~\ref{sec:1.4}}\\[0.5ex]
+The uniform probability distribution on a finite sample space $S$ satisfies $\prb(A) = |A|/|S|$.\\[0.5ex]
+Computing $\prb(A)$ in this case requires computing the sizes of the sets $A$ and $S$.\\[0.5ex]
+This may require combinatorial principles such as the multiplication principle, factorials, and binomial/multinomial coefficients.}}
+
+\bigskip
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:1.4.1}
+Suppose we roll eight fair six-sided dice.
+\begin{enumerate}[(a)]
+\item What is the probability that all eight dice show a 6?
+\item What is the probability that all eight dice show the same number?
+\item What is the probability that the sum of the eight dice is equal to 9?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item By independence, $\prb(\text{all eight show six}) = (1/6)^8 = 1/1679616$.
+    \item By additivity, $\prb(\text{all eight show same}) = \sum_{i=1}^{6} \prb(\text{all eight show } i) = \sum_{i=1}^{6} (1/6)^8 = 6 (1/6)^8 = (1/6)^7 = 1/279936$.
+    \item For the sum to equal $9$, we need seven of the dice to show $1$, and the eighth die to show $2$. There are eight ways this can happen, each having probability $(1/6)^8$. So, $\prb(\text{sum equals nine}) = 8 (1/6)^8 = 1/209952$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.2}
+Suppose we roll 10 fair six-sided dice. What is the probability that there are exactly two 2's showing?
+\end{exercise}
+
+\begin{solution}
+There are $\binom{10}{2} = 45$ ways of choosing which two dice will have $2$ showing. Then the probability that those two dice show $2$, and the other eight do not, is $(1/6)^2(5/6)^8$. So, the answer is $45 (1/6)^2(5/6)^8 = 1953125/6718464 = 0.2907$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.3}
+Suppose we flip 100 fair independent coins. What is the probability that at least three of them are heads? (Hint: You may wish to use \eqref{eq:1.3.1}.)
+\end{exercise}
+
+\begin{solution}
+\begin{align*}
+    \prb(\text{at least three heads}) &= 1 - \prb(\leqslant \text{two heads}) \\
+    &= 1 - \prb(0 \text{ heads}) - \prb(\text{one head}) - \prb(\text{two heads}) \\
+    &= 1 - (1/2)^{100} - \binom{100}{1}(1/2)^{100} - \binom{100}{2}(1/2)^{100} \\
+    &= 1 - (1 + 100 + 4950)(1/2)^{100} = 1 - 5051/2^{100}
+\end{align*}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.4}
+Suppose we are dealt five cards from an ordinary 52-card deck. What is the probability that
+\begin{enumerate}[(a)]
+\item we get all four aces, plus the king of spades?
+\item all five cards are spades?
+\item we get no pairs (i.e., all five cards are different values)?
+\item we get a full house (i.e., three cards of a kind, plus a different pair)?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item There is only one way this can happen, so the probability is $1 / \binom{52}{5} = 1/2598960$.
+    \item There are $\binom{13}{5}$ ways this can happen, so the probability is $\binom{13}{5} / \binom{52}{5} = 33/66640$.
+    \item The number of ways this can happen is equal to $(52 \cdot 48 \cdot 44 \cdot 40 \cdot 36) / 5! = 1317888$, so the probability is $1317888 / \binom{52}{5} = 2112/4165$.
+    \item The number of ways this can happen is equal to $(13)(12)\binom{4}{3}\binom{4}{2} = 3744$, so the probability is $3744 / \binom{52}{5} = 6/4165$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.5}
+Suppose we deal four 13-card bridge hands from an ordinary 52-card deck. What is the probability that
+\begin{enumerate}[(a)]
+\item all 13 spades end up in the same hand?
+\item all four aces end up in the same hand?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The number of ways this can happen is equal to $\binom{4}{1}\binom{13}{13}\binom{39}{13\ 13\ 13} = 337912392291465600$, so the probability is
+    \[
+        337912392291465600 \bigg/ \binom{52}{13\ 13\ 13\ 13} = 1/158753389900.
+    \]
+    \item The number of ways this can happen is equal to $\binom{4}{1}\binom{4}{4}\binom{48}{9}\binom{39}{13\ 13\ 13}$, so the probability is
+    \[
+        \binom{4}{1}\binom{4}{4}\binom{48}{9}\binom{39}{13\ 13\ 13} \bigg/ \binom{52}{13\ 13\ 13\ 13} = 44/4165 = 0.0106.
+    \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.6}
+Suppose we pick two cards at random from an ordinary 52-card deck. What is the probability that the sum of the values of the two cards (where we count jacks, queens, and kings as 10, and count aces as 1) is at least 4?
+\end{exercise}
+
+\begin{solution}
+The complement of this event is the event that the sum is less than $4$, which means we chose either two Aces, or one Ace and one $2$. $\prb(\text{two Aces}) = \binom{4}{2} / \binom{52}{2} = 1/221$. $\prb(\text{one Ace and one } 2) = \binom{4}{1}\binom{4}{1} / \binom{52}{2} = 8/663$. So, $\prb(\text{sum} \geqslant 4) = 1 - 1/221 - 8/663 = 652/663$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.7}
+Suppose we keep dealing cards from an ordinary 52-card deck until the first jack appears. What is the probability that at least 10 cards go by before the first jack?
+\end{exercise}
+
+\begin{solution}
+This is the probability that the first ten cards contain no Jack, so it equals $\binom{48}{10} / \binom{52}{10} = 246/595 = 0.4134$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.8}
+In a well-shuffled ordinary 52-card deck, what is the probability that the ace of spades and the ace of clubs are adjacent to each other?
+\end{exercise}
+
+\begin{solution}
+Out of all $52!$ different orderings, the number where the Ace of Spades follows the Ace of Clubs is equal to $51!$ (since the two Aces can then be treated as a single card). The same number have the Ace of Clubs following the Ace of Spades. Hence, the probability that those two Aces are adjacent equals $2 \cdot 51! / 52! = 1/26$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.9}
+Suppose we repeatedly roll two fair six-sided dice, considering the sum of the two values showing each time. What is the probability that the first time the sum is exactly 7 is on the third roll?
+\end{exercise}
+
+\begin{solution}
+The probability of getting $7$ on any one roll equals $6/36 = 1/6$. Hence, the probability of not getting $7$ on the first two rolls, and then getting it on the third roll, is equal to $(5/6)^2(1/6) = 25/216$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.10}
+Suppose we roll three fair six-sided dice. What is the probability that two of them show the same value, but the third one does not?
+\end{exercise}
+
+\begin{solution}
+There are $\binom{3}{2}$ ways of choosing which two dice are the same, and six ways of choosing which number comes up twice, and then $5$ ways of choosing which number comes up once. Hence, the probability equals $\binom{3}{2}(6)(5)/(6 \cdot 6 \cdot 6) = 5/12$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.11}
+Consider two urns, labelled urn \#1 and urn \#2. Suppose urn \#1 has 5 red and 7 blue balls. Suppose urn \#2 has 6 red and 12 blue balls. Suppose we pick three balls uniformly at random from each of the two urns. What is the probability that all six chosen balls are the same color?
+\end{exercise}
+
+\begin{solution}
+The probability they are all red equals $\left(\binom{5}{3} / \binom{12}{3}\right) \left(\binom{6}{3} / \binom{18}{3}\right) = 5/4488$. Similarly, the probability they are all blue equals $\left(\binom{7}{3} / \binom{12}{3}\right) \left(\binom{12}{3} / \binom{18}{3}\right) = 35/816$. Hence, the desired probability equals $5/4488 + 35/816 = 395/8976 = 0.0440$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.12}
+Suppose we roll a fair six-sided die and flip three fair coins. What is the probability that the total number of heads is equal to the number showing on the die?
+\end{exercise}
+
+\begin{solution}
+The number of heads are $0, 1, 2$ and $3$. The probability that the total number of heads is equal to the number showing on the die is
+\begin{align*}
+    &\prb(\text{die} = 1 \text{ and } 1 \text{ heads}) + \prb(\text{die} = 2 \text{ and } 2 \text{ heads}) + \prb(\text{die} = 3 \text{ and } 3 \text{ heads}) \\
+    &= \frac{1}{6}\binom{3}{1}\frac{1}{2^3} + \frac{1}{6}\binom{3}{2}\frac{1}{2^3} + \frac{1}{6}\binom{3}{3}\frac{1}{2^3} = \frac{7}{48} = 0.1458.
+\end{align*}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.13}
+Suppose we flip two pennies, three nickels, and four dimes. What is the probability that the total value of all coins showing heads is equal to \$0.31?
+\end{exercise}
+
+\begin{solution}
+There are two possible combinations: (1) $\$0.01 \times 1 + \$0.05 \times 2 + \$0.10 \times 2$ and (2) $\$0.01 \times 1 + \$0.10 \times 3$. Let $A$ be the event that the total value of all coins showing heads is equal to $\$0.31$. Hence, the probability of $A$ is
+\[
+    \binom{2}{1}\frac{1}{2^2} \cdot \binom{3}{2}\frac{1}{2^3} \cdot \binom{4}{2}\frac{1}{2^4} + \binom{2}{1}\frac{1}{2^2} \cdot \binom{3}{0}\frac{1}{2^3} \cdot \binom{4}{3}\frac{1}{2^4} = \frac{11}{128} = 0.0859.
+\]
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:1.4.14}
+Show that a probability measure defined by \eqref{eq:1.4.1} is always additive in the sense of \eqref{eq:1.2.1}.
+\end{exercise}
+
+\begin{solution}
+If $A_1, A_2, \ldots$ are disjoint sets, then $|A_1 \cup A_2 \cup \cdots| = |A_1| + |A_2| + \cdots$. Hence, $\prb(A_1 \cup A_2 \cup \cdots) = |A_1 \cup A_2 \cup \cdots| / |S| = (|A_1| + |A_2| + \cdots) / |S| = |A_1|/|S| + |A_2|/|S| + \cdots = \prb(A_1) + \prb(A_2) + \cdots$. Hence, $\prb$ is additive.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.15}
+Suppose we roll eight fair six-sided dice. What is the probability that the sum of the eight dice is equal to 9? What is the probability that the sum of the eight dice is equal to 10? What is the probability that the sum of the eight dice is equal to 11?
+\end{exercise}
+
+\begin{solution}
+By considering all $8$-tuples of numbers between $1$ and $6$, we see that $9$ can occur if and only if one of the dice takes the value $2$ and the remaining seven take the value $1$. This occurs with probability $\binom{8}{1}(1/6)^8 = 4.7630 \times 10^{-6}$.
+
+The value $10$ can occur if and only if one of the dice takes the value $3$ and the remaining seven take the value $1$ or two of the dice take the value $2$ and the remaining six take the value $1$. This occurs with probability $\binom{8}{1}(1/6)^8 + \binom{8}{2}(1/6)^8 = 2.1433 \times 10^{-5}$.
+
+The value $11$ can occur if and only if one of the dice takes the value $4$ and the remaining seven take the value $1$ or one of the dice takes the value $3$, one of the dice takes the value $2$, and the remaining six take the value $1$. This occurs with probability $\binom{8}{1}(1/6)^8 + \binom{8}{1}\binom{7}{1}(1/6)^8 = 3.8104 \times 10^{-5}$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.16}
+Suppose we roll one fair six-sided die, and flip six coins. What is the probability that the number of heads is equal to the number showing on the die?
+\end{exercise}
+
+\begin{solution}
+For $1 \leqslant i \leqslant 6$, the probability that the die equals $i$ and the number of heads equals $i$ is equal to $(1/6)\binom{6}{i} / 2^6$. Hence, by additivity, the total probability is equal to $\sum_{i=1}^{6}(1/6)\binom{6}{i} / 2^6 = (1/6)\sum_{i=1}^{6}\binom{6}{i} / 2^6 = (1/6)(1) = 1/6$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.17}
+Suppose we roll 10 fair six-sided dice. What is the probability that there are exactly two 2's showing and exactly three 3's showing?
+\end{exercise}
+
+\begin{solution}
+There are $\binom{10}{2\ 3\ 5} = 2520$ ways of choosing which two dice show $2$, and which three dice show $3$. For each such choice, the probability is $(1/6)^2(1/6)^3(4/6)^5$ that the dice show the proper combination of $2$, $3$, and other. Hence, the desired probability equals $2520(1/6)^2(1/6)^3(4/6)^5 = 280/6561$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.18}
+Suppose we deal four 13-card bridge hands from an ordinary 52-card deck. What is the probability that the North and East hands each have exactly the same number of spades?
+\end{exercise}
+
+\begin{solution}
+For $1 \leqslant i \leqslant 6$, the number of ways of apportioning the Spades to North, East, and Other (i.e., West and South combined), so that North and East each have $i$ Spades, is equal to $\binom{13}{i\ i\ 13-2i}$. The number of ways of apportioning the non-Spades to North, East, and Other is then $\binom{39}{13-i\ 13-i\ 13+2i}$. Hence, the number of deals such that North and East each have $i$ Spades is equal to
+\[
+    \binom{13}{i\ i\ 13-2i}\binom{39}{13-i\ 13-i\ 13+2i}.
+\]
+On the other hand, the number of ways of apportioning all the cards to North, East, and Other is equal to $\binom{52}{13\ 13\ 26}$. It then follows by additivity that the desired probability is equal to
+\[
+    \sum_{i=1}^{6} \binom{13}{i\ i\ 13-2i}\binom{39}{13-i\ 13-i\ 13+2i} \bigg/ \binom{52}{13\ 13\ 26} = 28033098249/158753389900 = 0.1766.
+\]
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.4.19}
+Suppose we pick a card at random from an ordinary 52-card deck and also flip 10 fair coins. What is the probability that the number of heads equals the value of the card (where we count jacks, queens, and kings as 10, and count aces as 1)?
+\end{exercise}
+
+\begin{solution}
+For $1 \leqslant i \leqslant 9$ the probability that the card's value is $i$ and that the number of heads equals $i$ is equal to $(4/52)\binom{10}{i} / 2^{10}$. For $i = 10$, $(4/52)$ is replaced by $(20/52)$ since any Ten, Jack, Queen, or King will do. Hence, by additivity, the total probability is equal to $\sum_{i=1}^{9}(4/52)\binom{10}{i} / 2^{10} + (20/52)\binom{10}{10} / 2^{10} = 79/1024 = 0.0771$.
+\end{solution}
+
+\subsection*{Challenges}
+
+\begin{exercise}
+\label{exer:1.4.20}
+Suppose we roll two fair six-sided dice and flip 12 coins. What is the probability that the number of heads is equal to the sum of the numbers showing on the two dice?
+\end{exercise}
+
+\begin{solution}
+For $2 \leqslant i \leqslant 7$, the probability that the sum of the numbers equals $i$ is equal to $(i - 1)/36$, while for $7 \leqslant i \leqslant 12$ it is equal to $(13 - i)/36$. Hence, the desired probability is equal to $\sum_{i=2}^{7}((i - 1)/36)\binom{12}{i} / 2^{12} + \sum_{i=8}^{12}((13 - i)/36)\binom{12}{i} / 2^{12} = 18109/147456 = 0.1228$.
+\end{solution}
+
+\begin{exercise}[The birthday problem]
+\label{exer:1.4.21}
+Suppose there are $C$ people, each of whose birthdays (month and day only) are equally likely to fall on any of the 365 days of a normal (i.e., non-leap) year.
+\begin{enumerate}[(a)]
+\item Suppose $C = 2$. What is the probability that the two people have the same exact birthday?
+\item Suppose $C \geqslant 2$. What is the probability that all $C$ people have the same exact birthday?
+\item Suppose $C \geqslant 2$. What is the probability that some pair of the $C$ people have the same exact birthday? (Hint: You may wish to use \eqref{eq:1.3.1}.)
+\item What is the smallest value of $C$ such that the probability in part (c) is more than $0.5$? Do you find this result surprising?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item This equals $365/365^2 = 1/365$.
+    \item This equals $365/365^C = 1/365^{C-1}$.
+    \item This equals $1 - (365 \cdot 364 \cdots (366 - C)) / 365^C = 1 - 365!/(365 - C)! \cdot 365^C$.
+    \item When $C = 23$, the probability equals $0.507297$. That is, with $23$ people in a room, there is more than a $50\%$ chance that two share the same birthday. (If $C = 40$ this probability is $0.891232$.) Many people find this surprising.
+\end{enumerate}
+\end{solution}
+
+\section{Conditional Probability and Independence}
+\label{sec:1.5}
+
+Consider again the three-coin example as in Example~\ref{ex:1.4.3}, where we flip three different fair coins, and
+\[
+S = \{HHH, HHT, HTH, HTT, THH, THT, TTH, TTT\}
+\]
+with $\prb(\{s\}) = 1/8$ for each $s \in S$. What is the probability that the first coin comes up heads? Well, of course, this should be $1/2$. We can see this more formally by saying that $\prb(\text{first coin heads}) = \prb(\{HHH, HHT, HTH, HTT\}) = 4/8 = 1/2$, as it should.
+
+But suppose now that an informant tells us that exactly two of the three coins came up heads. Now what is the probability that the first coin was heads?
+
+The point is that this informant has changed our available information, i.e., changed our level of ignorance. It follows that our corresponding probabilities should also change. Indeed, if we know that exactly two of the coins were heads, then we know that the outcome was one of $HHT$, $HTH$, and $THH$. Because those three outcomes should (in this case) still all be equally likely, and because only the first two correspond to the first coin being heads, we conclude the following: If we know that exactly two of the three coins are heads, then the probability that the first coin is heads is $2/3$.
+
+More precisely, we have computed a \emph{conditional probability}. That is, we have determined that, conditional on knowing that exactly two coins came up heads, the conditional probability of the first coin being heads is $2/3$. We write this in mathematical notation as
+\[
+\prb(\text{first coin heads} \mid \text{two coins heads}) = 2/3.
+\]
+Here the vertical bar stands for ``conditional on,'' or ``given that.''
+
+\subsection{Conditional Probability}
+\label{ssec:1.5.1}
+
+In general, given two events $A$ and $B$ with $\prb(B) > 0$, the \emph{conditional probability of $A$ given $B$}, written $\prb(A \mid B)$, stands for the fraction of the time that $A$ occurs once we know that $B$ occurs. It is computed as the ratio of the probability that $A$ and $B$ both occur, divided by the probability that $B$ occurs, as follows.
+
+\begin{definition}
+\label{def:1.5.1}
+Given two events $A$ and $B$, with $\prb(B) > 0$, the \emph{conditional probability of $A$ given $B$} is equal to
+\begin{equation}
+\label{eq:1.5.1}
+\prb(A \mid B) = \frac{\prb(A \cap B)}{\prb(B)}.
+\end{equation}
+\end{definition}
+
+The motivation for \eqref{eq:1.5.1} is as follows. The event $B$ will occur a fraction $\prb(B)$ of the time. Also, both $A$ and $B$ will occur a fraction $\prb(A \cap B)$ of the time. The ratio $\prb(A \cap B)/\prb(B)$ thus gives the proportion of the times when $B$ occurs, that $A$ also occurs. That is, if we ignore all the times that $B$ does not occur and consider only those times that $B$ does occur, then the ratio $\prb(A \cap B)/\prb(B)$ equals the fraction of the time that $A$ will also occur. This is precisely what is meant by the conditional probability of $A$ given $B$.
+
+In the example just computed, $A$ is the event that the first coin is heads, while $B$ is the event that exactly two coins were heads. Hence, in mathematical terms, $A = \{HHH, HHT, HTH, HTT\}$ and $B = \{HHT, HTH, THH\}$. It follows that $A \cap B = \{HHT, HTH\}$. Therefore,
+\[
+\prb(A \mid B) = \frac{\prb(A \cap B)}{\prb(B)} = \frac{\prb(\{HHT, HTH\})}{\prb(\{HHT, HTH, THH\})} = \frac{2/8}{3/8} = \frac{2}{3}
+\]
+as already computed.
+
+On the other hand, we similarly compute that
+\[
+\prb(\text{first coin tails} \mid \text{two coins heads}) = 1/3.
+\]
+We thus see that conditioning on some event (such as ``two coins heads'') can make probabilities either increase (as for the event ``first coin heads'') or decrease (as for the event ``first coin tails'').
+
+The definition of $\prb(B \mid A)$ immediately leads to the \emph{multiplication formula}
+\begin{equation}
+\label{eq:1.5.2}
+\prb(A \cap B) = \prb(A) \prb(B \mid A).
+\end{equation}
+This allows us to compute the joint probability of $A$ and $B$ when we are given the probability of $A$ and the conditional probability of $B$ given $A$.
+
+Conditional probability allows us to express Theorem~\ref{thm:1.3.1}, the law of total probability, in a different and sometimes more helpful way.
+
+\begin{theorem}[Law of total probability, conditioned version]
+\label{thm:1.5.1}
+Let $A_1, A_2, \ldots$ be events that form a partition of the sample space $S$, each of positive probability. Let $B$ be any event. Then $\prb(B) = \prb(A_1)\prb(B \mid A_1) + \prb(A_2)\prb(B \mid A_2) + \cdots$
+\end{theorem}
+
+\begin{proof}
+The multiplication formula \eqref{eq:1.5.2} gives that $\prb(A_i \cap B) = \prb(A_i)\prb(B \mid A_i)$. The result then follows immediately from Theorem~\ref{thm:1.3.1}.
+\end{proof}
+
+\begin{example}
+\label{ex:1.5.1}
+Suppose a class contains 60\% girls and 40\% boys. Suppose that 30\% of the girls have long hair, and 20\% of the boys have long hair. A student is chosen uniformly at random from the class. What is the probability that the chosen student will have long hair?
+
+To answer this, we let $A_1$ be the set of girls and $A_2$ be the set of boys. Then $\{A_1, A_2\}$ is a partition of the class. We further let $B$ be the set of all students with long hair.
+
+We are interested in $\prb(B)$. We compute this by Theorem~\ref{thm:1.5.1} as
+\[
+\prb(B) = \prb(A_1)\prb(B \mid A_1) + \prb(A_2)\prb(B \mid A_2) = (0.6)(0.3) + (0.4)(0.2) = 0.26
+\]
+so there is a 26\% chance that the randomly chosen student has long hair.
+\end{example}
+
+Suppose now that $A$ and $B$ are two events, each of positive probability. In some applications, we are given the values of $\prb(A)$, $\prb(B)$, and $\prb(B \mid A)$ and want to compute $\prb(A \mid B)$. The following result establishes a simple relationship among these quantities.
+
+\begin{theorem}[Bayes' theorem]
+\label{thm:1.5.2}
+Let $A$ and $B$ be two events, each of positive probability. Then
+\[
+\prb(A \mid B) = \frac{\prb(A)}{\prb(B)} \prb(B \mid A).
+\]
+\end{theorem}
+
+\begin{proof}
+We compute that
+\[
+\frac{\prb(A)}{\prb(B)} \prb(B \mid A) = \frac{\prb(A)}{\prb(B)} \cdot \frac{\prb(A \cap B)}{\prb(A)} = \frac{\prb(A \cap B)}{\prb(B)} = \prb(A \mid B).
+\]
+This gives the result.
+\end{proof}
+
+Standard applications of the multiplication formula, the law of total probabilities, and Bayes' theorem occur with \emph{two-stage systems}. The response for such systems can be thought of as occurring in two steps or stages. Typically, we are given the probabilities for the first stage and the conditional probabilities for the second stage. The multiplication formula is then used to calculate joint probabilities for what happens at both stages; the law of total probability is used to compute the probabilities for what happens at the second stage; and Bayes' theorem is used to calculate the conditional probabilities for the first stage, given what has occurred at the second stage. We illustrate this by an example.
+
+\begin{example}
+\label{ex:1.5.2}
+Suppose urn \#1 has 3 red and 2 blue balls, and urn \#2 has 4 red and 7 blue balls. Suppose one of the two urns is selected with probability $1/2$ each, and then one of the balls within that urn is picked uniformly at random.
+
+What is the probability that urn \#2 is selected at the first stage (event $A$) and a blue ball is selected at the second stage (event $B$)? The multiplication formula provides the correct way to compute this probability as
+\[
+\prb(A \cap B) = \prb(A)\prb(B \mid A) = \frac{1}{2} \cdot \frac{7}{11} = \frac{7}{22}.
+\]
+
+Suppose instead we want to compute the probability that a blue ball is obtained. Using the law of total probability (Theorem~\ref{thm:1.5.1}), we have that
+\[
+\prb(B) = \prb(A)\prb(B \mid A) + \prb(A^c)\prb(B \mid A^c) = \frac{1}{2} \cdot \frac{7}{11} + \frac{1}{2} \cdot \frac{2}{5}.
+\]
+
+Now suppose we are given the information that the ball picked is blue. Then, using Bayes' theorem, the conditional probability that we had selected urn \#2 is given by
+\[
+\prb(A \mid B) = \frac{\prb(A)}{\prb(B)} \prb(B \mid A) = \frac{1/2}{(1/2)(2/5) + (1/2)(7/11)} \cdot \frac{7}{11} = \frac{35}{57} \approx 0.614.
+\]
+
+Note that, without the information that a blue ball occurred at the second stage, we have that
+\[
+\prb(\text{urn \#2 selected}) = 1/2.
+\]
+We see that knowing the ball was blue significantly increases the probability that urn \#2 was selected.
+\end{example}
+
+We can represent a two-stage system using a tree, as in Figure~\ref{fig:1.5.1}. It can be helpful to draw such a figure when carrying out probability computations for such systems. There are two possible outcomes at the first stage and three possible outcomes at the second stage.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig1_5_1.pdf}
+\caption{A tree depicting a two-stage system with two possible outcomes at the first stage and three possible outcomes at the second stage.}
+\label{fig:1.5.1}
+\end{figure}
+
+\subsection{Independence of Events}
+\label{ssec:1.5.2}
+
+Consider now Example~\ref{ex:1.4.4}, where we roll one fair die and flip one fair coin, so that
+\[
+S = \{1H, 2H, 3H, 4H, 5H, 6H, 1T, 2T, 3T, 4T, 5T, 6T\}
+\]
+and $\prb(\{s\}) = 1/12$ for each $s \in S$. Here the probability that the die comes up 5 is equal to $\prb(\{5H, 5T\}) = 2/12 = 1/6$, as it should be.
+
+But now, what is the probability that the die comes up 5, conditional on knowing that the coin came up tails? Well, we can compute that probability as
+\[
+\prb(\text{die } 5 \mid \text{coin tails}) = \frac{\prb(\text{die } 5 \text{ and coin tails})}{\prb(\text{coin tails})} = \frac{\prb(\{5T\})}{\prb(\{1T, 2T, 3T, 4T, 5T, 6T\})} = \frac{1/12}{6/12} = \frac{1}{6}.
+\]
+This is the same as the unconditional probability, $\prb(\text{die } 5)$. It seems that knowing that the coin was tails had no effect whatsoever on the probability that the coin came up 5. This property is called \emph{independence}. We say that the coin and the die are independent in this example, to indicate that the occurrence of one does not have any influence on the probability of the other occurring.
+
+More formally, we make the following definition.
+
+\begin{definition}
+\label{def:1.5.2}
+Two events $A$ and $B$ are \emph{independent} if
+\[
+\prb(A \cap B) = \prb(A)\prb(B).
+\]
+\end{definition}
+
+Now, because $\prb(A \mid B) = \prb(A \cap B)/\prb(B)$, we see that $A$ and $B$ are independent if and only if $\prb(A \mid B) = \prb(A)$ or $\prb(B \mid A) = \prb(B)$, provided that $\prb(A) > 0$ and $\prb(B) > 0$. Definition~\ref{def:1.5.2} has the advantage that it remains valid even if $\prb(B) = 0$ or $\prb(A) = 0$ respectively. Intuitively, events $A$ and $B$ are independent if neither one has any impact on the probability of the other.
+
+\begin{example}
+\label{ex:1.5.3}
+In Example~\ref{ex:1.4.4}, if $A$ is the event that the die was 5, and $B$ is the event that the coin was tails, then $\prb(A) = \prb(\{5H, 5T\}) = 2/12 = 1/6$, and
+\[
+\prb(B) = \prb(\{1T, 2T, 3T, 4T, 5T, 6T\}) = 6/12 = 1/2.
+\]
+Also, $\prb(A \cap B) = \prb(\{5T\}) = 1/12$, which is indeed equal to $(1/6)(1/2)$. Hence, $A$ and $B$ are independent in this case.
+\end{example}
+
+For multiple events, the definition of independence is somewhat more involved.
+
+\begin{definition}
+\label{def:1.5.3}
+A collection of events $A_1, A_2, A_3, \ldots$ are \emph{independent} if
+\[
+\prb(A_{i_1} \cap \cdots \cap A_{i_j}) = \prb(A_{i_1}) \cdots \prb(A_{i_j})
+\]
+for any finite subcollection $A_{i_1}, \ldots, A_{i_j}$ of distinct events.
+\end{definition}
+
+\begin{example}
+\label{ex:1.5.4}
+According to Definition~\ref{def:1.5.3}, three events $A$, $B$, and $C$ are independent if all of the following equations hold:
+\begin{align}
+\prb(A \cap B) &= \prb(A)\prb(B) \notag \\
+\prb(A \cap C) &= \prb(A)\prb(C) \notag \\
+\prb(B \cap C) &= \prb(B)\prb(C) \label{eq:1.5.3}
+\end{align}
+and
+\begin{equation}
+\label{eq:1.5.4}
+\prb(A \cap B \cap C) = \prb(A)\prb(B)\prb(C).
+\end{equation}
+It is not sufficient to check just some of these conditions to verify independence. For example, suppose that $S = \{1, 2, 3, 4\}$, with $\prb(\{1\}) = \prb(\{2\}) = \prb(\{3\}) = \prb(\{4\}) = 1/4$. Let $A = \{1, 2\}$, $B = \{1, 3\}$, and $C = \{1, 4\}$. Then each of the three equations \eqref{eq:1.5.3} holds, but equation \eqref{eq:1.5.4} does not hold. Here, the events $A$, $B$, and $C$ are called \emph{pairwise independent}, but they are not independent.
+\end{example}
+
+\bigskip
+\noindent\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\textbf{Summary of Section~\ref{sec:1.5}}\\[0.5ex]
+Conditional probability measures the probability that $A$ occurs given that $B$ occurs; it is given by $\prb(A \mid B) = \prb(A \cap B)/\prb(B)$.\\[0.5ex]
+Conditional probability satisfies its own law of total probability.\\[0.5ex]
+Events are independent if they have no effect on each other's probabilities. Formally, this means that $\prb(A \cap B) = \prb(A)\prb(B)$.\\[0.5ex]
+If $A$ and $B$ are independent, and $\prb(A) > 0$ and $\prb(B) > 0$, then $\prb(A \mid B) = \prb(A)$ and $\prb(B \mid A) = \prb(B)$.}}
+
+\bigskip
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:1.5.1}
+Suppose that we roll four fair six-sided dice.
+\begin{enumerate}[(a)]
+\item What is the conditional probability that the first die shows 2, conditional on the event that exactly three dice show 2?
+\item What is the conditional probability that the first die shows 2, conditional on the event that at least three dice show 2?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Here $\prb(\text{first die } 6, \text{ and three dice } 6) = (1/6)\binom{3}{2}(1/6)^2(5/6) = 15/6^4$. Also, $\prb(\text{three dice } 6) = \binom{4}{3}(1/6)^3(5/6) = 20/6^4$. Hence, the conditional probability equals $(15/6^4) / (20/6^4) = 3/4 = 0.75$. (This also follows intuitively since any three of the four dice could have shown $6$.)
+    \item Here $\prb(\text{first die } 6, \text{ and at least three dice } 6) = \prb(\text{first die } 6, \text{ and three dice } 6) + \prb(\text{first die } 6, \text{ and four dice } 6) = 15/6^4 + (1/6)^4 = 16/6^4$. Also, $\prb(\text{at least three dice } 6) = \prb(\text{three dice } 6) + \prb(\text{four dice } 6) = 20/6^4 + 1/6^4 = 21/6^4$. Hence, the conditional probability equals $(16/6^4) / (21/6^4) = 16/21 = 0.762$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.2}
+Suppose we flip two fair coins and roll one fair six-sided die.
+\begin{enumerate}[(a)]
+\item What is the probability that the number of heads equals the number showing on the die?
+\item What is the conditional probability that the number of heads equals the number showing on the die, conditional on knowing that the die showed 1?
+\item Is the answer for part (b) larger or smaller than the answer for part (a)? Explain intuitively why this is so.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item This probability equals $\prb(\text{one head, and die shows } 1) + \prb(\text{two heads, and die shows } 2) = \binom{2}{1}(1/2)^2(1/6) + \binom{2}{2}(1/2)^2(1/6) = 1/12 + 1/24 = 1/8$.
+    \item This probability equals $\prb(\text{one head, and die shows } 1) / \prb(\text{die shows } 1) = (1/12) / (1/6) = 1/2$. (This makes sense since it is the same as the probability that the number of heads equals $1$.)
+    \item It is larger, since the die showing $1$ makes it much easier for the number of heads to equal the number showing on the die.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.3}
+Suppose we flip three fair coins.
+\begin{enumerate}[(a)]
+\item What is the probability that all three coins are heads?
+\item What is the conditional probability that all three coins are heads, conditional on knowing that the number of heads is odd?
+\item What is the conditional probability that all three coins are heads, given that the number of heads is even?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item This probability equals $(1/2)^3 = 1/8$.
+    \item Here $\prb(\text{number of heads odd}) = \prb(\text{one head}) + \prb(\text{three heads}) = \binom{3}{1}(1/2)^3 + \binom{3}{3}(1/2)^3 = 4/8 = 1/2$. Also $\prb(\text{number of heads odd, and all three coins heads}) = \prb(\text{all three coins heads}) = (1/2)^3 = 1/8$. Hence, desired conditional probability equals $(1/8) / (1/2) = 1/4$.
+    \item Here $\prb(\text{number of heads even}) = \prb(0 \text{ heads}) + \prb(\text{two heads}) = \binom{3}{0}(1/2)^3 + \binom{3}{2}(1/2)^3 = 4/8 = 1/2$. Also $\prb(\text{number of heads even, and all three coins heads}) = 0$ since this is impossible. Hence, desired conditional probability equals $0/(1/2) = 0$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.4}
+Suppose we deal five cards from an ordinary 52-card deck. What is the conditional probability that all five cards are spades, given that at least four of them are spades?
+\end{exercise}
+
+\begin{solution}
+$\prb(\text{five Spades}) = \binom{13}{5} / \binom{52}{5} = 33/66640$. Also, $\prb(\text{four Spades}) = \binom{13}{4}\binom{39}{1} / \binom{52}{5} = 143/13328$. Hence, $\prb(\text{five Spades} \mid \text{at least } 4 \text{ Spades}) = \prb(\text{five Spades}) / (\prb(\text{four Spades}) + \prb(\text{five Spades})) = (33/66640) / [(143/13328) + (33/66640)] = 3/68 = 0.044$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.5}
+Suppose we deal five cards from an ordinary 52-card deck. What is the conditional probability that the hand contains all four aces, given that the hand contains at least four aces?
+\end{exercise}
+
+\begin{solution}
+This probability equals $\prb(\text{four Aces}) / \prb(\text{four Aces}) = 1$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.6}
+Suppose we deal five cards from an ordinary 52-card deck. What is the conditional probability that the hand contains no pairs, given that it contains no spades?
+\end{exercise}
+
+\begin{solution}
+This probability equals $\binom{13}{5}\binom{3}{1}^5 / \binom{39}{5} = 0.54318$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.7}
+Suppose a baseball pitcher throws fastballs 80\% of the time and curveballs 20\% of the time. Suppose a batter hits a home run on 8\% of all fastball pitches, and on 5\% of all curveball pitches. What is the probability that this batter will hit a home run on this pitcher's next pitch?
+\end{exercise}
+
+\begin{solution}
+This equals $\prb(\text{home run} \mid \text{fastball})\prb(\text{fastball}) + \prb(\text{home run} \mid \text{curve ball}) \times \prb(\text{curve ball}) = (8\%)(80\%) + (5\%)(20\%) = (0.08)(0.80) + (0.05)(0.20) = 0.074$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.8}
+Suppose the probability of snow is 20\%, and the probability of a traffic accident is 10\%. Suppose further that the conditional probability of an accident, given that it snows, is 40\%. What is the conditional probability that it snows, given that there is an accident?
+\end{exercise}
+
+\begin{solution}
+By Bayes' Theorem, $\prb(\text{snow} \mid \text{accident}) = [\prb(\text{snow}) / \prb(\text{accident})] \times \prb(\text{accident} \mid \text{snow}) = [0.20/0.10] (0.40) = 0.80$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.9}
+Suppose we roll two fair six-sided dice, one red and one blue. Let $A$ be the event that the two dice show the same value. Let $B$ be the event that the sum of the two dice is equal to 12. Let $C$ be the event that the red die shows 4. Let $D$ be the event that the blue die shows 4.
+\begin{enumerate}[(a)]
+\item Are $A$ and $B$ independent?
+\item Are $A$ and $C$ independent?
+\item Are $A$ and $D$ independent?
+\item Are $C$ and $D$ independent?
+\item Are $A$, $C$, and $D$ all independent?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+Here $\prb(A) = 1/6$, $\prb(B) = 1/36$, $\prb(C) = 1/6$, and $\prb(D) = 1/6$.
+\begin{enumerate}[(a)]
+    \item $\prb(A \cap B) = \prb(\text{both dice show } 6) = 1/36 \neq (1/6)(1/36) = \prb(A)\prb(B)$, so $A$ and $B$ are not independent.
+    \item $\prb(A \cap C) = \prb(\text{both dice show } 4) = 1/36 = (1/6)(1/6) = \prb(A)\prb(C)$, so $A$ and $C$ are independent.
+    \item $\prb(A \cap D) = \prb(\text{both dice show } 4) = 1/36 = (1/6)(1/6) = \prb(A)\prb(D)$, so $A$ and $D$ are independent.
+    \item $\prb(C \cap D) = \prb(\text{both dice show } 4) = 1/36 = (1/6)(1/6) = \prb(C)\prb(D)$, so $C$ and $D$ are independent.
+    \item $\prb(A \cap C \cap D) = \prb(\text{both dice show } 4) = 1/36 \neq (1/6)(1/6)(1/6) = \prb(A)\prb(C)\prb(D)$, so $A$ and $C$ and $D$ are not all independent. (Thus, $A$ and $C$ and $D$ are pairwise independent, but not independent.)
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.10}
+Consider two urns, labelled urn \#1 and urn \#2. Suppose, as in Exercise~\ref{exer:1.4.11}, that urn \#1 has 5 red and 7 blue balls, that urn \#2 has 6 red and 12 blue balls, and that we pick three balls uniformly at random from each of the two urns. Conditional on the fact that all six chosen balls are the same color, what is the conditional probability that this color is red?
+\end{exercise}
+
+\begin{solution}
+We have from the Exercise \ref{exer:1.4.11} solution that $\prb(\text{all red}) = 5/4488$, while $\prb(\text{all blue}) = 35/816$. Hence, $\prb(\text{all red} \mid \text{all same color}) = \prb(\text{all red}) / \prb(\text{all same color}) = (5/4488)/[(5/4488) + (35/816)] = 2/79 = 0.025$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.11}
+Suppose we roll a fair six-sided die and then flip a number of fair coins equal to the number showing on the die. (For example, if the die shows 4, then we flip 4 coins.)
+\begin{enumerate}[(a)]
+\item What is the probability that the number of heads equals 3?
+\item Conditional on knowing that the number of heads equals 3, what is the conditional probability that the die showed the number 5?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The number showing on the die must be greater than or equal to $3$. Hence, the probability that the number of heads equals $3$ is
+    \[
+        \sum_{i=3}^{6} \prb(\text{die} = i, \# \text{ of heads} = 3) = \sum_{i=1}^{6} \frac{1}{6}\binom{i}{3}\frac{1}{2^i} = \frac{1}{6} = 0.1667.
+    \]
+    \item The conditional probability is
+    \[
+        \prb(\text{die} = 5 \mid \# \text{ of heads} = 3) = \frac{\prb(\text{die} = 5, \# \text{ of heads} = 3)}{\prb(\# \text{ of heads} = 3)} = \frac{\frac{1}{6}\binom{5}{3}\frac{1}{2^5}}{1/6} = \frac{5}{16} = 0.3125.
+    \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.12}
+Suppose we roll a fair six-sided die and then pick a number of cards from a well-shuffled deck equal to the number showing on the die. (For example, if the die shows 4, then we pick 4 cards.)
+\begin{enumerate}[(a)]
+\item What is the probability that the number of jacks in our hand equals 2?
+\item Conditional on knowing that the number of jacks in our hand equals 2, what is the conditional probability that the die showed the number 3?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Let $D$ be the number showing on the die and $J$ be the number of Jacks in our hands. Then, the distribution of $J$ given $D = d$ is Hypergeometric$(52, 4, d)$. Hence,
+    \[
+        \prb(J = 2) = \sum_{d=1}^{6} \prb(J = 2 \mid D = d)\prb(D = d) = \sum_{d=1}^{6} \frac{\binom{4}{2}\binom{48}{d-2}}{\binom{52}{d}} \frac{1}{6} = \frac{208}{8925} = 0.0233.
+    \]
+    \item Since $\prb(D = 3, J = 2) = \frac{1}{6} \cdot \frac{\binom{4}{2}\binom{48}{1}}{\binom{52}{3}} = 12/5525 = 0.002172$,
+    \[
+        \prb(D = 3 \mid J = 2) = \prb(D = 3, J = 2)/\prb(J = 2) = 1071/11492 = 0.093195.
+    \]
+\end{enumerate}
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:1.5.13}
+Consider three cards, as follows: One is red on both sides, one is black on both sides, and one is red on one side and black on the other. Suppose the cards are placed in a hat, and one is chosen at random. Suppose further that this card is placed flat on the table, so we can see one side only.
+\begin{enumerate}[(a)]
+\item What is the probability that this one side is red?
+\item Conditional on this one side being red, what is the probability that the card showing is the one that is red on both sides? (Hint: The answer is somewhat surprising.)
+\item Suppose you wanted to verify the answer in part (b), using an actual, physical experiment. Explain how you could do this.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\prb(\text{red}) = \prb(\text{card } \#1)\prb(\text{red} \mid \text{card } \#1) + \prb(\text{card } \#2)\prb(\text{red} \mid \text{card } \#2) + \prb(\text{card } \#3)\prb(\text{red} \mid \text{card } \#3) = (1/3)(1) + (1/3)(0) + (1/3)(1/2) = 1/2$.
+    \item $\prb(\text{card } \#1 \mid \text{red}) = \prb(\text{card } \#1, \text{red}) / \prb(\text{red}) = \prb(\text{card } \#1)\prb(\text{red} \mid \text{card } \#1) / \prb(\text{red}) = (1/3)(1) / (1/2) = 2/3$. (Many people think the answer will be $1/2$.)
+    \item Make three cards as specified, and repeatedly run the experiment. Discard all experiments where the one side showing is black. Of the experiments where the one side showing is red, count the fraction where the other side is also red. After many experiments, it should be close to $2/3$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.14}
+Prove that $A$ and $B$ are independent if and only if $A^C$ and $B$ are independent.
+\end{exercise}
+
+\begin{solution}
+Assume $A$ and $B$ are independent. Then since $A^c \cap B$ and $A \cap B$ are disjoint with union $B$, $\prb(A^c \cap B) + \prb(A \cap B) = \prb(B)$. Hence, $\prb(A^c \cap B) = \prb(B) - \prb(A \cap B) = \prb(B) - \prb(A)\prb(B) = \prb(B)[1 - \prb(A)] = \prb(B)\prb(A^c)$. So, $A^c$ and $B$ are independent. The converse then follows by interchanging $A$ and $A^c$ throughout.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.5.15}
+Let $A$ and $B$ be events of positive probability. Prove that $\prb(A \mid B) \geqslant \prb(A)$ if and only if $\prb(B \mid A) \geqslant \prb(B)$.
+\end{exercise}
+
+\begin{solution}
+If $\prb(A \mid B) > \prb(A)$, then $\prb(A \cap B) / \prb(B) > \prb(A)$, so $\prb(A \cap B) > \prb(A)\prb(B)$, so $\prb(A \cap B) / \prb(A) > \prb(B)$, so $\prb(B \mid A) > \prb(B)$. The converse follows by interchanging $A$ and $B$ throughout.
+\end{solution}
+
+\subsection*{Challenges}
+
+\begin{exercise}
+\label{exer:1.5.16}
+Suppose we roll three fair six-sided dice. Compute the conditional probability that the first die shows 4, given that the sum of the three numbers showing is 12.
+\end{exercise}
+
+\begin{solution}
+Let $q_i$ be the probability that the sum of the second and third dice (to be called the ``other dice'') equals $i$. Then the desired probability equals $\prb(\text{first die } 4, \text{ sum of three dice } 12) / \prb(\text{sum of three dice } 12) = \prb(\text{first die } 4, \text{ sum of other dice } 8) / \sum_{i=1}^{6} \prb(\text{first die } i, \text{ sum of other dice } 12 - i) = (1/6) q_8 / \sum_{i=1}^{6}(1/6) q_{12-i} = q_8 / \sum_{j=7}^{12} q_j = (5/36) / [(6/36) + (5/36) + (4/36) + (3/36) + (2/36) + (1/36)] = 5 / [6 + 5 + 4 + 3 + 2 + 1] = 5/21$.
+\end{solution}
+
+\begin{exercise}[The game of craps]
+\label{exer:1.5.17}
+The game of craps is played by rolling two fair, six-sided dice. On the first roll, if the sum of the two numbers showing equals 2, 3, or 12, then the player immediately loses. If the sum equals 7 or 11, then the player immediately wins. If the sum equals any other value, then this value becomes the player's ``point.'' The player then repeatedly rolls the two dice, until such time as he or she either rolls the point value again (in which case he or she wins) or rolls a 7 (in which case he or she loses).
+\begin{enumerate}[(a)]
+\item Suppose the player's point is equal to 4. Conditional on this, what is the conditional probability that he or she will win (i.e., will roll another 4 before rolling a 7)? (Hint: The final roll will be either a 4 or 7; what is the conditional probability that it is a 4?)
+\item For $2 \leqslant i \leqslant 12$, let $p_i$ be the conditional probability that the player will win, conditional on having rolled $i$ on the first roll. Compute $p_i$ for all $i$ with $2 \leqslant i \leqslant 12$. (Hint: You've already done this for $i = 4$ in part (b). Also, the cases $i = 2, 3, 7, 11, 12$ are trivial. The other cases are similar to the $i = 4$ case.)
+\item Compute the overall probability that a player will win at craps. (Hint: Use part (b) and Theorem~\ref{thm:1.5.1}.)
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item This probability is equal to $\prb(\text{sum is } 4 \mid \text{sum is } 4 \text{ or } 7) = (3/36) / [(3/36) + (6/36)] = 3/9 = 1/3$.
+    \item $p_2 = p_3 = p_{12} = 0$, and $p_7 = p_{11} = 1$. Also $p_4 = 1/3$ from part (a). For other $i$, let $q_i = \prb(\text{sum is } i)$ as in the previous solution. Then $p_i = \prb(\text{sum is } i \mid \text{sum is } i \text{ or } 7) = q_i / [q_i + (6/36)] = q_i / [q_i + (1/6)] = 1 / [1 + (1/6q_i)]$. Thus, $p_5 = 1 / [1 + (1/6(4/36))] = 2/5$, $p_6 = 1 / [1 + (1/6(5/36))] = 5/11$, $p_8 = 1 / [1 + (1/6(5/36))] = 5/11$, $p_9 = 1 / [1 + (1/6(4/36))] = 2/5$, and $p_{10} = 1 / [1 + (1/6(3/36))] = 1/3$.
+    \item By the law of total probability, the probability of winning at craps is
+    \begin{align*}
+        \sum_{i=2}^{12} \prb(\text{first sum } i)\prb(\text{win} \mid \text{first sum } i) &= \sum_{i=2}^{12} q_i p_i \\
+        &= (1/36)(0) + (2/36)(0) + (3/36)(1/3) + (4/36)(2/5) + (5/36)(5/11) \\
+        &\quad + (6/36)(1) + (5/36)(5/11) + (4/36)(2/5) + (3/36)(1/3) \\
+        &\quad + (2/36)(1) + (1/36)(0) \\
+        &= 244/495 = 0.492929.
+    \end{align*}
+    This is just barely less than $50\%$; but that ``barely less'' is still enough to ensure that, if you play craps repeatedly, then eventually you will lose money (and the casino will get rich).
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[The Monty Hall problem]
+\label{exer:1.5.18}
+Suppose there are three doors, labeled A, B, and C. A new car is behind one of the three doors, but you don't know which. You select one of the doors, say, door A. The host then opens one of doors B or C, as follows: If the car is behind B, then they open C; if the car is behind C, then they open B; if the car is behind A, then they open either B or C with probability 1/2 each. (In any case, the door opened by the host will not have the car behind it.) The host then gives you the option of either sticking with your original door choice (i.e., A), or switching to the remaining unopened door (i.e., whichever of B or C the host did not open). You then win (i.e., get to keep the car) if and only if the car is behind your final door selection. (Source: \textit{Parade Magazine}, ``Ask Marilyn'' column, September 9, 1990.) Suppose for definiteness that the host opens door B.
+\begin{enumerate}[(a)]
+\item If you stick with your original choice (i.e., door A), conditional on the host having opened door B, then what is your probability of winning? (Hint: First condition on the true location of the car. Then use Theorem~\ref{thm:1.5.2}.)
+\item If you switch to the remaining door (i.e., door C), conditional on the host having opened door B, then what is your probability of winning?
+\item Do you find the result of parts (a) and (b) surprising? How could you design a physical experiment to verify the result?
+\item Suppose we change the rules so that, if you originally chose A and the car was indeed behind A, then the host always opens door B. How would the answers to parts (a) and (b) change in this case?
+\item Suppose we change the rules so that, if you originally chose A, then the host always opens door B no matter where the car is. We then condition on the fact that door B happened not to have a car behind it. How would the answers to parts (a) and (b) change in this case?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Since you chose door $A$, the host will always open either door $B$ or door $C$. Without any further information, those two events are equally likely, i.e., $\prb(\text{host opens } B) = \prb(\text{host opens } C) = 1/2$. Also, the car was originally equally likely to be behind any of the three doors, so $\prb(\text{car behind } A) = \prb(\text{car behind } B) = \prb(\text{car behind } C) = 1/3$. Also, if the car is actually behind $A$, then the host had a choice of opening door $B$ or $C$, so $\prb(\text{host opens } B \mid \text{car behind } A) = 1/2$. Then by Bayes' Theorem $\prb(\text{win if don't switch} \mid \text{host opens } B) = \prb(\text{car behind } A \mid \text{host opens } B) = [\prb(\text{car behind } A) / \prb(\text{host opens } B)] \prb(\text{host opens } B \mid \text{car behind } A) = [(1/3) / (1/2)] (1/2) = 1/3$. So, if you don't switch, then only $1/3$ of the time will you win the car. (This makes sense if you consider that originally, you had $1/3$ chance of guessing the correct door. When the host opens another door it may change the probabilities of the other doors concealing the car, but it won't change the probability that you guessed right in the first place, which is still $1/3$.)
+    
+    \item If the car is actually behind $C$, then the host had to open door $B$, so $\prb(\text{host opens } B \mid \text{car behind } C) = 1$. Then $\prb(\text{win if switch} \mid \text{host opens } B) = \prb(\text{car behind } C \mid \text{host opens } B) = [\prb(\text{car behind } C) / \prb(\text{host opens } B)] \prb(\text{host opens } B \mid \text{car behind } C) = [(1/3) / (1/2)] (1) = 2/3$. (This makes sense since we must have $\prb(\text{win if don't switch} \mid \text{host opens } B) + \prb(\text{win if switch} \mid \text{host opens } B) = 1$.)
+    
+    \item Many people find this very surprising. To do an experiment, hide a pebble under one of three cups (say), let a volunteer guess one cup, then reveal an unselected non-pebbled cup, and give a volunteer the option to switch to the other cup or stick with the original cup. Do this repeatedly, and compute what fraction of the time they win if they do or do not switch.
+    
+    \item In this case, we would instead have $\prb(\text{host opens } B \mid \text{car behind } C) = 1$. Also, we would have $\prb(\text{host opens } B) = \prb(\text{host opens } B, \text{ car behind } A) + \prb(\text{host opens } B, \text{ car behind } C) = 1/3 + 1/3 = 2/3$. So, in this case, $\prb(\text{win if don't switch} \mid \text{host opens } B) = \prb(\text{car behind } A \mid \text{host opens } B) = [\prb(\text{car behind } A) / \prb(\text{host opens } B)] \prb(\text{host opens } B \mid \text{car behind } A) = [(1/3) / (2/3)] (1) = 1/2$. Also, $\prb(\text{win if switch} \mid \text{host opens } B) = \prb(\text{car behind } C \mid \text{host opens } B) = [\prb(\text{car behind } C) / \prb(\text{host opens } B)] \prb(\text{host opens } B \mid \text{car behind } C) = [(1/3) / (2/3)] (1) = 1/2$. So in this case, it doesn't matter if you switch or not.
+    
+    \item This is a standard conditional probability calculation. We have $\prb(\text{win if don't switch} \mid \text{car not behind } B) = \prb(\text{car behind } A \mid \text{car not behind } B) = \prb(\text{car behind } A, \text{ car not behind } B) / \prb(\text{car not behind } B) = (1/3) / (2/3) = 1/2$. Similarly, $\prb(\text{win if switch} \mid \text{car not behind } B) = \prb(\text{car behind } C \mid \text{car not behind } B) = \prb(\text{car behind } C, \text{ car not behind } B) / \prb(\text{car not behind } B) = (1/3) / (2/3) = 1/2$. So in this case also, it doesn't matter if you switch or not. (When the original Monty Hall problem was first proposed, many people incorrectly interpreted it as this case, leading to confusion over whether the correct answer was $1/3$ or $1/2$.)
+\end{enumerate}
+\end{solution}
+
+\subsection*{Discussion Topics}
+
+\begin{exercise}
+\label{exer:1.5.19}
+Suppose two people each flip a fair coin simultaneously. Will the results of the two flips usually be independent? Under what sorts of circumstances might they not be independent? (List as many such circumstances as you can.)
+\end{exercise}
+
+\begin{exercise}
+\label{exer:1.5.20}
+Suppose you are able to repeat an experiment many times, and you wish to check whether or not two events are independent. How might you go about this?
+\end{exercise}
+
+\begin{exercise}
+\label{exer:1.5.21}
+The Monty Hall problem (Challenge~\ref{exer:1.5.18}) was originally presented by Marilyn von Savant, writing in the ``Ask Marilyn'' column of \textit{Parade Magazine}. She gave the correct answer. However, many people (including some well-known mathematicians, plus many laypeople) wrote in to complain that her answer was incorrect. The controversy dragged on for months, with many letters and very strong language written by both sides (in the end, von Savant was vindicated). Part of the confusion lay in the assumptions being made, e.g., some people misinterpreted her question as that of the modified version of part (e) of Challenge~\ref{exer:1.5.18}. However, a lot of the confusion was simply due to mathematical errors and misunderstandings. (Source: \textit{Parade Magazine}, ``Ask Marilyn'' column, September 9, 1990; December 2, 1990; February 17, 1991; July 7, 1991.)
+\begin{enumerate}[(a)]
+\item Does it surprise you that so many people, including well-known mathematicians, made errors in solving this problem? Why or why not?
+\item Does it surprise you that so many people, including many laypeople, cared so strongly about the answer to this problem? Why or why not?
+\end{enumerate}
+\end{exercise}
+
+\section{Continuity of \texorpdfstring{$\prb$}{P}}
+\label{sec:1.6}
+
+Suppose $A_1, A_2, \ldots$ is a sequence of events that are getting ``closer'' (in some sense) to another event, $A$. Then we might expect that the probabilities $\prb(A_1), \prb(A_2), \ldots$ are getting close to $\prb(A)$, i.e., that $\lim_{n \to \infty} \prb(A_n) = \prb(A)$. But can we be sure about this?
+
+Properties like this, which say that $\prb(A_n)$ is close to $\prb(A)$ whenever $A_n$ is ``close'' to $A$, are called \emph{continuity properties}. The above question can thus be translated, roughly, as asking whether or not probability measures $P$ are ``continuous.'' It turns out that $P$ is indeed continuous in some sense.
+
+Specifically, let us write $\{A_n\} \nearrow A$ and say that the sequence $\{A_n\}$ \emph{increases to} $A$, if $A_1 \subseteq A_2 \subseteq A_3 \subseteq \cdots$, and also $\bigcup_{n=1}^{\infty} A_n = A$. That is, the sequence of events is an increasing sequence, and furthermore its union is equal to $A$. For example, if $A_n = (-1/n, n)$, then $A_1 \subseteq A_2 \subseteq \cdots$ and $\bigcup_{n=1}^{\infty} A_n = (0, \infty)$. Hence, $\{(-1/n, n)\} \nearrow (0, \infty)$. Figure~\ref{fig:1.6.1} depicts an increasing sequence of subsets.
+
+Similarly, let us write $\{A_n\} \searrow A$ and say that the sequence $\{A_n\}$ \emph{decreases to} $A$, if $A_1 \supseteq A_2 \supseteq A_3 \supseteq \cdots$, and also $\bigcap_{n=1}^{\infty} A_n = A$. That is, the sequence of events is a decreasing sequence, and furthermore its intersection is equal to $A$. For example, if $A_n = (-1/n, 1/n)$, then $A_1 \supseteq A_2 \supseteq \cdots$ and $\bigcap_{n=1}^{\infty} A_n = \{0\}$. Hence, $\{(-1/n, 1/n)\} \searrow \{0\}$. Figure~\ref{fig:1.6.2} depicts a decreasing sequence of subsets.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig1_6_1.pdf}
+\caption{An increasing sequence of subsets $A_1 \subseteq A_2 \subseteq A_3 \subseteq \cdots$.}
+\label{fig:1.6.1}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig1_6_2.pdf}
+\caption{A decreasing sequence of subsets $A_1 \supseteq A_2 \supseteq A_3 \supseteq \cdots$.}
+\label{fig:1.6.2}
+\end{figure}
+
+We will consider such sequences of sets at several points in the text. For this we need the following result.
+
+\begin{theorem}
+\label{thm:1.6.1}
+Let $A, A_1, A_2, \ldots$ be events, and suppose that either $\{A_n\} \nearrow A$ or $\{A_n\} \searrow A$. Then
+\[
+\lim_{n \to \infty} \prb(A_n) = \prb(A).
+\]
+\end{theorem}
+
+\begin{proof}
+See Section~\ref{sec:1.7} for the proof of this theorem.
+\end{proof}
+
+\begin{example}
+\label{ex:1.6.1}
+Suppose $S$ is the set of all positive integers, with $\prb(\{s\}) = 2^{-s}$ for all $s \in S$. Then what is $\prb(\{5, 6, 7, 8, \ldots\})$?
+
+We begin by noting that the events $A_n = \{5, 6, 7, 8, \ldots, n\}$ increase to $A = \{5, 6, 7, 8, \ldots\}$, i.e., $\{A_n\} \nearrow A$. Hence, using continuity of probabilities, we must have
+\begin{align*}
+\prb(\{5, 6, 7, 8, \ldots\}) &= \lim_{n \to \infty} \prb(\{5, 6, 7, 8, \ldots, n\}) \\
+&= \lim_{n \to \infty} \bigl(\prb(\{5\}) + \prb(\{6\}) + \cdots + \prb(\{n\})\bigr) \\
+&= \lim_{n \to \infty} \bigl(2^{-5} + 2^{-6} + \cdots + 2^{-n}\bigr) \\
+&= \lim_{n \to \infty} \frac{2^{-5} - 2^{-n-1}}{1 - 1/2} \\
+&= \lim_{n \to \infty} \bigl(2^{-4} - 2^{-n}\bigr) = 2^{-4} = 1/16.
+\end{align*}
+
+Alternatively, we could use countable additivity directly, to conclude that
+\[
+\prb(\{5, 6, 7, 8, \ldots\}) = \prb(\{5\}) + \prb(\{6\}) + \prb(\{7\}) + \cdots
+\]
+which amounts to the same thing.
+\end{example}
+
+\begin{example}
+\label{ex:1.6.2}
+Let $P$ be some probability measure on the space $S = \mathbb{R}^1$. Suppose
+\[
+P\bigl((3, 5 + 1/n]\bigr) = \alpha
+\]
+for all $n$, where $\alpha > 0$. Let $A_n = (3, 5 + 1/n]$. Then $\{A_n\} \searrow A$ where $A = (3, 5]$. Hence, we must have $\prb(A) = \prb((3, 5]) = \alpha$ as well.
+
+Note, however, that we could still have $\prb((3, 5)) \neq 0$. For example, perhaps $\prb(\{5\}) = \alpha$, but $\prb((3, 5)) = 0$.
+\end{example}
+
+\bigskip
+\noindent\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{%
+\textbf{Summary of Section~\ref{sec:1.6}}\\[0.5ex]
+If $\{A_n\} \nearrow A$ or $\{A_n\} \searrow A$, then $\lim_{n \to \infty} \prb(A_n) = \prb(A)$.\\[0.5ex]
+This allows us to compute or bound various probabilities that otherwise could not be understood.}}
+
+\bigskip
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:1.6.1}
+Suppose that $S = \{1, 2, 3, \ldots\}$ is the set of all positive integers and that $\prb(\{s\}) = 2^{-s}$ for all $s \in S$. Compute $\prb(A)$, where $A = \{2, 4, 6, \ldots\}$ is the set of all even positive integers. Do this in two ways --- by using continuity of $P$ (together with finite additivity) and by using countable additivity.
+\end{exercise}
+
+\begin{solution}
+For the first way, let $A_n = \{2, 4, 6, \ldots, 2n\}$. Then by finite additivity, $\prb(A_n) = \prb(2) + \prb(4) + \cdots + \prb(2n) = 2^{-2} + 2^{-4} + \cdots + 2^{-2n} = (1/4)[1 - (1/4)^n] / [1 - (1/4)] = (1/3)[1 - (1/4)^n]$. But also $\{A_n\} \nearrow A$. Hence, $\prb(A) = \lim_{n \to \infty} \prb(A_n) = \lim_{n \to \infty}(1/3)[1 - (1/4)^n] = 1/3$. For the second way, by countable additivity, $\prb(A) = \prb(2) + \prb(4) + \prb(6) + \cdots = 2^{-2} + 2^{-4} + 2^{-6} + \cdots = (1/4) / [1 - (1/4)] = 1/3$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.6.2}
+Consider the uniform distribution on $[0,1]$. Compute (with proof)
+\[
+\lim_{n \to \infty} \prb([1/4, 1 - e^{-n}]).
+\]
+\end{exercise}
+
+\begin{solution}
+Let $A_n = [1/4, 1 - e^{-n}]$. Then $\{A_n\} \nearrow A$, where $A = [1/4, 1)$. Hence, $\lim_{n \to \infty} \prb([1/4, 1 - e^{-n}]) = \lim_{n \to \infty} \prb(A_n) = \prb(A) = \prb([1/4, 1)) = 1 - 1/4 = 3/4$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.6.3}
+Suppose that $S = \{1, 2, 3, \ldots\}$ is the set of all positive integers and that $P$ is some probability measure on $S$. Prove that we must have
+\[
+\lim_{n \to \infty} \prb(\{1, 2, \ldots, n\}) = 1.
+\]
+\end{exercise}
+
+\begin{solution}
+Let $A_n = \{1, 2, \ldots, n\}$. Then $\{A_n\} \nearrow A$, where $A = \{1, 2, 3, \ldots\} = S$. Hence, $\lim_{n \to \infty} \prb(A_n) = \prb(A) = \prb(S) = 1$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.6.4}
+Suppose $\prb([0, 8/4^n]) = 2/(e^n + 6)$ for all $n = 1, 2, 3, \ldots$. What must $\prb(\{0\})$ be?
+\end{exercise}
+
+\begin{solution}
+The event of the interest is $\{0\} = [0, 0] = \bigcap_{n=1}^{\infty}[0, 8/(4 + n)]$. Theorem \ref{thm:1.6.1} implies $\prb(\{0\}) = \lim_{n \to \infty} \prb([0, 8/(4 + n)]) = \lim_{n \to \infty}(2 + e^{-n})/6 = 2/6 = 1/3$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.6.5}
+Suppose $\prb([0,1]) = 1$, but $\prb([1/n, 1]) = 0$ for all $n = 1, 2, 3, \ldots$. What must $\prb(\{0\})$ be?
+\end{exercise}
+
+\begin{solution}
+The event $\{0\}$ is the complement of $(0, 1]$ which can be represented as $(0, 1] = \bigcup_{n=1}^{\infty}[1/n, 1]$. Using Theorem \ref{thm:1.6.1}, we have
+\[
+    \prb((0, 1]) = \lim_{n \to \infty}\prb([1/n, 1]) = \lim_{n \to \infty} 0 = 0.
+\]
+Thus, $\prb(\{0\}) = \prb([0, 1]) - \prb((0, 1]) = 1 - 0 = 1$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.6.6}
+Suppose $\prb([1/n, 1/2]) = 1/3$ for all $n = 1, 2, 3, \ldots$.
+\begin{enumerate}[(a)]
+\item Must we have $\prb((0, 1/2]) = 1/3$?
+\item Must we have $\prb([0, 1/2]) = 1/3$?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+  \item Note $[1/n, 1/2] \subset (0, 1/2)$ for all $n \geqslant 1$. Monotonicity of a probability measure (see Corollary 1.3.1) and Theorem \ref{thm:1.6.1} imply
+    \[
+        \prb((0, 1/2]) = \lim_{n \to \infty} \prb([1/n, 1/2]) \leqslant \lim_{n \to \infty} 1/3 = 1/3.
+    \]
+    \item Suppose $\prb(\{0\}) = 2/3$ and $\prb(\{1/2\}) = 1/3$. Then, $\prb([1/n, 1/2]) = \prb(\{1/2\}) = 1/3 \leqslant 1/3$ for $n = 1, 2, \ldots$. However, $\prb([0, 1/2]) = \prb(\{0, 1/2\}) = 1 > 1/3$. Hence, $\prb([0, 1/2]) \leqslant 1/3$ does not hold.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.6.7}
+Suppose $\prb([0, \infty)) = 1$. Prove that there is some $n$ such that $\prb([0, n]) \geqslant 0.9$.
+\end{exercise}
+
+\begin{solution}
+Suppose that there is no $n$ such that $\prb([0, n]) > 0.9$. Note $[0, m] \subset [0, n]$ whenever $0 < m \leqslant n$ and $[0, \infty) = \bigcup_{n=1}^{\infty}[0, n]$. Theorem \ref{thm:1.6.1} implies $1 = \prb([0, \infty)) = \lim_{n \to \infty} \prb([0, n]) \leqslant 0.9$. It makes a contradiction. Hence, there must exist a number $N > 0$ such that $\prb([0, n]) > 0.9$ for all $n \geqslant N$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.6.8}
+Suppose $\prb((0, 1/2]) = 1/3$. Prove that there is some $n$ such that $\prb([1/n, 1/2]) \geqslant 1/4$.
+\end{exercise}
+
+\begin{solution}
+Suppose that $\prb([1/n, 1/2]) \leqslant 1/4$ for all $n$. Note $(0, 1/2] = \bigcup_{n=1}^{\infty}[1/n, 1/2]$. Theorem \ref{thm:1.6.1} implies $1/3 = \prb((0, 1/2]) = \lim_{n \to \infty} \prb([1/n, 1/2]) \leqslant 1/4$. It makes a contradiction. Hence, there must exist $N > 0$ such that $\prb([1/n, 1/2]) > 1/4$ for all $n \geqslant N$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:1.6.9}
+Suppose $\prb([0, 1/2]) = 1/3$. Must there be some $n$ such that $\prb([1/n, 1/2]) \geqslant 1/4$?
+\end{exercise}
+
+\begin{solution}
+If $\prb((0, 1/2]) > 1/4$, then there must be a number $n$ such that $\prb([1/n, 1/2]) > 1/4$. Otherwise, i.e.\ $\prb((0, 1/2]) \leqslant 1/4$, $\prb([1/n, 1/2]) \leqslant \prb((0, 1/2]) \leqslant 1/4$ for all $n > 0$. Unfortunately, $\prb([0, 1/2]) = 1/3$ doesn't guarantee $\prb((0, 1/2]) > 1/4$. For example, a probability measure having $\prb(\{0\}) = 1/3$ and $\prb(\{1\}) = 2/3$ also satisfies $\prb([0, 1/2]) = \prb(\{0\}) = 1/3$ but $\prb([1/n, 1/2]) = 0 < 1/4$ for all $n > 0$.
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:1.6.10}
+Let $P$ be some probability measure on sample space $S = [0,1]$.
+\begin{enumerate}[(a)]
+\item Prove that we must have $\lim_{n \to \infty} \prb((0, 1/n)) = 0$.
+\item Show by example that we might have $\lim_{n \to \infty} \prb([0, 1/n]) \neq 0$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Let $A_n = (0, 1/n)$. Then $\{A_n\} \searrow A$, where $A = \varnothing$ is the empty set. Hence, $\lim_{n \to \infty} \prb(A_n) = \prb(A) = \prb(\varnothing) = 0$.
+    \item Suppose $\prb(\{0\}) = 1$, so that $\prb$ puts all of the probability at the single value $0$. Then $\prb([0, 1/n)) = 1$ for all $n$, so $\lim_{n \to \infty} \prb([0, 1/n)) = 1 > 0$. (However, here $\prb((0, 1/n)) = 0$ for all $n$.)
+\end{enumerate}
+\end{solution}
+
+\subsection*{Challenges}
+
+\begin{exercise}
+\label{exer:1.6.11}
+Suppose we know that $P$ is finitely additive, but we do not know that it is countably additive. In other words, we know that $\prb(A_1 \cup \cdots \cup A_n) = \prb(A_1) + \cdots + \prb(A_n)$ for any finite collection of disjoint events $A_1, \ldots, A_n$, but we do not know about $\prb(A_1 \cup A_2 \cup \cdots)$ for infinite collections of disjoint events. Suppose further that we know that $P$ is continuous in the sense of Theorem~\ref{thm:1.6.1}. Using this, give a proof that $P$ must be countably additive. (In effect, you are proving that continuity of $P$ is equivalent to countable additivity of $P$, at least once we know that $P$ is finitely additive.)
+\end{exercise}
+
+\begin{solution}
+Let $A_1, A_2, A_3, \ldots$ be disjoint, and let $B = \bigcup_{n=1}^{\infty} A_n$. We must prove that $\sum_{n=1}^{\infty} \prb(A_n) = \prb(B)$. Well, let $B_n = A_1 \cup A_2 \cup \cdots \cup A_n$. Then $\prb(B_n) = \prb(A_1) + \prb(A_2) + \cdots + \prb(A_n)$ by finite additivity. Also, $B_n \subseteq B_{n+1}$, and $\bigcup_n B_n = B$, so that $\{B_n\} \nearrow B$. It follows that $\lim_{N \to \infty} \prb(B_N) = \prb(B)$. But $\lim_{N \to \infty} \prb(B_N) = \lim_{N \to \infty}[\prb(A_1) + \prb(A_2) + \cdots + \prb(A_N)] = \lim_{N \to \infty} \sum_{n=1}^{N} \prb(A_n) = \sum_{n=1}^{\infty} \prb(A_n)$. So, $\sum_{n=1}^{\infty} \prb(A_n) = \prb(B)$.
+\end{solution}
+
+\section{Further Proofs (Advanced)}
+\label{sec:1.7}
+
+\subsection*{Proof of Theorem~\ref{thm:1.3.4}}
+
+We want to prove that whenever $A_1, A_2, \ldots$ is a finite or countably infinite sequence of events, not necessarily disjoint, then $\prb(A_1 \cup A_2 \cup \cdots) \leqslant \prb(A_1) + \prb(A_2) + \cdots$
+
+Let $B_1 = A_1$, and for $n \geqslant 2$, let $B_n = A_n \cap (A_1 \cup \cdots \cup A_{n-1})^c$. Then $B_1, B_2, \ldots$ are disjoint, $B_1 \cup B_2 \cup \cdots = A_1 \cup A_2 \cup \cdots$, and, by additivity,
+\begin{equation}
+\label{eq:1.7.1}
+\prb(A_1 \cup A_2 \cup \cdots) = \prb(B_1 \cup B_2 \cup \cdots) = \prb(B_1) + \prb(B_2) + \cdots
+\end{equation}
+Furthermore, $A_n \supseteq B_n$, so by monotonicity, we have $\prb(A_n) \geqslant \prb(B_n)$. It follows from \eqref{eq:1.7.1} that
+\[
+\prb(A_1 \cup A_2 \cup \cdots) = \prb(B_1) + \prb(B_2) + \cdots \leqslant \prb(A_1) + \prb(A_2) + \cdots
+\]
+as claimed.
+
+\subsection*{Proof of Theorem~\ref{thm:1.6.1}}
+
+We want to prove that when $A, A_1, A_2, \ldots$ are events, and either $\{A_n\} \nearrow A$ or $\{A_n\} \searrow A$, then $\lim_{n \to \infty} \prb(A_n) = \prb(A)$.
+
+Suppose first that $\{A_n\} \nearrow A$. Then we can write
+\[
+A = A_1 \cup (A_2 \cap A_1^c) \cup (A_3 \cap A_2^c) \cup \cdots
+\]
+where the union is disjoint. Hence, by additivity,
+\[
+\prb(A) = \prb(A_1) + \prb(A_2 \cap A_1^c) + \prb(A_3 \cap A_2^c) + \cdots
+\]
+Now, by definition, writing this infinite sum is the same thing as writing
+\begin{equation}
+\label{eq:1.7.2}
+\prb(A) = \lim_{n \to \infty} \bigl(\prb(A_1) + \prb(A_2 \cap A_1^c) + \cdots + \prb(A_n \cap A_{n-1}^c)\bigr).
+\end{equation}
+However, again by additivity, we see that
+\[
+\prb(A_1) + \prb(A_2 \cap A_1^c) + \prb(A_3 \cap A_2^c) + \cdots + \prb(A_n \cap A_{n-1}^c) = \prb(A_n).
+\]
+Substituting this information into \eqref{eq:1.7.2}, we obtain $\prb(A) = \lim_{n \to \infty} \prb(A_n)$, which was to be proved.
+
+Suppose now that $\{A_n\} \searrow A$. Let $B_n = A_n^c$, and let $B = A^c$. Then we see that $\{B_n\} \nearrow B$ (why?). Hence, by what we just proved, we must have $\prb(B) = \lim_{n \to \infty} \prb(B_n)$. But then, using \eqref{eq:1.3.1}, we have
+\[
+1 - \prb(A) = \lim_{n \to \infty} (1 - \prb(A_n)),
+\]
+from which it follows that $\prb(A) = \lim_{n \to \infty} \prb(A_n)$. This completes the proof.

@@ -1,0 +1,119 @@
+\documentclass[12pt]{report}
+\usepackage{amsmath,amssymb,amsthm,mathrsfs,natbib}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[shortlabels]{enumitem}
+\usepackage{mathtools}
+\usepackage[margin=15mm]{geometry}
+\DeclareMathOperator\prb{\mathsf{P}}
+\DeclareMathOperator\expc{\mathsf{E}}
+\DeclareMathOperator\var{var}
+\DeclareMathOperator\cov{cov}
+\DeclareMathOperator\cor{cor}
+\DeclareMathOperator\argmin{argmin}
+\DeclareMathOperator\argmax{argmax}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{axiom}{Assumption}[section]
+\newtheorem{remark}{Remark}[section]
+\numberwithin{equation}{section}
+
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+%\counterwithin{algorithm}{section}
+
+% Exercise style: displays only the number (e.g., "9.1.1" not "Exercise 9.1.1")
+\newtheoremstyle{exstyle}% style name
+  {3pt}% space above
+  {3pt}% space below
+  {\normalfont}% body font
+  {}% indent amount
+  {\bfseries}% head font
+  {}% punctuation after head
+  {0.5em}% space after head
+  {\thmnumber{#2}}% head spec: number only
+\theoremstyle{exstyle}
+\newtheorem{exercise}{Exercise}[section]
+
+\usepackage{parskip}
+\usepackage{etoolbox}
+\AtBeginEnvironment{definition}{\vspace{\parskip}}
+\AtBeginEnvironment{example}{\vspace{\parskip}}
+\AtBeginEnvironment{lemma}{\vspace{\parskip}}
+\AtBeginEnvironment{theorem}{\vspace{\parskip}}
+\AtBeginEnvironment{corollary}{\vspace{\parskip}}
+\AtBeginEnvironment{proposition}{\vspace{\parskip}}
+\AtBeginEnvironment{remark}{\vspace{\parskip}}
+\AtBeginEnvironment{exercise}{\vspace{\parskip}}
+
+% redefine proof & solution environment
+\makeatletter
+\AtBeginDocument{%
+  \renewenvironment{proof}[1][\proofname]{\par
+    \pushQED{\qed}%
+    \normalfont \topsep6\p@\@plus6\p@\relax
+    \trivlist
+    \item[\hskip\labelsep\itshape #1\@addpunct{.}]\ignorespaces\leavevmode
+  }{\popQED\endtrivlist\@endpefalse}
+}
+
+\newenvironment{solution}[1][Solution]{\par
+  \normalfont \topsep6\p@\@plus6\p@\relax
+  \trivlist
+  \item[\hskip\labelsep\bfseries #1\@addpunct{.}]\ignorespaces\leavevmode
+}{\endtrivlist\@endpefalse}
+\makeatother
+
+\usepackage{dsfont}
+\DeclareMathOperator\indc{\mathds{1}}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+
+\usepackage[cache=false]{minted}
+\usepackage{fontspec}
+%\setmonofont{DejaVu Sans Mono}
+\usemintedstyle{friendly}
+\setminted{
+    frame=single,
+    framesep=10pt,
+    fontsize=\small,
+    linenos,
+    breaklines,
+    bgcolor=gray!5
+}
+
+\title{Probability and Statistics: The Science of Uncertainty}
+\author{M. J. Evans, J. S. Rosenthal}
+\date{}
+
+\begin{document}
+\maketitle
+
+\input{chap01}
+\input{chap02}
+\input{chap03}
+\input{chap04}
+\input{chap05}
+\input{chap06}
+\input{chap07}
+\input{chap08}
+\input{chap09}
+\input{chap10}
+\input{chap11}
+
+\end{document}
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{rosenthal}
+
+\appendix
+\input{app}
+

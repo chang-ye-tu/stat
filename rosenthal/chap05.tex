@@ -1,0 +1,2602 @@
+\chapter{Statistical Inference}
+\label{ch:5}
+
+\section*{Chapter Outline}
+\begin{description}
+\item[Section 1] Why Do We Need Statistics?
+\item[Section 2] Inference Using a Probability Model
+\item[Section 3] Statistical Models
+\item[Section 4] Data Collection
+\item[Section 5] Some Basic Inferences
+\end{description}
+
+In this chapter, we begin our discussion of statistical inference. Probability theory is primarily concerned with calculating various quantities associated with a probability model. This requires that we know what the correct probability model is. In applications, this is often not the case, and the best we can say is that the correct probability measure to use is in a set of possible probability measures. We refer to this collection as the statistical model. So, in a sense, our uncertainty has increased; not only do we have the uncertainty associated with an outcome or response as described by a probability measure, but now we are also uncertain about what the probability measure is.
+
+Statistical inference is concerned with making statements or inferences about characteristics of the true underlying probability measure. Of course, these inferences must be based on some kind of information; the statistical model makes up part of it. Another important part of the information will be given by an observed outcome or response, which we refer to as the data. Inferences then take the form of various statements about the true underlying probability measure from which the data were obtained. These take a variety of forms, which we refer to as types of inferences.
+
+The role of this chapter is to introduce the basic concepts and ideas of statistical inference. The most prominent approaches to inference are discussed in Chapters \ref{ch:6}, \ref{ch:7}, and \ref{ch:8}. Likelihood methods require the least structure as described in Chapter \ref{ch:6}. Bayesian methods, discussed in Chapter \ref{ch:7}, require some additional ingredients. Inference methods based on measures of performance and loss functions are described in Chapter \ref{ch:8}.
+
+\section{Why Do We Need Statistics?}
+\label{sec:5.1}
+
+While we will spend much of our time discussing the theory of statistics, we should always remember that statistics is an applied subject. By this we mean that ultimately statistical theory will be applied to real-world situations to answer questions of practical importance.
+
+What is it that characterizes those contexts in which statistical methods are useful? Perhaps the best way to answer this is to consider a practical example where statistical methodology plays an important role.
+
+\begin{example}[Stanford Heart Transplant Study]
+\label{ex:5.1.1}
+In the paper by Turnbull, Brown, and Hu entitled ``Survivorship of Heart Transplant Data'' (Journal of the American Statistical Association, March 1974, Volume 69, 74--80), an analysis is conducted to determine whether or not a heart transplant program, instituted at Stanford University, is in fact producing the intended outcome. In this case, the intended outcome is an increased length of life, namely, a patient who receives a new heart should live longer than if no new heart was received.
+
+It is obviously important to ensure that a proposed medical treatment for a disease leads to an improvement in the condition. Clearly, we would not want it to lead to a deterioration in the condition. Also, if it only produced a small improvement, it may not be worth carrying out if it is very expensive or causes additional suffering.
+
+We can never know whether a particular patient who received a new heart has lived longer because of the transplant. So our only hope in determining whether the treatment is working is to compare the lifelengths of patients who received new hearts with the lifelengths of patients who did not. There are many factors that influence a patient's lifelength, many of which will have nothing to do with the condition of the patient's heart. For example, lifestyle and the existence of other pathologies, which will vary greatly from patient to patient, will have a great influence. So how can we make this comparison?
+
+One approach to this problem is to imagine that there are probability distributions that describe the lifelengths of the two groups. Let these be given by the densities $f_T$ and $f_C$, where $T$ denotes transplant and $C$ denotes no transplant. Here we have used $C$ as our label because this group is serving as a control in the study to provide some comparison to the treatment (a heart transplant). Then we consider the lifelength of a patient who received a transplant as a random observation from $f_T$ and the lifelength of a patient who did not receive a transplant as a random observation from $f_C$. We want to compare $f_T$ and $f_C$ in some fashion, to determine whether or not the transplant treatment is working. For example, we might compute the mean lifelengths of each distribution and compare these. If the mean lifelength of $f_T$ is greater than $f_C$, then we can assert that the treatment is working. Of course, we would still have to judge whether the size of the improvement is enough to warrant the additional expense and patients' suffering.
+
+If we could take an arbitrarily large number of observations from $f_T$ and $f_C$, then we know, from the results in previous chapters, that we could determine these distributions with a great deal of accuracy. In practice, however, we are restricted to a relatively small number of observations. For example, in the cited study there were 30 patients in the control group (those who did not receive a transplant) and 52 patients in the treatment group (those who did receive a transplant).
+
+For each control patient, the value of $X$ --- the number of days they were alive after the date they were determined to be a candidate for a heart transplant until the termination date of the study --- was recorded. For various reasons, these patients did not receive new hearts, e.g., they died before a new heart could be found for them. These data, together with an indicator for the status of the patient at the termination date of the study, are presented in Table~\ref{tab:5.1}. The indicator value $S = a$ denotes that the patient was alive at the end of the study and $S = d$ denotes that the patient was dead.
+
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{ccc|ccc|ccc}
+P & X & S & P & X & S & P & X & S \\
+\hline
+1 & 49 & d & 11 & 1400 & a & 21 & 2 & d \\
+2 & 5 & d & 12 & 5 & d & 22 & 148 & d \\
+3 & 17 & d & 13 & 34 & d & 23 & 1 & d \\
+4 & 2 & d & 14 & 15 & d & 24 & 68 & d \\
+5 & 39 & d & 15 & 11 & d & 25 & 31 & d \\
+6 & 84 & d & 16 & 2 & d & 26 & 1 & d \\
+7 & 7 & d & 17 & 1 & d & 27 & 20 & d \\
+8 & 0 & d & 18 & 39 & d & 28 & 118 & a \\
+9 & 35 & d & 19 & 8 & d & 29 & 91 & a \\
+10 & 36 & d & 20 & 101 & d & 30 & 427 & a \\
+\end{tabular}
+\caption{Survival times ($X$) in days and status ($S$) at the end of the study for each patient (P) in the control group.}
+\label{tab:5.1}
+\end{table}
+
+For each treatment patient, the value of $Y$ --- the number of days they waited for the transplant after the date they were determined to be a candidate for a heart transplant, and the value of $Z$ --- the number of days they were alive after the date they received the heart transplant until the termination date of the study, were both recorded. The survival times for the treatment group are then given by the values of $Y + Z$. These data, together with an indicator for the status of the patient at the termination date of the study, are presented in Table~\ref{tab:5.2}.
+
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{cccc|cccc|cccc}
+P & Y & Z & S & P & Y & Z & S & P & Y & Z & S \\
+\hline
+1 & 0 & 15 & d & 19 & 50 & 1140 & a & 37 & 77 & 442 & a \\
+2 & 35 & 3 & d & 20 & 22 & 1153 & a & 38 & 2 & 65 & d \\
+3 & 50 & 624 & d & 21 & 45 & 54 & d & 39 & 26 & 419 & a \\
+4 & 11 & 46 & d & 22 & 18 & 47 & d & 40 & 32 & 362 & a \\
+5 & 25 & 127 & d & 23 & 4 & 0 & d & 41 & 13 & 64 & d \\
+6 & 16 & 61 & d & 24 & 1 & 43 & d & 42 & 56 & 228 & d \\
+7 & 36 & 1350 & d & 25 & 40 & 971 & a & 43 & 2 & 65 & d \\
+8 & 27 & 312 & d & 26 & 57 & 868 & a & 44 & 9 & 264 & a \\
+9 & 19 & 24 & d & 27 & 0 & 44 & d & 45 & 4 & 25 & d \\
+10 & 17 & 10 & d & 28 & 1 & 780 & a & 46 & 30 & 193 & a \\
+11 & 7 & 1024 & d & 29 & 20 & 51 & d & 47 & 3 & 196 & a \\
+12 & 11 & 39 & d & 30 & 35 & 710 & a & 48 & 26 & 63 & d \\
+13 & 2 & 730 & d & 31 & 82 & 663 & a & 49 & 4 & 12 & d \\
+14 & 82 & 136 & d & 32 & 31 & 253 & d & 50 & 45 & 103 & a \\
+15 & 24 & 1379 & a & 33 & 40 & 147 & d & 51 & 25 & 60 & a \\
+16 & 70 & 1 & d & 34 & 9 & 51 & d & 52 & 5 & 43 & a \\
+17 & 15 & 836 & d & 35 & 66 & 479 & a & & & & \\
+18 & 16 & 60 & d & 36 & 20 & 322 & d & & & & \\
+\end{tabular}
+\caption{The number of days until transplant ($Y$), survival times in days after transplant ($Z$), and status ($S$) at the end of the study for each patient (P) in the treatment group.}
+\label{tab:5.2}
+\end{table}
+
+We cannot compare $f_T$ and $f_C$ directly because we do not know these distributions. But we do have some information about them because we have obtained values from each, as presented in Tables~\ref{tab:5.1} and~\ref{tab:5.2}. So how do we use these data to compare $f_T$ and $f_C$ to answer the question of central importance, concerning whether or not the treatment is effective? This is the realm of statistics and statistical theory, namely, providing methods for making inferences about unknown probability distributions based upon observations (samples) obtained from them.
+
+We note that we have simplified this example somewhat, although our discussion presents the essence of the problem. The added complexity comes from the fact that typically statisticians will have available additional data on each patient, such as their age, gender, and disease history. As a particular example of this, in Table~\ref{tab:5.2} we have the values of both $Y$ and $Z$ for each patient in the treatment group. As it turns out, this additional information, known as covariates, can be used to make our comparisons more accurate. This will be discussed in Chapter \ref{ch:10}.
+\end{example}
+
+The previous example provides some evidence that questions of great practical importance require the use of statistical thinking and methodology. There are many situations in the physical and social sciences where statistics plays a key role, and the reasons are just like those found in Example~\ref{ex:5.1.1}. The central ingredient in all of these is that we are faced with uncertainty. This uncertainty is caused both by variation, which can be modeled via probability, and by the fact that we cannot collect enough observations to know the correct probability models precisely. The first four chapters have dealt with building, and using, a mathematical model to deal with the first source of uncertainty. In this chapter, we begin to discuss methods for dealing with the second source of uncertainty.
+
+\subsubsection*{Summary of Section~\ref{sec:5.1}}
+\begin{itemize}
+\item Statistics is applied to situations in which we have questions that cannot be answered definitively, typically because of variation in data.
+\item Probability is used to model the variation observed in the data. Statistical inference is concerned with using the observed data to help identify the true probability distribution (or distributions) producing this variation and thus gain insight into the answers to the questions of interest.
+\end{itemize}
+
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:5.1.1}
+Compute the mean survival times for the control group and for the treatment groups in Example~\ref{ex:5.1.1}. What do you conclude from these numbers? Do you think it is valid to base your conclusions about the effectiveness of the treatment on these numbers? Explain why or why not.
+\end{exercise}
+
+\begin{solution}
+The mean survival times for the control group and the treatment group are 93.2 days and 356.2 days respectively. As we can see, there is a big difference between the two means, which might suggest that the treatment is indeed effective, but we cannot base our conclusions about the effectiveness of the treatment based only on these numbers. We have to consider sampling variability as well.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.1.2}
+Are there any unusual observations in the data presented in Example~\ref{ex:5.1.1}? If so, what effect do you think these observations have on the mean survival times computed in Exercise~\ref{exer:5.1.1}?
+\end{exercise}
+
+\begin{solution}
+In the control group there are two unusual observations, namely, observations 11 and 30, and these tend to make the mean for this group much larger. In the treatment group there would not appear to be any unusual observations.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.1.3}
+In Example~\ref{ex:5.1.1}, we can use the status variable $S$ as a covariate. What is the practical significance of this variable?
+\end{exercise}
+
+\begin{solution}
+For those who are still alive, their survival times will be longer than the recorded values, so these data values are incomplete.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.1.4}
+A student is uncertain about the mark that will be received in a statistics course. The course instructor has made available a database of marks in the course for a number of years. Can you identify a probability distribution that may be relevant to quantifying the student's uncertainty? What covariates might be relevant in this situation?
+\end{exercise}
+
+\begin{solution}
+We could construct a probability distribution based on the database of marks. For example, recording the proportion of students receiving marks greater than 80, etc. Then for a student randomly selected from the database, this proportion is the probability that the student will have a mark greater than 80.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.1.5}
+The following data were generated from an $\text{N}(\mu, 1)$ distribution by a student. Unfortunately, the student forgot which value of $\mu$ was used, so we are uncertain about the correct probability distribution to use to describe the variation in the data.
+\[
+\begin{array}{cccccccc}
+0.2 & 0.7 & 0.0 & 1.9 & 0.7 & 0.3 & 0.3 & 0.4 \\
+0.3 & 0.8 & 1.5 & 0.1 & 0.3 & 0.7 & 1.8 & 0.2
+\end{array}
+\]
+Can you suggest a plausible value for $\mu$? Explain your reasoning.
+\end{exercise}
+
+\begin{solution}
+We use the sample average $\bar{x} = -0.1375$. We base this on the weak law of large numbers because we know that $\bar{x}$ will be close to $\mu$ when $n$ is large.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.1.6}
+Suppose you are interested in determining the average age of all male students at a particular college. The registrar of the college allows you access to a database that lists the age of every student at the college. Describe how you might answer your question. Is this a statistical problem in the sense that you are uncertain about anything and so will require the use of statistical methodology?
+\end{exercise}
+
+\begin{solution}
+We could get ages of all male students at the college from the database. Since we can then compute the average age exactly, there are no uncertainties. This means we don't need any statistical methodology.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.1.7}
+Suppose you are told that a characteristic $X$ follows an $\text{N}(\mu_1, 1)$ distribution and a characteristic $Y$ follows an $\text{N}(\mu_2, 1)$ distribution where $\mu_1$ and $\mu_2$ are unknown. In addition, you are given the results $x_1, \ldots, x_m$ of $m$ independent measurements on $X$ and $y_1, \ldots, y_n$ of $n$ independent measurements on $Y$. Suggest a method for determining whether or not $\mu_1$ and $\mu_2$ are equal. Can you think of any problems with your approach?
+\end{exercise}
+
+\begin{solution}
+We use the difference $\bar{x} - \bar{y}$ of the sample averages $\bar{x}$ and $\bar{y}$. We know that $\bar{x}$ and $\bar{y}$ will be close to $\mu_1$ and $\mu_2$ as $m$ and $n$ are large based on the weak law of large numbers. But if $m$ or $n$ is small, the values of $\bar{x}$ or $\bar{y}$ may not be close to $\mu_1$ or $\mu_2$ respectively.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.1.8}
+Suppose we know that a characteristic $X$ follows an Exponential$(\lambda)$ distribution and you are required to determine $\lambda$ based on i.i.d.\ observations $x_1, \ldots, x_n$ from this distribution. Suggest a method for doing this. Can you think of any problems with your approach?
+\end{exercise}
+
+\begin{solution}
+We estimate $\lambda$ by $1/\bar{x}$. The weak law of large numbers guarantees $\bar{x}$ is close to the expected value of $X$, $\expc(X) = 1/\lambda$. Hence, the reciprocal of $\bar{x}$ is also close to $\lambda$. If $\lambda$ is very large, or $1/\lambda$ is very small, then $\bar{x}$ is also very small value. So a small change of $\bar{x}$ could make large difference in the result. That means if $\lambda$ is very large, then a huge number of observations are required to determine $\lambda$.
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:5.1.9}
+Can you identify any potential problems with the method we have discussed in Example~\ref{ex:5.1.1} for determining whether or not the heart transplant program is effective in extending life?
+\end{exercise}
+
+\begin{solution}
+We note that patients who didn't receive transplants could have been much unhealthier than those that did. It is not clear what factors influenced which group a patient wound up in and these factors could have a profound impact on the survival times.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.1.10}
+Suppose you are able to generate samples of any size from a probability distribution $P$ for which it is very difficult to compute $P(C)$ for some set $C$. Explain how you might estimate $P(C)$ based on a sample. What role does the size of the sample play in your uncertainty about how good your approximation is? Does the size of $P(C)$ play a role in this?
+\end{exercise}
+
+\begin{solution}
+We get an approximate value of $\prb(C)$ by dividing the number of sample values lying in the set $C$ by the sample size, i.e., $\prb(C)$ is determined by $\bar{I}_C = n^{-1} \sum_{i=1}^{n} \indc_C(X_i)$ for a sample $X_1, \ldots, X_n$. The weak law of large numbers (see Theorem~\ref{thm:4.2.1}) guarantees that $\bar{I}_C$ is close to $\prb(C)$ when the sample size is big. However, the accuracy depends on the size of $\prb(C)$. Consider the central limit theorem (see Theorem~\ref{thm:4.4.3}), $(\bar{I}_C - \prb(C))/(\prb(C)(1 - \prb(C))/n)^{1/2} \xrightarrow{D} N(0, 1)$. When $\prb(C)$ is very close to 0 or 1, a small change of $\bar{I}_C$ could lead to a large difference from the value $\prb(C)$.
+\end{solution}
+
+\subsection*{Computer Problems}
+
+\begin{exercise}
+\label{exer:5.1.11}
+Suppose we want to obtain the distribution of the quantity $Y = X^4 - 2X^3 + 3$ when $X \sim \text{N}(0, 1)$. Here we are faced with a form of mathematical uncertainty because it is very difficult to determine the distribution of $Y$ using mathematical methods. Propose a computer method for approximating the distribution function of $Y$ and estimate $\prb(Y \leqslant 1.2)$. What is the relevance of statistical methodology to your approach?
+\end{exercise}
+
+\begin{solution}
+A good method would be to generate a large sample (say $n = 1000$) from the $N(0, 1)$ distribution, calculate the values of $Y$, and then record the empirical distribution function of $Y$. This allows us to estimate the probability $\prb(Y \in A)$ for any interval $A$. For example, the following R commands do this and record the estimate 0.021 for $\prb(Y \in (1, 2))$. As we know from the weak law of large numbers, the proportion of $Y$ values in this interval will converge to this probability as $n \to \infty$.
+
+\begin{listing}[!htbp]
+\begin{minted}{R}
+set.seed(123)
+# Generate 1000 random values from N(0,1)
+x <- rnorm(1000, mean = 0, sd = 1)
+
+# Calculate Y = X^4 + 2*X^3 - 3
+y <- x^4 + 2*x^3 - 3
+
+# Check which values are in (1, 2)
+in_interval <- (y > 1) & (y < 2)
+
+# Calculate proportion
+k1 <- mean(in_interval)
+print(k1)
+# [1] 0.021
+\end{minted}
+\caption{Estimating $\prb(Y \in (1,2))$ via simulation}
+\label{lst:5.1.11}
+\end{listing}
+
+Statistical methodology is relevant to determine if $n$ is large enough to accurately estimate the probability and how accurate this estimate is.
+\end{solution}
+
+\subsection*{Discussion Topics}
+
+\begin{exercise}
+\label{exer:5.1.12}
+Sometimes it is claimed that all uncertainties can and should be modeled using probability. Discuss this issue in the context of Example~\ref{ex:5.1.1}, namely, indicate all the things you are uncertain about in this example and how you might propose probability distributions to quantify these uncertainties.
+\end{exercise}
+
+\section{Inference Using a Probability Model}
+\label{sec:5.2}
+
+In the first four chapters, we have discussed probability theory, a good part of which has involved the mathematics of probability theory. This tells us how to carry out various calculations associated with the application of the theory. It is important to keep in mind, however, our reasons for introducing probability in the first place. As we discussed in Section \ref{sec:1.1}, probability is concerned with measuring or quantifying uncertainty.
+
+Of course, we are uncertain about many things, and we cannot claim that probability is applicable to all these situations. Let us assume, however, that we are in a situation in which we feel probability is applicable and that we have a probability measure $P$ defined on a collection of subsets of a sample space $S$ for a response $s$.
+
+In an application of probability, we presume that we know $P$ and are uncertain about a future, or concealed, response value $s \in S$. In such a context, we may be required, or may wish, to make an inference about the unknown value of $s$. This can take the form of a prediction or estimate of a plausible value for $s$, e.g., under suitable conditions, we might take the expected value of $s$ as our prediction. In other contexts, we may be asked to construct a subset that has a high probability of containing $s$ and is in some sense small, e.g., find the region that contains at least 95\% of the probability and has the smallest size amongst all such regions. Alternatively, we might be asked to assess whether or not a stated value $s_0$ is an implausible value from the known $P$, e.g., assess whether or not $s_0$ lies in a region assigned low probability by $P$ and so is implausible. These are examples of inferences that are relevant to applications of probability theory.
+
+\begin{example}
+\label{ex:5.2.1}
+As a specific application, consider the lifelength $X$ in years of a machine where it is known that $X \sim \text{Exponential}(1)$ (see Figure~\ref{fig:5.2.1}).
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_2_1.pdf}
+\caption{Plot of the Exponential(1) density $f$.}
+\label{fig:5.2.1}
+\end{figure}
+
+Then for a new machine, we might predict its lifelength by $\expc(X) = 1$ year. Furthermore, from the graph of the Exponential$(1)$ density, it is clear that the smallest interval containing 95\% of the probability for $X$ is $(0, c]$ where $c$ satisfies
+\[
+0.95 = \int_0^c e^{-x} \, \mathrm{d}x = 1 - e^{-c}
+\]
+or $c = -\ln(0.05) = 2.9957$. This interval gives us a reasonable range of probable lifelengths for the new machine. Finally, if we wanted to assess whether or not $x_0 = 5$ is a plausible lifelength for a newly purchased machine, we might compute the tail probability as
+\[
+\prb(X \geqslant 5) = \int_5^{\infty} e^{-x} \, \mathrm{d}x = e^{-5} = 0.0067,
+\]
+which, in this case, is very small and therefore indicates that $x_0 = 5$ is fairly far out in the tail. The right tail of this density is a region of low probability for this distribution, so $x_0 = 5$ can be considered implausible. It is thus unlikely that a machine will last 5 years, so a purchaser would have to plan to replace the machine before that period is over.
+\end{example}
+
+In some applications, we receive some partial information about the unknown $s$ taking the form $s \in C \subset S$. In such a case, we replace $P$ by the conditional probability measure $P(\cdot \mid C)$ when deriving our inferences. Our reasons for doing this are many, and, in general, we can say that most statisticians agree that it is the right thing to do. It is important to recognize, however, that this step does not proceed from a mathematical theorem; rather it can be regarded as a basic axiom or principle of inference. We will refer to this as the \emph{principle of conditional probability}, which will play a key role in some later developments.
+
+\begin{example}
+\label{ex:5.2.2}
+Suppose we have a machine whose lifelength is distributed as in Example~\ref{ex:5.2.1}, and the machine has already been running for one year. Then inferences about the lifelength of the machine are based on the conditional distribution, given that $X \geqslant 1$. The density of this conditional distribution is given by $e^{-(x-1)}$ for $x \geqslant 1$. The predicted lifelength is now
+\[
+\expc(X \mid X \geqslant 1) = \int_1^{\infty} x e^{-(x-1)} \, \mathrm{d}x = \left[-xe^{-(x-1)}\right]_1^{\infty} + \int_1^{\infty} e^{-(x-1)} \, \mathrm{d}x = 2.
+\]
+The fact that the additional lifelength is the same as the predicted lifelength before the machine starts working is a special characteristic of the Exponential distribution. This will not be true in general (see Exercise~\ref{exer:5.2.4}).
+
+The tail probability measuring the plausibility of the value $x_0 = 5$ is given by
+\[
+\prb(X \geqslant 5 \mid X \geqslant 1) = \int_5^{\infty} e^{-(x-1)} \, \mathrm{d}x = e^{-4} = 0.0183,
+\]
+which indicates that $x_0 = 5$ is a little more plausible in light of the fact that the machine has already survived one year. The shortest interval containing $0.95$ of the conditional probability is now of the form $(1, c]$, where $c$ is the solution to
+\[
+0.95 = \int_1^c e^{-(x-1)} \, \mathrm{d}x = e^{-e^{-1}} - e^{-c}
+\]
+which implies that $c = -\ln(e^{-1} - 0.95e^{-1}) = 3.9957$.
+\end{example}
+
+Our main point in this section is simply that we are already somewhat familiar with inferential concepts. Furthermore, via the principle of conditional probability, we have a basic rule or axiom governing how we go about making inferences in the context where the probability measure $P$ is known and $s$ is not known.
+
+\subsubsection*{Summary of Section~\ref{sec:5.2}}
+\begin{itemize}
+\item Probability models are used to model uncertainty about future responses.
+\item We can use the probability distribution to predict a future response or assess whether or not a given value makes sense as a possible future value from the distribution.
+\end{itemize}
+
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:5.2.1}
+Sometimes the mode of a density (the point where the density takes its maximum value) is chosen as a predictor for a future value of a response. Determine this predictor in Examples~\ref{ex:5.2.1} and~\ref{ex:5.2.2} and comment on its suitability as a predictor.
+\end{exercise}
+
+\begin{solution}
+In Example~\ref{ex:5.2.1} the lifelength in years of a machine was known to be $X \sim \text{Exponential}(1)$, so the mode is given by 0. In Example~\ref{ex:5.2.2} the conditional density is given by $e^{-(x-1)}$ for $x > 1$. The mode of this density is 1.
+
+In both cases the mode is at the extreme left end of the distribution and so does not seem like a very good predictor.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.2}
+Suppose it has been decided to use the mean of a distribution to predict a future response. In Example~\ref{ex:5.2.1}, compute the mean-squared error (expected value of the square of the error between a future value and its predictor) of this predictor, prior to observing the value. To what characteristic of the distribution of the lifelength does this correspond?
+\end{exercise}
+
+\begin{solution}
+Using the mean of a distribution to predict a future response, the mean squared error of this predictor is $\expc(X - 1)^2 = \var(X) = 1$, where $X$ is the future response and 1 is the mean of the distribution.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.3}
+Graph the density of the distribution obtained as a mixture of a normal distribution with mean $-4$ and variance $1$ and a normal distribution with mean $4$ and variance $1$ where the mixture probability is $0.5$. Explain why neither the mean nor the mode is a suitable predictor in this case. (Hint: Section \ref{ssec:2.5.4}.)
+\end{exercise}
+
+\begin{solution}
+The density of the distribution obtained as a mixture of a $N(-4, 1)$ and a $N(4, 1)$ with mixture probability 0.5 has density given by $\frac{0.5}{\sqrt{2\pi}} \exp\left\{-\frac{(x+4)^2}{2}\right\} + \frac{0.5}{\sqrt{2\pi}} \exp\left\{-\frac{(x-4)^2}{2}\right\}$ for $-\infty < x < \infty$. This is plotted below.
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig5_2_3.pdf}
+  \caption{Density of mixture of $N(-4,1)$ and $N(4,1)$ distributions}
+  \label{fig:mixture-density}
+\end{figure}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.4}
+Repeat the calculations of Examples~\ref{ex:5.2.1} and~\ref{ex:5.2.2} when the lifelength of a machine is known to be distributed as $Y = 10X$ where $X \sim \text{Uniform}[0, 1]$.
+\end{exercise}
+
+\begin{solution}
+First, if $X \sim \text{Uniform}(0, 1)$, then the density of $Y = 10X$ is given by $f_Y(y) = 1/10$ for $0 \leqslant y \leqslant 10$, i.e., $Y \sim \text{Uniform}(0, 10)$, so $\expc(Y) = 5$ years.
+
+The smallest interval containing 95\% of the probability for $Y$ is an interval $(a, b)$, where $a$ and $b$ satisfy $0 \leqslant a \leqslant b \leqslant 10$ and $0.95 = \int_a^b \frac{1}{10} \, \mathrm{d}y = \frac{1}{10}(b - a)$ or $b - a = 9.5$. We thus see that any subinterval of $(0, 10)$ of length 9.5 will work, e.g., $(0.5, 10)$.
+
+Next, if we want to assess whether or not $x_0 = 5$ is a plausible lifelength for a new machine, we need to compute the tail probability $\prb(Y \geqslant 5) = \int_5^{10} \frac{1}{10} \, \mathrm{d}y = \frac{5}{10} = 0.5$, which in this case is quite high and therefore indicates that $x_0 = 5$ is a plausible lifelength for that new machine.
+
+Now, the density of the conditional distribution of $Y$, given $Y > 1$, is given by $f_Y(y \mid Y > 1) = \frac{1}{9}$ for $1 \leqslant y \leqslant 10$. So the predicted lifelength is now $\expc(Y \mid Y > 1) = \int_1^{10} \frac{y}{9} \, \mathrm{d}y = \frac{1}{9}\left(\frac{100}{2} - \frac{1}{2}\right) = 5.5$.
+
+The tail probability measuring the plausibility of the value $x_0 = 5$ is given by $\prb(Y > 5 \mid Y > 1) = \int_5^{10} \frac{1}{9} \, \mathrm{d}y = \frac{5}{9} = 0.555555$, which indicates that $x_0 = 5$ is slightly more plausible now.
+
+Finally, the shortest interval containing 0.95 of the conditional probability is of the form $(c, d)$, where $c$ and $d$ satisfy $1 \leqslant c \leqslant d \leqslant 10$ and $0.95 = \int_c^d \frac{1}{9} \, \mathrm{d}y = \frac{1}{9}(d - c)$ or $d - c = (0.95)9 = 8.55$. We thus see that any subinterval of $(1, 10)$ of length 8.55 will work, e.g., $(1.45, 10)$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.5}
+Suppose that $X \sim \text{N}(10, 2)$. What value would you record as a prediction of a future value of $X$? How would you justify your choice?
+\end{exercise}
+
+\begin{solution}
+We consider the mode of a density as a predictor for a future value. The density $(1/\sqrt{4\pi}) \exp(-(x - 10)^2/4)$ is maximized at $x = 10$. Thus, $x = 10$ is recorded as a prediction value of a future value of $X$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.6}
+Suppose that $X \sim \text{N}(10, 2)$. Record the smallest interval containing $0.95$ of the probability for a future response. (Hint: Consider a plot of the density.)
+\end{exercise}
+
+\begin{solution}
+To get the smallest interval containing 0.95 of the probability for a future response, the density at any point in the interval must be higher than the density at points outside of the interval. As we can see in the density plot, the density is unimodal and symmetric at $x = 10$. Hence, the shortest interval must be $I = (10 - c, 10 + c)$. From the requirement the probability of $I$ is 0.95, we have
+\[
+\prb(I) = \prb(10 - c < X < 10 + c) = \Phi(c/\sqrt{2}) - \Phi(-c/\sqrt{2}) = 2\Phi(c/\sqrt{2}) - 1 = 0.95.
+\]
+The solution of $c$ is $c = \sqrt{2}\Phi^{-1}((0.95 + 1)/2) = \sqrt{2} \cdot 1.96 = 2.7719$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.7}
+Suppose that $X \sim \text{Gamma}(3, 6)$. What value would you record as a prediction of a future value of $X$? How would you justify your choice?
+\end{exercise}
+
+\begin{solution}
+The mode of a density is a possibility. The density of $\text{Gamma}(3, 6)$ is $(6^3/\Gamma(3))x^2 \exp(-6x)$. The first and second derivative of the logarithm of the density are $-6 + 2/x$ and $-2/x^2$. Hence, the density has the maximum value at $x = 1/3$. In other words, $x = 1/3$ is the most probable value. So $x = 1/3$ is recorded as a future response.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.8}
+Suppose that $X \sim \text{Poisson}(5)$. What value would you record as a prediction of a future value of $X$? How would you justify your choice?
+\end{exercise}
+
+\begin{solution}
+The value having highest probability is considered. Since $\prb(X = x + 1)/\prb(X = x) = [e^{-5}5^{x+1}/(x + 1)!]/[e^{-5}5^x/x!] = 5/(x + 1)$, $p(x) = \prb(X = x)$ is increasing when $x \leqslant 4$ and is decreasing when $x \geqslant 5$. Also $p(4) = p(5)$ is the maximum value. Both 4 and 5 can be a prediction of a future value.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.9}
+Suppose that $X \sim \text{Geometric}(1/3)$. What value would you record as a prediction of a future value of $X$?
+\end{exercise}
+
+\begin{solution}
+The probability function $p(x) = (1/3)(2/3)^x$ is decreasing. Hence, $x = 0$ is the most probable.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.10}
+Suppose that $X$ follows the following probability distribution.
+\[
+\begin{array}{c|cccc}
+x & 1 & 2 & 3 & 4 \\
+\hline
+\prb(X = x) & 1/2 & 1/4 & 1/8 & 1/8
+\end{array}
+\]
+\begin{enumerate}[(a)]
+\item Record a prediction of a future value of $X$.
+\item Suppose you are then told that $X \geqslant 2$. Record a prediction of a future value of $X$ that uses this information.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Answer I: The value $x = 1$ has the highest probability. So $x = 1$ is the most probable future value.
+    
+    Answer II: Since $\expc(X) = (1/2) \cdot 1 + (1/4) \cdot 2 + (1/8) \cdot 3 + (1/8) \cdot 4 = 15/8$, the value $x = 2$ has the smallest MSE.
+    
+    \item The conditional probability $\prb(X = x \mid X \geqslant 2)$ is given by
+    \begin{center}
+    \begin{tabular}{c|ccc}
+    $x$ & 2 & 3 & 4 \\
+    \hline
+    $\prb(X = x \mid X \geqslant 2)$ & $1/2$ & $1/4$ & $1/4$
+    \end{tabular}
+    \end{center}
+    Answer I: Among $X \geqslant 2$, the value $X = 2$ has the highest probability. So $x = 2$ is the most probable future value.
+    
+    Answer II: The conditional expectation is $\expc(X \mid X \geqslant 2) = (1/2) \cdot 2 + (1/4) \cdot 3 + (1/4) \cdot 4 = 11/4$. Hence, the value $x = 3$ has the smallest conditional mean-squared error.
+\end{enumerate}
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:5.2.11}
+Suppose a fair coin is tossed 10 times and the response $X$ measured is the number of times we observe a head.
+\begin{enumerate}[(a)]
+\item If you use the expected value of the response as a predictor, then what is the prediction of a future response $X$?
+\item Using Table D.6 (or a statistical package), compute a shortest interval containing at least $0.95$ of the probability for $X$. Note that it might help to plot the probability function of $X$ first.
+\item What region would you use to assess whether or not a value $s_0$ is a possible future value? (Hint: What are the regions of low probability for the distribution?) Assess whether or not $x = 8$ is plausible.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+Let $X$ be the number of heads in 10 tosses of a fair coin. Then $X \sim \text{Binomial}(10, 0.5)$.
+\begin{enumerate}[(a)]
+    \item The expected value of the response is $\expc(X) = 10 \cdot 0.5 = 5$.
+    
+    \item The probability function of $X$ looks like the graph below.
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_2_11.pdf}
+      \caption{Probability function of $\text{Binomial}(10, 0.5)$}
+      \label{fig:binomial-pmf}
+    \end{figure}
+    
+    From this we can see that the shortest interval containing 0.95 of the probability is symmetric about 5. So $c$ satisfying $2(\prb(X = 0) + \cdots + \prb(X = c)) \leqslant 0.05$ and $2(\prb(X = 0) + \cdots + \prb(X = c + 1)) > 0.05$ gives the shortest interval as $(c, n - c)$. In this case $c = 2$ since $2(\prb(X = 0) + \cdots + \prb(X = 2)) = 0.02148$ and $2(\prb(X = 0) + \cdots + \prb(X = 3)) = 0.10937$.
+    
+    \item As we can see, the probability function of $X$ is symmetric, so to assess whether or not a value $x$ is a possible future value we would use the probability of obtaining a value whose probability of occurrence was as small or smaller than that of $x$. In this case it is the probability
+    \[
+    2(\prb(X = 0) + \cdots + \prb(X = \min(x, n - x))).
+    \]
+    When $x = 8$ this probability is given by $2(\prb(X = 0) + \cdots + \prb(X = 2)) = 0.02148$. It seems small, so we have evidence against the coin being fair. Note that it is also plausible to use the left or right tail alone, but the two-tailed approach seems more sensible.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.12}
+In Example~\ref{ex:5.2.1}, explain (intuitively) why the interval $(0, 2.9957]$ is the shortest interval containing $0.95$ of the probability for the lifelength.
+\end{exercise}
+
+\begin{solution}
+We have that the probability of an interval $(a, b)$ is given by $e^{-a} - e^{-b}$, and we want $a$ and $b$ such that $e^{-a} - e^{-b} = 0.95$ and $b - a$ is smallest. From the graph of the density $e^{-x}$, we see that for two intervals of the same length the one closest to 0 has the most probability. So taking $a = 0$ means that choosing $b$ appropriately will give the shortest interval.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.13}
+(Problem~\ref{exer:5.2.11} continued) Suppose we are told that the number of heads observed is an even number. Repeat parts (a), (b), and (c).
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The condition implies that $X \in C = \{0, 2, 4, 6, 8, 10\}$ and this has probability
+    \[
+    \prb(C) = \frac{1}{2}\left[\binom{10}{0} + \binom{10}{2} + \binom{10}{4} + \binom{10}{6} + \binom{10}{8} + \binom{10}{10}\right]\left(\frac{1}{2}\right)^{10} = \frac{1}{2}.
+    \]
+    The conditional distribution of $X$, given $C$, is
+    \begin{align*}
+    \prb(X = 0 \mid C) &= 2\binom{10}{0}\left(\frac{1}{2}\right)^{10} = 1.9531 \times 10^{-3} \\
+    \prb(X = 2 \mid C) &= 2\binom{10}{2}\left(\frac{1}{2}\right)^{10} = 8.7891 \times 10^{-2} \\
+    \prb(X = 4 \mid C) &= 2\binom{10}{4}\left(\frac{1}{2}\right)^{10} = 0.41016 \\
+    \prb(X = 6 \mid C) &= 2\binom{10}{6}\left(\frac{1}{2}\right)^{10} = 0.41016 \\
+    \prb(X = 8 \mid C) &= 2\binom{10}{8}\left(\frac{1}{2}\right)^{10} = 8.7891 \times 10^{-2} \\
+    \prb(X = 10 \mid C) &= 2\binom{10}{10}\left(\frac{1}{2}\right)^{10} = 1.9531 \times 10^{-3}
+    \end{align*}
+    so the conditional expectation of $X$ is $\mu = 0(1.9531 \times 10^{-3}) + 2(8.7891 \times 10^{-2}) + 4(0.41016) + 6(0.41016) + 8(8.7891 \times 10^{-2}) + 10(1.9531 \times 10^{-3}) = 5.0$.
+    
+    \item The shortest interval containing at least 0.95 of the probability for $X$ is $(2, 8)$.
+    
+    \item We assess $x = 8$ by computing $2(\prb(X = 0) + \prb(X = 2)) = 2(1.9531 \times 10^{-3} + 8.7891 \times 10^{-2}) = 0.17969$, and we see that we now do not have any evidence against 8 as a plausible value.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.14}
+Suppose that a response $X$ is distributed $\text{Beta}(a, b)$ with $a, b > 1$ fixed (see Problem \ref{exer:2.4.16}). Determine the mean and the mode (point where density takes its maximum) of this distribution and assess which is the most accurate predictor of a future $X$ when using mean-squared error, i.e., the expected squared distance between $X$ and the prediction.
+\end{exercise}
+
+\begin{solution}
+Suppose that $X \sim \text{Beta}(a, b)$. We have that
+\[
+\expc(X) = \int_0^1 x \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} x^{a-1}(1 - x)^{b-1} \, \mathrm{d}x = \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} \int_0^1 x^a(1 - x)^{b-1} \, \mathrm{d}x = \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} \frac{\Gamma(a + 1)\Gamma(b)}{\Gamma(a + b + 1)} = \frac{a}{a + b},
+\]
+and the mean-squared error of this predictor is just
+\[
+\expc\left[\left(X - \frac{a}{a + b}\right)^2\right] = \var(X) = \frac{ab}{(a + b + 1)(a + b)^2}.
+\]
+We have that
+\[
+\expc(X^2) = \int_0^1 x^2 \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} x^{a-1}(1 - x)^{b-1} \, \mathrm{d}x = \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} \int_0^1 x^{a+1}(1 - x)^{b-1} \, \mathrm{d}x = \frac{\Gamma(a + b)}{\Gamma(a)\Gamma(b)} \frac{\Gamma(a + 2)\Gamma(b)}{\Gamma(a + b + 2)} = \frac{a(a + 1)}{(a + b)(a + b + 1)}
+\]
+so $\var(X) = ab/(a + b + 1)(a + b)^2$.
+
+To obtain the mode, we need to maximize $x^{a-1}(1 - x)^{b-1}$ or equivalently $(a - 1)\ln x + (b - 1)\ln(1 - x)$, which has derivative $(a - 1)/x - (b - 1)/(1 - x)$, and setting this equal to 0 yields the solution $\hat{x} = (a - 1)/(a + b - 2)$. The second derivative is given by $-(a - 1)/x^2 - (b - 1)/(1 - x)^2$, which is always less than or equal to 0 so $\hat{x}$ is the mode. Then
+\begin{align*}
+\expc\left[\left(X - \frac{a - 1}{a + b - 2}\right)^2\right] &= \expc\left[\left(X - \frac{a}{a + b} + \frac{a}{a + b} - \frac{a - 1}{a + b - 2}\right)^2\right] \\
+&= \var(X) + \left(\frac{a}{a + b} - \frac{a - 1}{a + b - 2}\right)^2 \\
+&= \frac{ab}{(a + b + 1)(a + b)^2} + \left(\frac{a}{a + b} - \frac{a - 1}{a + b - 2}\right)^2 \\
+&\geqslant \expc\left[\left(X - \frac{a}{a + b}\right)^2\right].
+\end{align*}
+Therefore, the mean is a better predictor.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.15}
+Suppose that a response $X$ is distributed $\text{N}(0, 1)$ and that we have decided to predict a future value using the mean of the distribution.
+\begin{enumerate}[(a)]
+\item Determine the prediction for a future $X$.
+\item Determine the prediction for a future $Y = X^2$.
+\item Comment on the relationship (or lack thereof) between the answers in parts (a) and (b).
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+Suppose $X \sim N(0, 1)$ and that we use the mean of the distribution to predict a future value. Then:
+\begin{enumerate}[(a)]
+    \item $\expc(X) = 0$ is a prediction for a future $X$.
+    \item If $Y = X^2$, then $Y \sim \chi^2(1)$ and $\expc(Y) = 1$.
+    \item We notice that we predict $X$ by 0 but do not predict $X^2$ by $0^2$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.16}
+Suppose that $X \sim \text{Geometric}(1/3)$. Determine the shortest interval containing $0.95$ of the probability for a future $X$. (Hint: Plot the probability function and record the distribution function.)
+\end{exercise}
+
+\begin{solution}
+As in the graph, the probability function is decreasing as $x$ increases. Hence, the shortest interval containing 95\% probability of a future value $X$ is $[0, c]$ for some $c$ such that $\prb(X \leqslant c) \geqslant 0.95$. Since $\prb(X \leqslant x) = \theta + \theta(1 - \theta) + \cdots + \theta(1 - \theta)^x = 1 - (1 - \theta)^{x+1}$ for $\theta = 1/3$, the solution $c$ must satisfy $1 - (2/3)^{c+1} \geqslant 0.95$. The solution is $c \geqslant -1 + \ln(0.05)/\ln(2/3) = 6.3884$. Hence, the interval $[0, 7]$ is the solution.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.2.17}
+Suppose that $X \sim \text{Geometric}(1/3)$ and we are told that $X \geqslant 5$. What value would you record as a prediction of a future value of $X$? Determine the shortest interval containing $0.95$ of the probability for a future $X$. (Hint: Plot the probability function and record the distribution function.)
+\end{exercise}
+
+\begin{solution}
+The conditional probability $\prb(X = x \mid X > 5) = \theta(1 - \theta)^{x-6}$ where $x \geqslant 6$ and $\theta = 1/3$. The conditional probability function is decreasing and the value $x = 6$ is the most probable.
+
+Again the shortest interval containing 95\% probability of a future $X$ is $[6, c]$ satisfying $\prb(6 \leqslant X \leqslant c \mid X > 5) \geqslant 0.95$. Since $\prb(X \leqslant x \mid X > 5) = 1 - (1 - \theta)^{x-5}$, the solution is $c \geqslant 5 + \ln(0.05)/\ln(2/3) = 12.3884$. Finally, the interval $[6, 13]$ is the solution.
+\end{solution}
+
+\subsection*{Discussion Topics}
+
+\begin{exercise}
+\label{exer:5.2.18}
+Do you think it is realistic for a practitioner to proceed as if he knows the true probability distribution for a response in a problem?
+\end{exercise}
+
+\section{Statistical Models}
+\label{sec:5.3}
+
+In a statistical problem, we are faced with uncertainty of a different character than that arising in Section~\ref{sec:5.2}. In a statistical context, we observe the data $s$, but we are uncertain about $P$. In such a situation, we want to construct inferences about $P$ based on $s$. This is the inverse of the situation discussed in Section~\ref{sec:5.2}.
+
+How we should go about making these statistical inferences is probably not at all obvious. In fact, there are several possible approaches that we will discuss in subsequent chapters. In this chapter, we will develop the basic ingredients of all the approaches.
+
+Common to virtually all approaches to statistical inference is the concept of the statistical model for the data $s$. This takes the form of a set $\{\prb_\theta : \theta \in \Omega\}$ of probability measures, one of which corresponds to the true unknown probability measure $P$ that produced the data $s$. In other words, we are asserting that there is a random mechanism generating $s$ and we know that the corresponding probability measure $P$ is one of the probability measures in $\{\prb_\theta : \theta \in \Omega\}$.
+
+The statistical model $\{\prb_\theta : \theta \in \Omega\}$ corresponds to the information a statistician brings to the application about what the true probability measure is, or at least what one is willing to assume about it. The variable $\theta$ is called the \emph{parameter} of the model, and the set $\Omega$ is called the \emph{parameter space}. Typically, we use models where $\theta$ indexes the probability measures in the model, i.e., $\prb_{\theta_1} \neq \prb_{\theta_2}$ if and only if $\theta_1 \neq \theta_2$. If the probability measures $\prb_\theta$ can all be presented via probability functions or density functions $f_\theta$ (for convenience we will not distinguish between the discrete and continuous case in the notation), then it is common to write the statistical model as $\{f_\theta : \theta \in \Omega\}$.
+
+From the definition of a statistical model, we see that there is a unique value $\theta \in \Omega$ such that $\prb_\theta$ is the true probability measure. We refer to this value as the \emph{true parameter value}. It is obviously equivalent to talk about making inferences about the true parameter value rather than the true probability measure, i.e., an inference about the true value of $\theta$ is at once an inference about the true probability distribution. So, for example, we may wish to estimate the true value of $\theta$, construct small regions in $\Omega$ that are likely to contain the true value, or assess whether or not the data are in agreement with some particular value $\theta_0$ suggested as being the true value. These are types of inferences, just like those we discussed in Section~\ref{sec:5.2}, but the situation here is quite different.
+
+\begin{example}
+\label{ex:5.3.1}
+Suppose we have an urn containing 100 chips, each colored either black (B) or white (W). Suppose further that we are told there are either 50 or 60 black chips in the urn. The chips are thoroughly mixed, and then two chips are withdrawn without replacement. The goal is to make an inference about the true number of black chips in the urn, having observed the data $s = (s_1, s_2)$ where $s_i$ is the color of the $i$th chip drawn.
+
+In this case, we can take the statistical model to be $\{\prb_\theta : \theta \in \Omega\}$ where $\theta$ is the number of black chips in the urn, so that $\Omega = \{50, 60\}$ and $\prb_\theta$ is the probability measure on
+\[
+S = \{(B, B), (B, W), (W, B), (W, W)\}
+\]
+corresponding to $\theta$. Therefore, $\prb_{50}$ assigns the probability $(50 \cdot 49)/(100 \cdot 99)$ to each of the sequences $(B, B)$ and $(W, W)$ and the probability $(50 \cdot 50)/(100 \cdot 99)$ to each of the sequences $(B, W)$ and $(W, B)$, and $\prb_{60}$ assigns the probability $(60 \cdot 59)/(100 \cdot 99)$ to the sequence $(B, B)$, the probability $(40 \cdot 39)/(100 \cdot 99)$ to the sequence $(W, W)$, and the probability $(60 \cdot 40)/(100 \cdot 99)$ to each of the sequences $(B, W)$ and $(W, B)$.
+
+The choice of the parameter is somewhat arbitrary, as we could have easily labelled the possible probability measures as $\prb_1$ and $\prb_2$ respectively. The parameter is in essence only a label that allows us to distinguish amongst the possible candidates for the true probability measure. It is typical, however, to choose this label conveniently so that it means something in the problem under discussion.
+\end{example}
+
+We note some additional terminology in common usage. If a single observed value for a response $X$ has the statistical model $\{f_\theta : \theta \in \Omega\}$, then a sample $X_1, \ldots, X_n$ (recall that sample here means that the $X_i$ are independent and identically distributed --- see Definition 2.8.6) has joint density given by $f_\theta(x_1) f_\theta(x_2) \cdots f_\theta(x_n)$ for some $\theta \in \Omega$. This specifies the statistical model for the response $(X_1, \ldots, X_n)$. We refer to this as the \emph{statistical model for a sample}. Of course, the true value of $\theta$ for the statistical model for a sample is the same as that for a single observation. Sometimes, rather than referring to the statistical model for a sample, we speak of a \emph{sample from the statistical model} $\{f_\theta : \theta \in \Omega\}$.
+
+Note that, wherever possible, we will use uppercase letters to denote an unobserved value of a random variable $X$ and lowercase letters to denote the observed value. So an observed sample $X_1, \ldots, X_n$ will be denoted $x_1, \ldots, x_n$.
+
+\begin{example}
+\label{ex:5.3.2}
+Suppose there are two manufacturing plants for machines. It is known that machines built by the first plant have lifelengths distributed Exponential$(1)$, while machines manufactured by the second plant have lifelengths distributed Exponential$(2/3)$. The densities of these distributions are depicted in Figure~\ref{fig:5.3.1}.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_3_1.pdf}
+\caption{Plot of the Exponential$(1)$ (solid line) and Exponential$(1.5)$ (dashed line) densities.}
+\label{fig:5.3.1}
+\end{figure}
+
+You have purchased five of these machines knowing that all five came from the same plant, but you do not know which plant. Subsequently, you observe the lifelengths of these machines, obtaining the sample $(x_1, \ldots, x_5)$, and want to make inferences about the true $P$.
+
+In this case, the statistical model for a single observation comprises two probability measures $\{\prb_1, \prb_2\}$, where $\prb_1$ is the Exponential$(1)$ probability measure and $\prb_2$ is the Exponential$(2/3)$ probability measure. Here we take the parameter $\theta$ to be $\theta \in \{1, 2\}$.
+
+Clearly, longer observed lifelengths favor $\theta = 2$. For example, if
+\[
+(x_1, \ldots, x_5) = (5.0, 3.5, 3.3, 4.1, 2.8)
+\]
+then intuitively we are more certain that $\theta = 2$ than if
+\[
+(x_1, \ldots, x_5) = (2.0, 2.5, 3.0, 3.1, 1.8).
+\]
+The subject of statistical inference is concerned with making statements like this more precise and quantifying our uncertainty concerning the validity of such assertions.
+\end{example}
+
+We note again that the quantity $\theta$ serves only as a label for the distributions in the model. The value of $\theta$ has no interpretation other than as a label and we could just as easily have used different values for the labels. In many applications, however, the parameter is taken to be some characteristic of the distribution that takes a unique value for each distribution in the model. Here, we could have taken $\theta$ to be the mean and then the parameter space would be $\Omega = \{1, 1.5\}$. Notice that we could just as well have used the first quartile, or for that matter any other quantile, to have labelled the distributions, provided that each distribution in the family yields a unique value for the characteristic chosen. Generally, any 1--1 transformation of a parameter is acceptable as a parameterization of a statistical model. When we relabel, we refer to this as a \emph{reparameterization} of the statistical model.
+
+We now consider two important examples of statistical models. These are important because they commonly arise in applications.
+
+\begin{example}[Bernoulli Model]
+\label{ex:5.3.3}
+Suppose that $x_1, \ldots, x_n$ is a sample from a Bernoulli$(\theta)$ distribution with $\theta \in [0, 1]$ unknown. We could be observing the results of tossing a coin and recording $X_i$ equal to $1$ whenever a head is observed on the $i$th toss and equal to $0$ otherwise. Alternatively, we could be observing items produced in an industrial process and recording $X_i$ equal to $1$ whenever the $i$th item is defective and $0$ otherwise. In a biomedical application, the response $X_i = 1$ might indicate that a treatment on a patient has been successful, whereas $X_i = 0$ indicates a failure. In all these cases, we want to know the true value of $\theta$ as this tells us something important about the coin we are tossing, the industrial process, or the medical treatment, respectively.
+
+Now suppose we have no information whatsoever about the true probability $\theta$. Accordingly, we take the parameter space to be $\Omega = [0, 1]$, the set of all possible values for $\theta$. The probability function for the $i$th sample item is given by
+\[
+f_\theta(x_i) = \theta^{x_i}(1 - \theta)^{1 - x_i}
+\]
+and the probability function for the sample is given by
+\[
+\prod_{i=1}^{n} f_\theta(x_i) = \prod_{i=1}^{n} \theta^{x_i}(1 - \theta)^{1 - x_i} = \theta^{n\bar{x}}(1 - \theta)^{n(1 - \bar{x})}.
+\]
+This specifies the model for a sample.
+
+Note that we could parameterize this model by any 1--1 function of $\theta$. For example, $\theta^2$ would work (as it is 1--1 on $\Omega$), as would $\ln(\theta/(1 - \theta))$.
+\end{example}
+
+\begin{example}[Location-Scale Normal Model]
+\label{ex:5.3.4}
+Suppose that $x_1, \ldots, x_n$ is a sample from an $\text{N}(\mu, \sigma^2)$ distribution with $(\mu, \sigma^2) \in R^1 \times R^+$ unknown, where $R^+ = (0, \infty)$. For example, we may have observations of heights in centimeters of individuals in a population and feel that it is reasonable to assume that the distribution of heights in the population is normal with some unknown mean and standard deviation.
+
+The density for the sample is then given by
+\begin{align*}
+\prod_{i=1}^{n} f_{(\mu, \sigma^2)}(x_i) &= (2\pi\sigma^2)^{-n/2} \exp\left\{-\frac{1}{2\sigma^2} \sum_{i=1}^{n}(x_i - \mu)^2\right\} \\
+&= (2\pi\sigma^2)^{-n/2} \exp\left\{-\frac{n}{2\sigma^2}\left[(\bar{x} - \mu)^2 + \frac{n-1}{n}s^2\right]\right\}
+\end{align*}
+because (Problem~\ref{exer:5.3.13})
+\begin{equation}
+\sum_{i=1}^{n}(x_i - \mu)^2 = n(\bar{x} - \mu)^2 + \sum_{i=1}^{n}(x_i - \bar{x})^2
+\label{eq:5.3.1}
+\end{equation}
+where
+\[
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
+\]
+is the \emph{sample mean}, and
+\[
+s^2 = \frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})^2
+\]
+is the \emph{sample variance}.
+
+Alternative parameterizations for this model are commonly used. For example, rather than using $(\mu, \sigma^2)$, sometimes $(\mu, \sigma)$, $(\mu, \sigma^{-2})$, or $(\mu, \ln\sigma)$ is a convenient choice. Note that $\ln\sigma$ ranges in $R^1$ as $\sigma$ varies in $R^+$.
+\end{example}
+
+Actually, we might wonder how appropriate the model of Example~\ref{ex:5.3.4} is for the distribution of heights in a population, for in any finite population the true distribution is discrete (there are only finitely many students). Of course, a normal distribution may provide a good approximation to a discrete distribution, as in Example \ref{ex:4.4.9}. So, in Example~\ref{ex:5.3.4}, we are also assuming that a continuous probability distribution can provide a close approximation to the true discrete distribution. As it turns out, such approximations can lead to great simplifications in the derivation of inferences, so we use them whenever feasible. Such an approximation is, of course, not applicable in Example~\ref{ex:5.3.3}.
+
+Also note that heights will always be expressed in some specific unit, e.g., centimeters; based on this, we know that the population mean $\mu$ must be in a certain range of values, e.g., $(0, 300)$, but the statistical model allows for any value for $\mu$. So we often do have additional information about the true value of the parameter for a model, but it is somewhat imprecise, e.g., we also probably have $\mu \in (100, 300)$. In Chapter \ref{ch:7}, we will discuss ways of incorporating such information into our analysis.
+
+Where does the model information $\{\prb_\theta : \theta \in \Omega\}$ come from in an application? For example, how could we know that heights are approximately normally distributed in Example~\ref{ex:5.3.4}? Sometimes there is such information based upon previous experience with related applications, but often it is an assumption that requires checking before inference procedures can be used. Procedures designed to check such assumptions are referred to as \emph{model-checking procedures}, which will be discussed in Chapter \ref{ch:9}. In practice, model-checking procedures are required, or else inferences drawn from the data and statistical model can be erroneous if the model is wrong.
+
+\subsubsection*{Summary of Section~\ref{sec:5.3}}
+\begin{itemize}
+\item In a statistical application, we do not know the distribution of a response, but we know (or are willing to assume) that the true probability distribution is one of a set of possible distributions $\{f_\theta : \theta \in \Omega\}$ where $f_\theta$ is the density or probability function (whichever is relevant) for the response. The set of possible distributions is called the \emph{statistical model}.
+\item The set $\Omega$ is called the \emph{parameter space}, and the variable $\theta$ is called the \emph{parameter} of the model. Because each value of $\theta$ corresponds to a distinct probability distribution in the model, we can talk about the true value of $\theta$ as this gives the true distribution via $f_\theta$.
+\end{itemize}
+
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:5.3.1}
+Suppose there are three coins --- one is known to be fair, one has probability $1/3$ of yielding a head on a single toss, and one has probability $2/3$ for head on a single toss. A coin is selected (not randomly) and then tossed five times. The goal is to make an inference about which of the coins is being tossed, based on the sample. Fully describe a statistical model for a single response and for the sample.
+\end{exercise}
+
+\begin{solution}
+Let $\theta$ denote the type of coin being selected, then $\theta \in \Omega = \{1, 2, 3\}$, where coin 1 is the fair one, coin 2 has probability $1/3$ of yielding a head, and coin 3 has probability $2/3$ of yielding a head. So the statistical model for a single response consists of three probability functions $\{f_1, f_2, f_3\}$, where $f_1$ is the probability function for the $\text{Bernoulli}(1/2)$ distribution, $f_2$ is the probability function for the $\text{Bernoulli}(1/3)$ distribution, and $f_3$ is the probability function for the $\text{Bernoulli}(2/3)$ distribution. Then $(x_1, x_2, \ldots, x_5)$ is a sample from one of these $\text{Bernoulli}(\theta)$ distributions.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.2}
+Suppose that one face of a symmetrical six-sided die is duplicated but we do not know which one. We do know that if 1 is duplicated, then 2 does not appear; otherwise, 1 does not appear. Describe the statistical model for a single roll.
+\end{exercise}
+
+\begin{solution}
+There are 6 possible distributions in the model as given in the following table. Here $p_i$ denotes the distribution relevant when the face with $i$ pips is duplicated.
+\begin{center}
+\begin{tabular}{c|cccccc}
+ & 1 & 2 & 3 & 4 & 5 & 6 \\
+\hline
+$p_1$ & $1/3$ & $0$ & $1/6$ & $1/6$ & $1/6$ & $1/6$ \\
+$p_2$ & $0$ & $1/3$ & $1/6$ & $1/6$ & $1/6$ & $1/6$ \\
+$p_3$ & $0$ & $1/6$ & $1/3$ & $1/6$ & $1/6$ & $1/6$ \\
+$p_4$ & $0$ & $1/6$ & $1/6$ & $1/3$ & $1/6$ & $1/6$ \\
+$p_5$ & $0$ & $1/6$ & $1/6$ & $1/6$ & $1/3$ & $1/6$ \\
+$p_6$ & $0$ & $1/6$ & $1/6$ & $1/6$ & $1/6$ & $1/3$
+\end{tabular}
+\end{center}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.3}
+Suppose we have two populations (I and II) and that variable $X$ is known to be distributed $\text{N}(10, 2)$ on population I and distributed $\text{N}(8, 3)$ on population II. A sample $X_1, \ldots, X_n$ is generated from one of the populations; you are not told which population the sample came from, but you are required to draw inferences about the true distribution based on the sample. Describe the statistical model for this problem. Could you parameterize this model by the population mean, by the population variance? Sometimes problems like this are called classification problems because making inferences about the true distribution is equivalent to classifying the sample as belonging to one of the populations.
+\end{exercise}
+
+\begin{solution}
+The sample $(X_1, \ldots, X_n)$ is a sample from $N(\mu, \sigma^2)$ distribution, where $\theta = (\mu, \sigma^2) \in \Omega = \{(10, 2), (8, 3)\}$. We could parameterize this model by the population mean or by the population variance as both of these quantities uniquely identify the two populations. For example, if we know the mean of the distribution is 10, then we know that we are sampling from population I (and similarly if we know the variance is 2).
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.4}
+Suppose the situation is as described in Exercise~\ref{exer:5.3.3}, but now the distribution for population I is $\text{N}(10, 2)$ and the distribution for population II is $\text{N}(10, 3)$. Could you parameterize the model by the population mean? By the population variance? Justify your answer.
+\end{exercise}
+
+\begin{solution}
+We cannot parameterize the model by the population mean since the two populations have the same mean, but we can parameterize by the population variance, as this is unique.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.5}
+Suppose that a manufacturing process produces batteries whose lifelengths are known to be exponentially distributed but with the mean of the distribution completely unknown. Describe the statistical model for a single observation. Is it possible to parameterize this model by the mean? Is it possible to parameterize this model by the variance? Is it possible to parameterize this model by the coefficient of variation (the coefficient of variation of a distribution equals the standard deviation divided by the mean)?
+\end{exercise}
+
+\begin{solution}
+A single observation is from an $\text{Exponential}(\theta)$ distribution, where $\theta \in \Omega = [0, \infty)$. We can parameterize this model by the mean $1/\theta$ since the mean is a 1-1 function of $\theta$. We can also parameterize this model by the variance, since it is a 1-1 transformation of $\theta \geqslant 0$. The coefficient of variation is given by $\theta^{-1}/\sqrt{\theta^{-2}} = 1$. This quantity is free of $\theta$, and so we cannot use this quantity to parameterize the model.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.6}
+Suppose it is known that a response $X$ is distributed Uniform$[0, \theta]$, where $\theta > 0$ is unknown. Is it possible to parameterize this model by the first quartile of the distribution? (The first quartile of the distribution of a random variable $X$ is the point $c$ satisfying $\prb(X \leqslant c) = 0.25$.) Explain why or why not.
+\end{exercise}
+
+\begin{solution}
+The first quartile $c$ of the $\text{Uniform}[0, \beta]$ distribution satisfies $0.25 = \int_0^c \frac{1}{\beta} \, \mathrm{d}x = \frac{c}{\beta}$, so $c = 0.25\beta$. Since $c$ is a 1-1 transformation of $\beta$, we can parameterize this model by the first quartile.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.7}
+Suppose it is known that a random variable $X$ follows one of the following distributions.
+\[
+\begin{array}{c|ccc}
+& \prb(X = 1) & \prb(X = 2) & \prb(X = 3) \\
+\hline
+A & 1/2 & 1/2 & 0 \\
+B & 0 & 1/2 & 1/2
+\end{array}
+\]
+\begin{enumerate}[(a)]
+\item What is the parameter space $\Omega$?
+\item Suppose we observe a value $X = 1$. What is the true value of the parameter? What is the true distribution of $X$?
+\item What could you say about the true value of the parameter if you had observed $X = 2$?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The parameter space is comprised of the possible values of $\theta$. Hence, the parameter space is $\Omega = \{A, B\}$.
+    
+    \item The value $X = 1$ is observable only when $\theta = A$. Hence, $\theta = A$ is the true parameter. The distribution of $X$ is
+    \[
+    \prb(X = x) = \begin{cases}
+    1/2 & \text{if } x = 1 \text{ or } x = 2, \\
+    0 & \text{otherwise}.
+    \end{cases}
+    \]
+    
+    \item Both $\theta = A$ and $\theta = B$ are possible because $\prb_A(X = 2), \prb_B(X = 2) > 0$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.8}
+Suppose we have a statistical model $\{\prb_1, \prb_2\}$, where $\prb_1$ and $\prb_2$ are probability measures on a sample space $S$. Further suppose there is a subset $C \subset S$ such that $\prb_1(C) = 1$ while $\prb_2(C^c) = 1$. Discuss how you would make an inference about the true distribution of a response $s$ after you have observed a single observation.
+\end{exercise}
+
+\begin{solution}
+Assume the observed value $x$ is contained in $C$, that is, $x \in C$. Since $x \in C$ and $x \notin C^c$, the value $x$ could come from $\prb_1$ but not come from $\prb_2$. That means the true probability measure is $\prb_1$. If $x \notin C$, then the value $x$ could come from $\prb_2$ but not from $\prb_1$. Hence, the true probability measure is $\prb_2$. In sum, if the probability measures are constructed on disjoint sets, then the true probability measure is easily determined by the observed value.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.9}
+Suppose you know that the probability distribution of a variable $X$ is either $\prb_1$ or $\prb_2$. If you observe $X = 1$ and $\prb_1(X = 1) = 0.75$ while $\prb_2(X = 1) = 0.001$, then what would you guess as the true distribution of $X$? Give your reasoning for this conclusion.
+\end{exercise}
+
+\begin{solution}
+The probabilities of the event $X = 1$ with respect to the probability measures $\prb_1$ and $\prb_2$ are $\prb_1(X = 1) = 0.75$ and $\prb_2(X = 1) = 0.001$. If the true probability measure were $\prb_1$, the event $(X = 1)$ would be very probable to have happened. But the event $X = 1$ would be very rare if the true probability measure were $\prb_2$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.10}
+Suppose you are told that class \#1 has 35 males and 65 females while class \#2 has 45 males and 55 females. You are told that a particular student from one of these classes is female, but you are not told which class she came from.
+\begin{enumerate}[(a)]
+\item Construct a statistical model for this problem, identifying the parameter, the parameter space, and the family of distributions. Also identify the data.
+\item Based on the data, do you think a reliable inference is feasible about the true parameter value? Explain why or why not.
+\item If you had to make a guess about which distribution the data came from, what choice would you make? Explain why.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The model is the set of all possible distributions, class 1 and class 2. That is $\Omega = \{\prb_1, \prb_2\}$. The probability measure $\prb_1$ corresponds to class 1 and $\prb_2$ corresponds to class 2. The parameter space is $\{1, 2\}$. The random variable considered in this problem is the number of female students when a sample of size 1 is taken. Hence, the observed data is $X = 1$. The distribution of $X$ is $\text{Hypergeometric}(100, 65, 1)$ from $\prb_1$ and $\text{Hypergeometric}(100, 55, 1)$ from $\prb_2$.
+    
+    \item The probabilities of the event $(X = 1)$ is $\prb_1(X = 1) = \binom{65}{1}\binom{35}{0}/\binom{100}{1} = 13/20$ and $\prb_2(X = 1) = \binom{55}{1}\binom{45}{0}/\binom{100}{1} = 11/20$. Since both classes give similar probabilities for the observed data, it is hard to determine from which class the female student came.
+    
+    \item Since $\prb_1(X = 1) = 0.65 > 0.55 = \prb_2(X = 1)$, the probability measure $\prb_1$ would appear to be more likely.
+\end{enumerate}
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:5.3.11}
+Suppose in Example~\ref{ex:5.3.3} we parameterize the model by $\psi = \ln(\theta/(1 - \theta))$. Record the statistical model using this parameterization, i.e., record the probability function using $\psi$ as the parameter and record the relevant parameter space.
+\end{exercise}
+
+\begin{solution}
+We have that $\exp(\psi) = \theta/(1 - \theta)$, so $1 + \exp(\psi) = 1 + \theta/(1 - \theta) = 1/(1 - \theta)$, giving that $\theta = \exp(\psi)/(1 + \exp(\psi))$. Then the probability function for $X_i$ is given by
+\[
+\left(\frac{\exp(\psi)}{1 + \exp(\psi)}\right)^{x_i} \left(\frac{1}{1 + \exp(\psi)}\right)^{1-x_i}
+\]
+for $x_i \in \{0, 1\}$ with $\psi \in [0, \infty]$ (note $\psi = \infty$ when $\theta = 1$). The probability function for the sample $(X_1, \ldots, X_n)$ is given by the product of these individual probability functions, and the parameter is $\psi$, which takes values in the parameter space $[0, \infty]$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.12}
+Suppose in Example~\ref{ex:5.3.4} we parameterize the model by $(\mu, \tau) = (\mu, \ln\sigma)$. Record the statistical model using this parameterization, i.e., record the density function using $(\mu, \tau)$ as the parameter and record the relevant parameter space.
+\end{exercise}
+
+\begin{solution}
+We have that $\psi = \ln \sigma$, so $\sigma = \exp(\psi)$. The density function for $X_i$ is then given by
+\[
+\frac{\exp(-\psi/2)}{\sqrt{2\pi}} \exp\left\{-\frac{\exp(-2\psi)}{2}(x_i - \mu)^2\right\}
+\]
+and $(\mu, \psi) \in \mathbb{R}^2$ so that the parameter space is now $\mathbb{R}^2$. The density function for the sample $(X_1, \ldots, X_n)$ is given by the product of these individual probability functions and the parameter is $(\mu, \psi)$, which takes values in the parameter space $\mathbb{R}^2$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.13}
+Establish the identity~\eqref{eq:5.3.1}.
+\end{exercise}
+
+\begin{solution}
+$\sum_{i=1}^{n}(x_i - \mu)^2 = \sum_{i=1}^{n}(x_i - \bar{x} + \bar{x} - \mu)^2 = \sum_{i=1}^{n}((x_i - \bar{x})^2 + 2(x_i - \bar{x})(\bar{x} - \mu) + (\mu - \bar{x})^2) = \sum_{i=1}^{n}(x_i - \bar{x})^2 - 2(\mu - \bar{x})\sum_{i=1}^{n}(x_i - \bar{x}) + \sum_{i=1}^{n}(\mu - \bar{x})^2 = \sum_{i=1}^{n}(x_i - \bar{x})^2 + n(\mu - \bar{x})^2$ since $\sum_{i=1}^{n}(x_i - \bar{x}) = \sum_{i=1}^{n} x_i - n\bar{x} = 0$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.14}
+A sample $X_1, \ldots, X_n$ is generated from a Bernoulli$(\theta)$ distribution with $\theta \in [0, 1]$ unknown, but only $T = \sum_{i=1}^{n} X_i$ is observed by the statistician. Describe the statistical model for the observed data.
+\end{exercise}
+
+\begin{solution}
+We know that $T \sim \text{Binomial}(n, \theta)$, where $\theta \in [0, 1]$ is unknown. Therefore, the probability function for $T$ is given by $f_\theta(t) = \binom{n}{t}\theta^t(1 - \theta)^{n-t}$ for $t \in \{0, \ldots, n\}$. The parameter is $\theta$ and the parameter space is $[0, 1]$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.15}
+Suppose it is known that a response $X$ is distributed $\text{N}(\mu, \sigma^2)$ where $(\mu, \sigma^2) \in R^1 \times R^+$ and is completely unknown. Show how to calculate the first quartile of each distribution in this model from the values $(\mu, \sigma^2)$. Is it possible to parameterize the model by the first quartile? Explain your answer.
+\end{exercise}
+
+\begin{solution}
+The first quartile $c$, of a $N(\mu, \sigma^2)$ distribution satisfies
+\[
+0.25 = \int_{-\infty}^{c} \frac{1}{\sqrt{2\pi}\sigma} \exp\left\{-\frac{(x - \mu)^2}{2\sigma^2}\right\} \, \mathrm{d}x = \Phi\left(\frac{c - \mu}{\sigma}\right).
+\]
+Therefore, $c = \mu + \sigma z_{0.25}$, where $z_{0.25}$ is the first quartile of the $N(0, 1)$ distribution, i.e., $\Phi(z_{0.25}) = 0.25$. But we see from this that several different values of $(\mu, \sigma^2)$ can give the same first quartile, e.g., $(\mu, \sigma^2) = (0, 1)$ and $(\mu, \sigma^2) = (z_{0.25}/2, 1/4)$ both give rise to normal distributions whose first quartile equals $z_{0.25}$. Therefore, we cannot parameterize this model by the first quartile.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.16}
+Suppose response $X$ is known to be distributed $\text{N}(Y, \sigma^2)$ where $Y \sim \text{N}(\mu_0, \tau^2)$ and $(\sigma^2, \tau^2) > 0$ are completely unknown. Describe the statistical model for an observation $(X, Y)$. If $Y$ is not observed, describe the statistical model for $X$.
+\end{exercise}
+
+\begin{solution}
+The statistical model for $(X, Y)$ is given by the densities
+\begin{align*}
+f(x, y \mid \sigma^2, \delta^2) &= f(x \mid \sigma^2, y)f(y \mid \delta^2) \\
+&= \frac{1}{\sqrt{2\pi}\sigma} \exp\left\{-\frac{(x - y)^2}{2\sigma^2}\right\} \frac{1}{\sqrt{2\pi}\delta} \exp\left\{-\frac{1}{2\delta^2}y^2\right\} \\
+&= \frac{1}{2\pi\sigma\delta} \exp\left\{-\frac{1}{2}\left(\frac{x^2}{\sigma^2} + \frac{2xy}{\sigma^2} - \left(\frac{1}{\sigma^2} + \frac{1}{\delta^2}\right)y^2\right)\right\} \\
+&= \frac{1}{2\pi\sigma\delta} \exp\left\{-\frac{1}{2}\left(\frac{x^2}{\sigma^2} + \frac{2xy}{\sigma^2} - \frac{\delta^2 + \sigma^2}{\sigma^2\delta^2}y^2\right)\right\} \\
+&= \frac{1}{2\pi\sigma\delta} \exp\left\{-\frac{\delta^2 + \sigma^2}{2\sigma^2}\left(\frac{x^2}{\delta^2 + \sigma^2} + \frac{2xy}{\delta^2 + \sigma^2} - \frac{1}{\delta^2}y^2\right)\right\}
+\end{align*}
+where the parameter $(\sigma^2, \delta^2)$ ranges in the parameter space $(\sigma^2, \delta^2) \times (\sigma^2, \delta^2)$. From Example~\ref{ex:2.7.8} we see that this is the density of a $\text{Bivariate Normal}(0, 0, \delta^2 + \sigma^2, \delta^2, \rho)$ distribution, where $\rho = \sqrt{\delta^2/(\delta^2 + \sigma^2)}$. Using Problem~\ref{exer:2.7.13} we have immediately that $X \sim N(0, \sigma^2 + \delta^2)$. Therefore, the statistical model for $X$ alone is given by the collection of all $N(0, \tau^2)$ distributions, where the parameter $\tau^2$ is any value greater than 0. Alternatively, this result can be obtained by integrating out $y$ in the joint density to obtain
+\[
+f(x \mid \sigma^2, \delta^2) = \int_{-\infty}^{\infty} \frac{1}{2\pi\sigma\delta} \exp\left\{-\frac{x^2}{2\sigma^2} + \frac{2xy}{2\sigma^2} - \left(\frac{1}{2\sigma^2} + \frac{1}{2\delta^2}\right)y^2\right\} \, \mathrm{d}y = \frac{1}{\sqrt{2\pi(\sigma^2 + \delta^2)}} \exp\left\{-\frac{x^2}{2(\delta^2 + \sigma^2)}\right\}.
+\]
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.17}
+Suppose we have a statistical model $\{\prb_1, \prb_2\}$, where $\prb_1$ is an $\text{N}(10, 1)$ distribution while $\prb_2$ is an $\text{N}(0, 1)$ distribution.
+\begin{enumerate}[(a)]
+\item Is it possible to make any kind of reliable inference about the true distribution based on a single observation? Why or why not?
+\item Repeat part (a) but now suppose that $\prb_1$ is an $\text{N}(1, 1)$ distribution.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item It is possible to distinguish $\prb_1$ and $\prb_2$ with small error. Note that $\prb_1(X > 5) = 1 - \Phi(-5) = 1 - 2.8665 \times 10^{-7}$ and $\prb_2(X > 5) = \Phi(-5) = 2.8665 \times 10^{-7}$. Hence, we conclude the observed value $x$ came from $\prb_1$ if $x \geqslant 5$ and came from $\prb_2$ if $x < 5$. The probability of making any error is $2.8665 \times 10^{-7}$. Therefore, this inference is very reliable.
+    
+    \item A similar inference could be made even when $\prb_1$ is a $N(1, 1)$. We conclude the observed value $x$ came from $\prb_1$ if $x \geqslant 1/2$ and came from $\prb_2$ if $x < 1/2$. But the probability of making any error given by $\prb_1(X < 1/2) = \Phi(-1/2) = 0.3085$ is very big. Hence, this inference is not reliable.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.3.18}
+Suppose we have a statistical model $\{\prb_1, \prb_2\}$, where $\prb_1$ is an $\text{N}(1, 1)$ distribution while $\prb_2$ is an $\text{N}(0, 1)$ distribution. Further suppose that we had a sample $x_1, \ldots, x_{100}$ from the true distribution. Discuss how you might go about making an inference about the true distribution based on the sample.
+\end{exercise}
+
+\begin{solution}
+If $\prb_1$ is the true probability measure, the sample mean $\bar{X} = (X_1 + \cdots + X_n)/n$ has a $N(1, 1/100)$ distribution. And $\bar{X}$ has a $N(0, 1/100)$ distribution if $\prb_2$ is true. Hence, we conclude the true probability measure is $\prb_1$ if $\bar{X} \geqslant 1/2$ and is $\prb_2$ if $\bar{X} < 1/2$. The probability of making an error is $\prb_1(\bar{X} < 1/2) = \prb_1((\bar{X} - 1)/\sqrt{1/100} < (1/2 - 1)/\sqrt{1/100}) = \Phi(-5) = 2.8665 \times 10^{-7}$. Thus, this inference is very reliable.
+\end{solution}
+
+\subsection*{Discussion Topics}
+
+\begin{exercise}
+\label{exer:5.3.19}
+Explain why you think it is important that statisticians state very clearly what they are assuming any time they carry out a statistical analysis.
+\end{exercise}
+
+\begin{exercise}
+\label{exer:5.3.20}
+Consider the statistical model given by the collection of $\text{N}(\mu, \sigma_0^2)$ distributions where $\mu \in R^1$ is considered completely unknown, but $\sigma_0^2$ is assumed known. Do you think this is a reasonable model to use in an application? Give your reasons why or why not.
+\end{exercise}
+
+\section{Data Collection}
+\label{sec:5.4}
+
+The developments of Sections~\ref{sec:5.2} and~\ref{sec:5.3} are based on the observed response $s$ being a realization from a probability measure $P$. In fact, in many applications, this is an assumption. We are often presented with data that could have been produced in this way, but we cannot always be sure.
+
+When we cannot be sure that the data were produced by a random mechanism, then the statistical analysis of the data is known as an \emph{observational study}. In an observational study, the statistician merely observes the data rather than intervening directly in generating the data, to ensure that the randomness assumption holds. For example, suppose a professor collects data from his students for a study that examines the relationship between grades and part-time employment. Is it reasonable to regard the data collected as having come from a probability distribution? If so, how would we justify this?
+
+It is important for a statistician to distinguish carefully between situations that are observational studies and those that are not. As the following discussion illustrates, there are qualifications that must be applied to the analysis of an observational study. While statistical analyses of observational studies are valid and indeed important, we must be aware of their limitations when interpreting their results.
+
+\subsection{Finite Populations}
+\label{ssec:5.4.1}
+
+Suppose we have a finite set of objects $\Pi$, called the \emph{population}, and a real-valued function $X$ (sometimes called a \emph{measurement}) defined on $\Pi$. So for each $\omega \in \Pi$ we have a real-valued quantity $X(\omega)$ that measures some aspect or feature of $\omega$.
+
+For example, $\Pi$ could be the set of all students currently enrolled full-time at a particular university, with $X(\omega)$ the height of student $\omega$ in centimeters. Or, for the same $\Pi$, we could take $X(\omega)$ to be the gender of student $\omega$, where $X(\omega) = 1$ denotes female and $X(\omega) = 2$ denotes male. Here, height is a \emph{quantitative variable}, because its values mean something on a numerical scale, and we can perform arithmetic on these values, e.g., calculate a mean. On the other hand, gender is an example of a \emph{categorical variable} because its values serve only to classify, and any other choice of unique real numbers would have served as well as the ones we chose. The first step in a statistical analysis is to determine the types of variables we are working with because the relevant statistical analysis techniques depend on this.
+
+The population $\Pi$ and the measurement $X$ together produce a \emph{population distribution} over the population. This is specified by the \emph{population cumulative distribution function} $F_X : R^1 \to [0, 1]$ where
+\[
+F_X(x) = \frac{\#\{\omega \in \Pi : X(\omega) \leqslant x\}}{N}
+\]
+with $\#A$ being the number of elements in the set $A$ and $N = \#\Pi$. Therefore, $F_X(x)$ is the proportion of elements in $\Pi$ with their measurement less than or equal to $x$.
+
+Consider the following simple example where we can calculate $F_X$ exactly.
+
+\begin{example}
+\label{ex:5.4.1}
+Suppose that $\Pi$ is a population of $N = 20$ plots of land of the same size. Further suppose that $X$ is a measure of the fertility of plot $\omega$ on a 10-point scale and that the following measurements were obtained.
+\[
+\begin{array}{cccccccccc}
+4 & 8 & 6 & 7 & 8 & 3 & 7 & 5 & 4 & 6 \\
+9 & 5 & 7 & 5 & 8 & 3 & 4 & 7 & 8 & 3
+\end{array}
+\]
+Then we have
+\[
+F_X(x) = \begin{cases}
+0 & x < 3 \\
+3/20 & 3 \leqslant x < 4 \\
+6/20 & 4 \leqslant x < 5 \\
+9/20 & 5 \leqslant x < 6 \\
+11/20 & 6 \leqslant x < 7 \\
+15/20 & 7 \leqslant x < 8 \\
+19/20 & 8 \leqslant x < 9 \\
+1 & 9 \leqslant x
+\end{cases}
+\]
+because, for example, 6 out of the 20 plots have fertility measurements less than or equal to 4.
+\end{example}
+
+The goal of a statistician in this context is to know the function $F_X$ as precisely as possible. If we know $F_X$ exactly, then we have identified the distribution of $X$ over $\Pi$. One way of knowing the distribution exactly is to conduct a \emph{census}, wherein, the statistician goes out and observes $X(\omega)$ for every $\omega \in \Pi$ and then calculates $F_X$. Sometimes this is feasible, but often it is not possible or even desirable, due to the costs involved in the accurate accumulation of all the measurements --- think of how difficult it might be to collect the heights of all the students at your school.
+
+While sometimes a census is necessary, even mandated by law, often a very accurate approximation to $F_X$ can be obtained by selecting a subset $\{\omega_1, \ldots, \omega_n\} \subset \Pi$ for some $n \leqslant N$. We then approximate $F_X(x)$ by the \emph{empirical distribution function} defined by
+\[
+\hat{F}_X(x) = \frac{\#\{i : X(\omega_i) \leqslant x, \; i = 1, \ldots, n\}}{n} = \frac{1}{n}\sum_{i=1}^{n} \indc_{(-\infty, x]}(X(\omega_i)).
+\]
+
+We could also measure more than one aspect of $\omega$ to produce a multivariate measurement $X : \Pi \to R^k$ for some $k$. For example, if $\Pi$ is again the population of students, we might have $X(\omega) = (X_1(\omega), X_2(\omega))$ where $X_1(\omega)$ is the height in centimeters of student $\omega$ and $X_2(\omega)$ is the weight of student $\omega$ in kilograms. We will discuss multivariate measurements in Chapter \ref{ch:10}, where our concern is the relationships amongst variables, but we focus on univariate measurements here.
+
+There are two questions we need to answer now --- namely, how should we select the subset $\{\omega_1, \ldots, \omega_n\}$ and how large should $n$ be?
+
+\subsection{Simple Random Sampling}
+\label{ssec:5.4.2}
+
+We will first address the issue of selecting $\{\omega_1, \ldots, \omega_n\}$. Suppose we select this subset according to some given rule based on the unique label that each $\omega \in \Pi$ possesses. For example, if the label is a number, we might order the numbers and then take the $n$ elements with the smallest labels. Or we could order the numbers and take every other element until we have a subset of $n$, etc.
+
+There are many such rules we could apply, and there is a basic problem with all of them. If we want $\hat{F}_X$ to approximate $F_X$ for the full population, then, when we employ a rule, we run the risk of only selecting $\{\omega_1, \ldots, \omega_n\}$ from a subpopulation. For example, if we use student numbers to identify each element of a population of students, and more senior students have lower student numbers, then, when $n$ is much smaller than $N$ and we select the students with smallest student numbers, $\hat{F}_X$ is really only approximating the distribution of $X$ in the population of senior students at best. This distribution could be very different from $F_X$. Similarly, for any other rule we employ, even if we cannot imagine what the subpopulation could be, there may be such a selection effect, or \emph{bias}, induced that renders the estimate invalid.
+
+This is the qualification we need to apply when analyzing the results of observational studies. In an observational study, the data are generated by some rule, typically unknown to the statistician; this means that any conclusions drawn based on the data $X(\omega_1), \ldots, X(\omega_n)$ may not be valid for the full population.
+
+There seems to be only one way to guarantee that selection effects are avoided, namely, the set $\{\omega_1, \ldots, \omega_n\}$ must be selected using randomness. For \emph{simple random sampling}, this means that a random mechanism is used to select the $\omega_i$ in such a way that each subset of $n$ has probability $1/\binom{N}{n}$ of being chosen. For example, we might place $N$ chips in a bowl, each with a unique label corresponding to a population element, and then randomly draw $n$ chips from the bowl without replacement. The labels on the drawn chips identify the individuals that have been selected from $\Pi$. Alternatively, for the randomization, we might use a table of random numbers, such as Table D.1 in Appendix D (see Table D.1 for a description of how it is used) or generate random values using a computer algorithm (see Section \ref{sec:2.10}).
+
+Note that with simple random sampling $X(\omega_1), \ldots, X(\omega_n)$ is random. In particular, when $n = 1$ we then have
+\[
+\prb(X(\omega_1) \leqslant x) = F_X(x),
+\]
+namely, the probability distribution of the random variable $X(\omega_1)$ is the same as the population distribution.
+
+\begin{example}
+\label{ex:5.4.2}
+Consider the context of Example~\ref{ex:5.4.1}. When we randomly select the first plot from $\Pi$, it is clear that each plot has probability $1/20$ of being selected. Then we have
+\[
+\prb(X(\omega_1) \leqslant x) = \frac{\#\{\omega : X(\omega) \leqslant x\}}{20} = F_X(x)
+\]
+for every $x \in R^1$.
+
+Prior to observing the sample, we also have $\prb(X(\omega_2) \leqslant x) = F_X(x)$. Consider, however, the distribution of $X(\omega_2)$ given that $X(\omega_1) = x_1$. Because we have removed one population member, with measurement value $x_1$, then $N \cdot F_X(x) - 1$ is the number of individuals left in $\Pi$ with $X \leqslant x_1$. Therefore,
+\[
+\prb(X(\omega_2) \leqslant x \mid X(\omega_1) = x_1) = \begin{cases}
+\displaystyle\frac{N \cdot F_X(x) - 1}{N - 1} & x \geqslant x_1 \\[2ex]
+\displaystyle\frac{N \cdot F_X(x)}{N - 1} & x < x_1
+\end{cases}
+\]
+Note that this is not equal to $F_X(x)$.
+
+So with simple random sampling, $X(\omega_1)$ and $X(\omega_2)$ are not independent. Observe, however, that when $N$ is large, then
+\[
+\prb(X(\omega_2) \leqslant x \mid X(\omega_1) = x_1) \approx F_X(x)
+\]
+so that $X(\omega_1)$ and $X(\omega_2)$ are approximately independent and identically distributed (i.i.d.). Similar calculations lead to the conclusion that, when $N$ is large and $n$ is small relative to $N$, then with simple random sampling from the population, the random variables
+\[
+X(\omega_1), \ldots, X(\omega_n)
+\]
+are approximately i.i.d.\ and with distribution given by $F_X$. So we will treat the observed values $x_1, \ldots, x_n$ of $X(\omega_1), \ldots, X(\omega_n)$ as a sample (in the sense of Definition 2.8.6) from $F_X$. In this text, unless we indicate otherwise, we will always assume that $n$ is small relative to $N$ so that this approximation makes sense.
+\end{example}
+
+Under the i.i.d.\ assumption, the weak law of large numbers (Theorem 4.2.1) implies that the empirical distribution function $\hat{F}_X$ satisfies
+\[
+\hat{F}_X(x) = \frac{1}{n}\sum_{i=1}^{n} \indc_{(-\infty, x]}(X(\omega_i)) \xrightarrow{P} F_X(x)
+\]
+as $n \to \infty$. So we see that $\hat{F}_X$ can be considered as an estimate of the population cumulative distribution function (cdf) $F_X$.
+
+Whenever the data have been collected using simple random sampling, we will refer to the statistical investigation as a \emph{sampling study}. It is a basic principle of good statistical practice that sampling studies are always preferred over observational studies, whenever they are feasible. This is because we can be sure that, with a sampling study, any conclusions we draw based on the sample $\{\omega_1, \ldots, \omega_n\}$ will apply to the population of interest. With observational studies, we can never be sure that the sample data have not actually been selected from some proper subset of $\Pi$. For example, if you were asked to make inferences about the distribution of student heights at your school but selected some of your friends as your sample, then it is clear that the estimated cdf may be very unlike the true cdf (possibly more of your friends are of one gender than the other).
+
+Often, however, we have no choice but to use observational data for a statistical analysis. Sampling directly from the population of interest may be extremely difficult or even impossible. We can still treat the results of such analyses as a form of evidence, but we must be wary about possible selection effects and acknowledge this possibility. Sampling studies constitute a higher level of statistical evidence than observational studies, as they avoid the possibility of selection effects.
+
+In Chapter \ref{ch:10}, we will discuss experiments that constitute the highest level of statistical evidence. Experiments are appropriate when we are investigating the possibility of cause--effect relationships existing amongst variables defined on populations.
+
+The second question we need to address concerns the choice of the sample size $n$. It seems natural that we would like to choose as large a sample as possible. On the other hand, there are always costs associated with sampling, and sometimes each sample value is very expensive to obtain. Furthermore, often the more data we collect, the more difficulty we have in making sure that the data are not corrupted by various errors that can arise in the collection process. So our answer, concerning how large $n$ need be, is that we want it chosen large enough so that we obtain the accuracy necessary but no larger. Accordingly, the statistician must specify what accuracy is required, and then $n$ is determined.
+
+We will see in the subsequent chapters that there are various methods for specifying the required accuracy in a problem and then determining an appropriate value for $n$. Determining $n$ is a key component in the implementation of a sampling study and is often referred to as a \emph{sample-size calculation}.
+
+If we define
+\[
+f_X(x) = \frac{\#\{\omega \in \Pi : X(\omega) = x\}}{N} = \frac{1}{N}\sum_{\omega \in \Pi} \indc_{\{x\}}(X(\omega)),
+\]
+namely, $f_X(x)$ is the proportion of population members satisfying $X(\omega) = x$, then we see that $f_X$ plays the role of the probability function because
+\[
+F_X(x) = \sum_{z \leqslant x} f_X(z).
+\]
+We refer to $f_X$ as the \emph{population relative frequency function}. Now, $f_X(x)$ may be estimated, based on the sample $\{\omega_1, \ldots, \omega_n\}$, by
+\[
+\hat{f}_X(x) = \frac{\#\{i : X(\omega_i) = x, \; i = 1, \ldots, n\}}{n} = \frac{1}{n}\sum_{i=1}^{n} \indc_{\{x\}}(X(\omega_i)),
+\]
+namely, the proportion of sample members satisfying $X(\omega_i) = x$.
+
+With categorical variables, $\hat{f}_X(x)$ estimates the population proportion $f_X(x)$ in the category specified by $x$. With some quantitative variables, however, $f_X$ is not an appropriate quantity to estimate, and an alternative function must be considered.
+
+\subsection{Histograms}
+\label{ssec:5.4.3}
+
+Quantitative variables can be further classified as either \emph{discrete} or \emph{continuous} variables. Continuous variables are those that we can measure to an arbitrary precision as we increase the accuracy of a measuring instrument. For example, the height of an individual could be considered a continuous variable, whereas the number of years of education an individual possesses would be considered a discrete quantitative variable.
+
+For discrete quantitative variables, $f_X$ is an appropriate quantity to describe a population distribution, but we proceed differently with continuous quantitative variables.
+
+Suppose that $X$ is a continuous quantitative variable. In this case, it makes more sense to group values into intervals, given by
+\[
+(h_1, h_2], (h_2, h_3], \ldots, (h_{m-1}, h_m]
+\]
+where the $h_i$ are chosen to satisfy $h_1 < h_2 < \cdots < h_m$ with $h_1$ and $h_m$ effectively covering the range of possible values for $X$. Then we define
+\[
+h_X(x) = \begin{cases}
+\displaystyle\frac{\#\{\omega \in \Pi : X(\omega) \in (h_i, h_{i+1}]\}}{N(h_{i+1} - h_i)} & x \in (h_i, h_{i+1}] \\[2ex]
+0 & \text{otherwise}
+\end{cases}
+\]
+and refer to $h_X$ as a \emph{density histogram function}. Here, $h_X(x)$ is the proportion of population elements that have their measurement $X$ in the interval $(h_i, h_{i+1}]$ containing $x$, divided by the length of the interval.
+
+In Figure~\ref{fig:5.4.1}, we have plotted a density histogram based on a sample of 10,000 from an $\text{N}(0, 1)$ distribution (we are treating this sample as the full population) and
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_4_1.pdf}
+\caption{Density histogram based on a sample of 10,000 from an N(0,1) distribution.}
+\label{fig:5.4.1}
+\end{figure}
+using the values $h_1 = -5$, $h_2 = -4$, \ldots, $h_{11} = 5$. Note that the vertical lines are only artifacts of the plotting software and do not represent values of $h_X$ as these are given by the horizontal lines.
+
+If $x \in (h_i, h_{i+1}]$, then $h_X(x)(h_{i+1} - h_i)$ gives the proportion of individuals in the population that have their measurement $X$ in $(h_i, h_{i+1}]$. Furthermore, we have
+\[
+F_X(h_j) = \int_{-\infty}^{h_j} h_X(x) \, \mathrm{d}x
+\]
+for each interval endpoint and
+\[
+F_X(h_j) - F_X(h_i) = \int_{h_i}^{h_j} h_X(x) \, \mathrm{d}x
+\]
+when $h_i < h_j$. If the intervals $(h_i, h_{i+1}]$ are small, then we expect that
+\[
+F_X(b) - F_X(a) \approx \int_a^b h_X(x) \, \mathrm{d}x
+\]
+for any choice of $a < b$.
+
+Now suppose that the lengths $h_{i+1} - h_i$ are small and $N$ is very large. Then it makes sense to imagine a smooth, continuous function $f_X$, e.g., perhaps a normal or gamma density function, that approximates $h_X$ in the sense that
+\[
+\int_a^b f_X(x) \, \mathrm{d}x \approx \int_a^b h_X(x) \, \mathrm{d}x
+\]
+for every $a < b$. Then we will also have
+\[
+\int_a^b f_X(x) \, \mathrm{d}x \approx F_X(b) - F_X(a)
+\]
+for every $a < b$. We will refer to such an $f_X$ as a \emph{density function} for the population distribution.
+
+In essence, this is how many continuous distributions arise in practice. In Figure~\ref{fig:5.4.2}, we have plotted a density histogram for the same values used in Figure~\ref{fig:5.4.1}, but this time we used the interval endpoints $h_1 = -5$, $h_2 = -4.75$, \ldots, $h_{41} = 5$. We note that Figure~\ref{fig:5.4.2} looks much more like a continuous function than does Figure~\ref{fig:5.4.1}.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_4_2.pdf}
+\caption{Density histogram function for a sample of 10,000 from an N(0,1) distribution using the values $h_1 = -5$, $h_2 = -4.75$, \ldots, $h_{41} = 5$.}
+\label{fig:5.4.2}
+\end{figure}
+
+\subsection{Survey Sampling}
+\label{ssec:5.4.4}
+
+Finite population sampling provides the formulation for a very important application of statistics, namely, \emph{survey sampling} or \emph{polling}. Typically, a survey consists of a set of questions that are asked of a sample $\{\omega_1, \ldots, \omega_n\}$ from a population $\Pi$. Each question corresponds to a measurement, so if there are $m$ questions, the response from a respondent $\omega$ is the $m$-dimensional vector $(X_1(\omega), X_2(\omega), \ldots, X_m(\omega))$. A very important example of survey sampling is the pre-election polling that is undertaken to predict the outcome of a vote. Also, many consumer product companies engage in extensive market surveys to try to learn what consumers want and so gain information that can lead to improved sales.
+
+Typically, the analysis of the results will be concerned not only with the population distributions of the individual $X_i$ over the population but also the joint population distributions. For example, the joint cumulative distribution function of $(X_1, X_2)$ is given by
+\[
+F_{(X_1, X_2)}(x_1, x_2) = \frac{\#\{\omega \in \Pi : X_1(\omega) \leqslant x_1, \, X_2(\omega) \leqslant x_2\}}{N},
+\]
+namely, $F_{(X_1, X_2)}(x_1, x_2)$ is the proportion of the individuals in the population whose $X_1$ measurement is no greater than $x_1$ and whose $X_2$ measurement is no greater than $x_2$. Of course, we can also define the joint distributions of three or more measurements. These joint distributions are what we use to answer questions like, is there a relationship between $X_1$ and $X_2$ and if so, what form does it take? This topic will be extensively discussed in Chapter \ref{ch:10}. We can also define $f_{(X_1, X_2)}$ for the joint distribution, and joint density histograms are again useful when $X_1$ and $X_2$ are both continuous quantitative variables.
+
+\begin{example}
+\label{ex:5.4.3}
+Suppose there are four candidates running for mayor in a particular city. A random sample of 1000 voters is selected; they are each asked if they will vote and, if so, which of the four candidates they will vote for. Additionally, the respondents are asked their age. We denote the answer to the question of whether or not they will vote by $X_1$ with $X_1(\omega) = 1$ meaning yes and $X_1(\omega) = 0$ meaning no. For those voting, we denote by $X_2$ the response concerning which candidate they will vote for, with $X_2(\omega) = i$ indicating candidate $i$. Finally, the age in years of the respondent $\omega$ is denoted by $X_3(\omega)$. In addition to the distributions of $X_1$ and $X_2$, the pollster is also interested in the joint distributions of $(X_1, X_3)$ and $(X_2, X_3)$, as these tell us about the relationship between voter participation and age in the first case and candidate choice and age in the second case.
+\end{example}
+
+There are many interesting and important aspects to survey sampling that go well beyond this book. For example, it is often the case with human populations that a randomly selected person will not respond to a survey. This is called \emph{nonresponse error}, and it is a serious selection effect. The sampler must design the study carefully to try to mitigate the effects of nonresponse error. Furthermore, there are variants of simple random sampling (see Challenge~\ref{exer:5.4.20}) that can be preferable in certain contexts, as these increase the accuracy of the results. The design of the actual questionnaire used is also very important, as we must ensure that responses address the issues intended without biasing the results.
+
+\subsubsection*{Summary of Section~\ref{sec:5.4}}
+\begin{itemize}
+\item Simple random sampling from a population $\Pi$ means that we randomly select a subset of size $n$ from $\Pi$ in such a way that each subset of $n$ has the same probability --- namely, $1/\binom{N}{n}$ --- of being selected.
+\item Data that arise from a sampling study are generated from the distribution of the measurement of interest $X$ over the whole population rather than some subpopulation. This is why sampling studies are preferred to observational studies.
+\item When the sample size $n$ is small relative to $\#\Pi$, we can treat the observed values of $X$ as a sample from the distribution of $X$ over the population.
+\end{itemize}
+
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:5.4.1}
+Suppose we have a population $\Pi = \{1, \ldots, 10\}$ and quantitative measurement $X$ given by:
+\[
+\begin{array}{c|cccccccccc}
+i & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+\hline
+X(i) & 1 & 1 & 2 & 1 & 2 & 3 & 3 & 1 & 2 & 4
+\end{array}
+\]
+Calculate $F_X$, $f_X$, $\mu_X$, and $\sigma_X^2$.
+\end{exercise}
+
+\begin{solution}
+We have that
+\[
+F_X(x) = \begin{cases}
+0 & x < 1 \\
+4/10 & 1 \leqslant x < 2 \\
+7/10 & 2 \leqslant x < 3 \\
+9/10 & 3 \leqslant x < 4 \\
+1 & 4 \leqslant x
+\end{cases}, \quad
+f_X(x) = \begin{cases}
+4/10 & x = 1 \\
+3/10 & x = 2 \\
+2/10 & x = 3 \\
+1/10 & x = 4
+\end{cases}
+\]
+and $\mu_X = \sum_{x=1}^{4} x f_X(x) = 2$, $\sigma_X^2 = \left(\sum_{x=1}^{4} x^2 f_X(x)\right) - 2^2 = 1$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.2}
+Suppose you take a sample of $n = 3$ (without replacement) from the population in Exercise~\ref{exer:5.4.1}.
+\begin{enumerate}[(a)]
+\item Can you consider this as an approximate i.i.d.\ sample from the population distribution? Why or why not?
+\item Explain how you would actually physically carry out the sampling from the population in this case. (Hint: Table D.1.)
+\item Using the method you outlined in part (b), generate three samples of size $n = 3$ and calculate $\bar{X}$ for each sample.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item We cannot consider this as an approximate i.i.d.\ sample from the population distribution since the size of the population is small and the sample size is large relative to the population size.
+    
+    \item Place ten chips in a bowl. Each chip should have a unique number on it from 1 to 10. Thoroughly mix the chips and draw three of them without replacement. The numbers on the selected chips correspond to the individuals to be selected from the population. Alternatively, we can use Table D.1 by selecting a row and reading off the first three single numbers (treat 0 in the table as a 10).
+    
+    \item Using row 108 of Table D.1 (treating 0 as 10) we get:
+    
+    First sample --- we obtain random numbers 6, 0, 9 and so compute $(X(\pi_6) + X(\pi_{10}) + X(\pi_9))/3 = (3 + 4 + 2)/3 = 3.0$
+    
+    Second sample --- we obtain random numbers 4, 0, 7 and so compute $(1 + 4 + 3)/3 = 2.6667$
+    
+    Third sample --- we obtain random numbers 2, 0, 4 (note we had to skip the second 2) and so compute $(1 + 4 + 1)/3 = 2.0$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.3}
+Suppose you take a sample of $n = 4$ (with replacement) from the population in Exercise~\ref{exer:5.4.1}.
+\begin{enumerate}[(a)]
+\item Can you consider this as an approximate i.i.d.\ sample from the population distribution? Why or why not?
+\item Explain how you would actually physically carry out the sampling in this case.
+\item Using the method you outlined in part (b), generate three samples of size $n = 3$ and calculate $\bar{X}$ for each sample.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item We can consider this as an exact i.i.d.\ sample from the population distribution since it is a sample with replacement, so each individual has the same chance to be chosen on each draw.
+    
+    \item Place ten chips in a bowl. Each chip should have a unique number on it from 1 to 10. Thoroughly mix the chips and draw three of them with replacement. The numbers on the selected chips correspond to the individuals to be selected from the population. Alternatively, we can use Table D.1 by selecting a row and reading off the first three single numbers (treat 0 in the table as a 10).
+    
+    \item Using row 108 of Table D.1 (treating 0 as 10) we get:
+    
+    First sample --- we obtain random numbers 6, 0, 9 and so compute $(X(\pi_6) + X(\pi_{10}) + X(\pi_9))/3 = (3 + 4 + 2)/3 = 3.0$
+    
+    Second sample --- we obtain random numbers 4, 0, 7 and so compute $(1 + 4 + 3)/3 = 2.6667$
+    
+    Third sample --- we obtain random numbers 2, 0, 2 (note we do not skip the second 2) and so compute $(1 + 4 + 1)/3 = 2.0$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.4}
+Suppose we have a finite population $\Pi$ and a measurement $X : \Pi \to \{0, 1\}$ where $N = \#\Pi$ and $\#\{\omega : X(\omega) = 0\} = a$.
+\begin{enumerate}[(a)]
+\item Determine $f_X(0)$ and $f_X(1)$. Can you identify this population distribution?
+\item For a simple random sample of size $n$, determine the probability that $n\hat{f}_X(0) = x$.
+\item Under the assumption of i.i.d.\ sampling, determine the probability that $n\hat{f}_X(0) = x$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $f_X(0) = a/N$, $f_X(1) = (N - a)/N$. This is a $\text{Bernoulli}((N - a)/N)$ distribution.
+    
+    \item $\prb(\tilde{f}_X(0) = f_X(0)) = \prb(n\tilde{f}_X(0) = nf_X(0)) = \prb(\text{number of 0's in the sample equals } nf_X(0)) = \binom{a}{n - nf_X(0)}\binom{N-a}{nf_X(0)}/\binom{N}{n}$ since $n\tilde{f}_X(0) \sim \text{Hypergeometric}(N, a, n)$.
+    
+    \item We have that $n\tilde{f}_X(0) \sim \text{Binomial}(n, a/N)$, so $\prb(\tilde{f}_X(0) = f_X(0)) = \prb(n\tilde{f}_X(0) = nf_X(0)) = \prb(\text{number of 0's in the sample equals } nf_X(0)) = \binom{n}{nf_X(0)}\left(\frac{a}{N}\right)^{nf_X(0)} \times \left(1 - \frac{a}{N}\right)^{n - nf_X(0)}$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.5}
+Suppose the following sample of size of $n = 20$ is obtained from an industrial process.
+\[
+\begin{array}{cccccccccc}
+3.9 & 7.2 & 6.9 & 4.5 & 5.8 & 3.7 & 4.4 & 4.5 & 5.6 & 2.5 \\
+4.8 & 8.5 & 4.3 & 1.2 & 2.3 & 3.1 & 3.4 & 4.8 & 1.8 & 3.7
+\end{array}
+\]
+\begin{enumerate}[(a)]
+\item Construct a density histogram for this data set using the intervals $(1.4, 5.5]$, $(4.5, 5.5]$, $(5.5, 6.5]$, $(6.5, 10]$.
+\item Construct a density histogram for this data set using the intervals $(1, 3.5]$, $(3.5, 4.5]$, $(4.5, 6.5]$, $(6.5, 10]$.
+\item Based on the results of parts (a) and (b), what do you conclude about histograms?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item 
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_4_5a.pdf}
+      \caption{Histogram with intervals centered at 1.0, 4.5, 5.5, 6.5, 10.0}
+      \label{fig:histogram-5.4.5a}
+    \end{figure}
+    
+    \item 
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_4_5b.pdf}
+      \caption{Histogram with intervals centered at 1.0, 3.5, 4.5, 6.5, 10.0}
+      \label{fig:histogram-5.4.5b}
+    \end{figure}
+    
+    \item The shape of a histogram depends on the intervals being used.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.6}
+Suppose it is known that in a population of 1000 students, 350 students will vote for party $A$, 550 students will vote for party $B$, and the remaining students will vote for party $C$.
+\begin{enumerate}[(a)]
+\item Explain how such information can be obtained.
+\item If we let $X : \Pi \to \{A, B, C\}$ be such that $X(\omega)$ is the party that $\omega$ will vote for, then explain why we cannot represent the population distribution of $X$ by $F_X$.
+\item Compute $f_X$.
+\item Explain how one might go about estimating $f_X$ prior to the election.
+\item What is unrealistic about the population distribution specified via $f_X$? (Hint: Does it seem realistic, based on what you know about voting behavior?)
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Through a census of the population.
+    
+    \item We cannot represent the population distribution of $X$ by $F_X$ since $X$ is a categorical variable.
+    
+    \item 
+    \[
+    f_X(x) = \begin{cases}
+    0.35 & x = A \\
+    0.55 & x = B \\
+    0.1 & x = C
+    \end{cases}
+    \]
+    
+    \item We can select a simple random sample from the population, record the political opinion of each student, and compute the sample proportions for each party.
+    
+    \item It does not allow for those who do not have a preference.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.7}
+Consider the population $\Pi$ to be files stored on a computer at a particular time. Suppose that $X$ is the type of file as indicated by its extension, e.g., .mp3. Is $X$ a categorical or quantitative variable?
+\end{exercise}
+
+\begin{solution}
+The file extension of a file indicates the type of the file. That means the file extension is a base distinguishing the type of the file. Hence, it is a categorical variable.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.8}
+Suppose that you are asked to estimate the proportion of students in a college of 15,000 students who intend to work during the summer.
+\begin{enumerate}[(a)]
+\item Identify the population $\Pi$, the variable $X$, and $f_X$. What kind of variable is $X$?
+\item How could you determine $f_X$ exactly?
+\item Why might you not be able to determine $f_X$ exactly? Propose a procedure for estimating $f_X$ in such a situation.
+\item Suppose you were also asked to estimate the proportion of students who intended to work but could not find a job. Repeat parts (a), (b), and (c) for this situation.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The population $\Pi$ is the set of all 15,000 students. The variable $X(\pi)$ is 1 if the student $\pi$ intended to work during the summer and is 0 otherwise. So $X$ is a categorical variable. The function $f_X$ is the distribution of $X$, i.e., $f_X(1)$ is the proportion of students who intend to work during summer and $f_X(0)$ is the proportion of students who do not intend to work during summer.
+    
+    \item After asking all students whether they intend to work during summer or not, count the number of students who intend to work, say $M$. Then, $f_X(1) = M/15{,}000$ and $f_X(0) = (15{,}000 - M)/15{,}000 = 1 - f_X(1)$.
+    
+    \item Sometimes it is impossible to collect data from some students. If the budget for this research is limited, some of the data cannot be collected. If it is impossible to collect all data, then we need to collect data as much as possible. Say $n$ data values are collected. Let $m$ be the number of students who intend to work during summer among these $n$ students. Then, the estimator is $\tilde{f}_X(1) = m/n$, $\tilde{f}_X(0) = (n - m)/n$, and $\tilde{f}_X(x) = 0$ if $x \neq 0$ and $x \neq 1$.
+    
+    \item Now the population $\Pi_1$ is reduced to the students who intend to work during summer. Hence, the size of new population is $M$. The variable $Y$ indicates 1 if the student $\pi$ who could not find a job and is 0 otherwise. Still $Y$ is a categorical variable. After taking a census, let $L$ be the number of students who intended to work during summer but could not find a job. Then, the exact distribution is $f_Y(1) = L/M$ and $f_Y(0) = (M - L)/M = 1 - f_Y(1)$. To estimate $f_Y$, sample $m$ students who intended to work during summer and count the number of students who could not find a job, say $l$ students. Then, the estimate $\tilde{f}_Y(1) = l/m$ and $\tilde{f}_Y(0) = (m - l)/m = 1 - l/m = 1 - \tilde{f}_Y(1)$.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.9}
+Sometimes participants in a poll do not respond truthfully to a question. For example, students who are asked ``Have you ever illegally downloaded music?'' may not respond truthfully even if they are assured that their responses are confidential. Suppose a simple random sample of students was chosen from a college and students were asked this question.
+\begin{enumerate}[(a)]
+\item If students were asked this question by a person, comment on how you think the results of the sampling study would be affected.
+\item If students were allowed to respond anonymously, perhaps by mailing in a questionnaire, comment on how you think the results would be affected.
+\item One technique for dealing with the respondent bias induced by such questions is to have students respond truthfully only when a certain random event occurs. For example, we might ask a student to toss a fair coin three times and lie whenever they obtain two heads. What is the probability that a student tells the truth? Once you have completed the study and have recorded the proportion of students who said they did cheat, what proportion would you record as your estimate of the proportion of students who actually did cheat?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Students are more likely to lie if they have illegally downloaded music, so the results of the study will be flawed.
+    
+    \item Under anonymity, students are more likely to tell the truth so there will be less error.
+    
+    \item The probability of obtaining two heads among three tosses is $\binom{3}{2}(1/2)^2(1/2)^1 = 3/8 = 0.375$. The probability that a student tells the truth is $1 - 0.375 = 0.625$. This can be modelled statistically as follows. Let $Y_i$ be the answer of the question from student $i$, $X_i$ be the true answer of student $i$ and $T_i$ be the truth of the answer $X_i$. Then, $X_i \sim \text{Bernoulli}(\theta)$ and $T_i \sim \text{Bernoulli}(p)$ where $\theta \in [0, 1]$ is unknown and $p = 0.625$ is known. The answer $Y_i = X_i$ if $T_i = 1$ and $Y_i = 1 - X_i$ if $T_i = 0$. Only $Y_i$'s are observed. In other words, $X_i$'s and $T_i$'s are not observed. The expectation of $Y_i$ is
+    \[
+    \expc_\theta[Y_i] = \expc_\theta[X_i]\prb(T_i = 1) + \expc_\theta[1 - X_i]\prb(T_i = 0) = \theta \cdot p + (1 - \theta) \cdot (1 - p) = \theta(2p - 1) + 1 - p.
+    \]
+    Hence, $\hat{\theta} = (\bar{Y} - (1 - p))/(2p - 1)$ is recorded as an estimated proportion of the students who have ever downloaded music illegally.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.10}
+A market research company is asked to determine how satisfied owners are with their purchase of a new car in the last 6 months. Satisfaction is to be measured by respondents choosing a point on a seven-point scale $\{1, 2, 3, 4, 5, 6, 7\}$, where 1 denotes completely dissatisfied and 7 denotes completely satisfied (such a scale is commonly called a Likert scale).
+\begin{enumerate}[(a)]
+\item Identify $\Pi$, the variable $X$, and $f_X$.
+\item It is common to treat a variable such as $X$ as a quantitative variable. Do you think this is correct? Would it be correct to treat $X$ as a categorical variable?
+\item A common criticism of using such a scale is that the interpretation of a statement such as 3 ``I'm somewhat dissatisfied'' varies from one person to another. Comment on how this affects the validity of the study.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The population $\Pi$ is the set of all purchasers of a new car in the last 6 months. The random variable $X$ is the satisfaction level indicating one of $\{1, \ldots, 7\}$. Each $f_X(x)$ for $x = 1, \ldots, 7$ is the proportion of buyers at the satisfaction level $x$. Hence, $f_X(x) \geqslant 0$ and $f_X(1) + \cdots + f_X(7) = 1$.
+    
+    \item A categorical variable has no relationship among categories. The value $x$ indicates the level of a person's satisfaction. The bigger value of $x$ means the more satisfaction. Thus, $x$ might be treated as a quantitative variable but this is not completely correct either as there is no clear meaning to the size of the steps between categories. So this variable possesses features of both categorical and quantitative variables.
+    
+    \item The difficulty arises from the subjectivity of the answer. This definitely adds some ambiguity to any interpretation of the results.
+\end{enumerate}
+\end{solution}
+
+\subsection*{Computer Exercises}
+
+\begin{exercise}
+\label{exer:5.4.11}
+Generate a sample of 1000 from an $\text{N}(3, 2)$ distribution.
+\begin{enumerate}[(a)]
+\item Calculate $\hat{F}_X$ for this sample.
+\item Plot a density histogram based on these data using the intervals of length 1 over the range $(-5, 10)$.
+\item Plot a density histogram based on these data using the intervals of length $0.1$ over the range $(-5, 10)$.
+\item Comment on the difference in the look of the histograms in parts (b) and (c). To what do you attribute this?
+\item What limits the size of the intervals we use to group observations when we are plotting histograms?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item After generating the sample $(x_1, \ldots, x_{1000})$, you need to sort it to obtain the order statistics $(x_{(1)}, \ldots, x_{(n)})$ and then record the proportion of data values less than or equal to each value. Then $F_X(x)$ equals the largest value $i/n$, such that $x_{(i)} \leqslant x$.
+    
+    \item 
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_4_11b.pdf}
+      \caption{Histogram of $N(3, 4)$ sample with $n = 1000$}
+      \label{fig:histogram-5.4.11b}
+    \end{figure}
+    
+    \item 
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_4_11c.pdf}
+      \caption{Histogram of $N(3, 4)$ sample with $n = 50$}
+      \label{fig:histogram-5.4.11c}
+    \end{figure}
+    
+    \item The histogram in (c) is much more erratic than that in (b). Some of this is due to sampling error.
+    
+    \item If we make the lengths of the intervals too short, then there will inevitably only be one or a few data points per interval, and the histogram will not have any kind of recognizable shape. This is sometimes called over-fitting, as the erratic shape is caused by making the intervals too small.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.12}
+Suppose we have a population of 10,000 elements, each with a unique label from the set $\{1, 2, 3, \ldots, 10{,}000\}$.
+\begin{enumerate}[(a)]
+\item Generate a sample of 500 labels from this population using simple random sampling.
+\item Generate a sample of 500 labels from this population using i.i.d.\ sampling.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+Using R this can be carried out by placing the numbers 1 through 10,000 in a vector and then using the \texttt{sample} function with the \texttt{replace = TRUE} argument to carry out sampling with replacement.
+
+\begin{listing}[!htbp]
+\begin{minted}{R}
+# Create population of numbers 1 to 10000
+population <- 1:10000
+
+# Sample with replacement
+sample_data <- sample(population, size = 100, replace = TRUE)
+print(sample_data)
+\end{minted}
+\caption{Sampling with replacement in R}
+\label{lst:5.4.12}
+\end{listing}
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:5.4.13}
+Suppose we have a finite population $\Pi$ and a measurement $X : \Pi \to \{0, 1, 2\}$, where $N = \#\Pi$ and $\#\{\omega : X(\omega) = 0\} = a$ and $\#\{\omega : X(\omega) = 1\} = b$. This problem generalizes Exercise~\ref{exer:5.4.4}.
+\begin{enumerate}[(a)]
+\item Determine $f_X(0)$, $f_X(1)$, and $f_X(2)$.
+\item For a simple random sample of size $n$, determine the probability that $\hat{f}_X(0) = f_0$, $\hat{f}_X(1) = f_1$, and $\hat{f}_X(2) = f_2$.
+\item Under the assumption of i.i.d.\ sampling, determine the probability that $\hat{f}_X(0) = f_0$, $\hat{f}_X(1) = f_1$, and $\hat{f}_X(2) = f_2$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $f_X(0) = a/N$, $f_X(1) = b/N$, $f_X(2) = (N - a - b)/N$.
+    
+    \item Assuming $f_1$, $f_2$, and $f_3$ are nonnegative integers summing to $n$ (otherwise probability is 0), the probability is $\binom{a}{f_0}\binom{b}{f_1}\binom{N-a-b}{f_2}/\binom{N}{n}$.
+    
+    \item The probability that $\tilde{f}_X(0) = f_0$, $\tilde{f}_X(1) = f_1$ and $\tilde{f}_X(2) = f_2$ is
+    \[
+    \binom{n}{f_0 \, f_1 \, f_2} \left(\frac{a}{N}\right)^{f_0} \left(\frac{b}{N}\right)^{f_1} \left(\frac{N - a - b}{N}\right)^{f_2}
+    \]
+    since each sequence of $f_0$ zeros, $f_1$ ones, and $f_2$ twos has probability $\left(\frac{a}{N}\right)^{f_0} \left(\frac{b}{N}\right)^{f_1} \left(\frac{N - a - b}{N}\right)^{f_2}$ of occurring, and there are $\binom{n}{f_0 \, f_1 \, f_2}$ such sequences.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.14}
+Suppose $X$ is a quantitative measurement defined on a finite population $\Pi$.
+\begin{enumerate}[(a)]
+\item Prove that the population mean equals $\mu_X = \sum_x x f_X(x)$, i.e., the average of $X$ over all population elements equals $\mu_X$.
+\item Prove that the population variance is given by $\sigma_X^2 = \sum_x (x - \mu_X)^2 f_X(x)$, i.e., the average of $(X - \mu_X)^2$ over all population elements equals $\sigma_X^2$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The population mean is given by $\mu_X = \frac{1}{N}\sum_{i=1}^{N} X(\pi_i) = \sum_x x f_X(x)$ since $f_X(x) = (\text{the number of population elements with } X(\pi_i) = x)/N$.
+    
+    \item The population variance is given by
+    \begin{align*}
+    \sigma_X^2 &= \frac{1}{N}\sum_{i=1}^{N}(X(\pi_i) - \mu_X)^2 = \frac{1}{N}\sum_{i=1}^{N} X^2(\pi_i) - \frac{2}{N}\sum_{i=1}^{N} X(\pi_i)\mu_X + \mu_X^2 \\
+    &= \sum_x x^2 f_X(x) - 2\mu_X^2 + \mu_X^2 = \sum_x x^2 f_X(x) - \mu_X^2 = \sum_x (x - \mu_X)^2 f_X(x).
+    \end{align*}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.15}
+Suppose we have the situation described in Exercise~\ref{exer:5.4.4}, and we take a simple random sample of size $n$ from $\Pi$ where $N = \#\Pi$.
+\begin{enumerate}[(a)]
+\item Prove that the mean of $\hat{f}_X(0)$ is given by $f_X(0)$. (Hint: Note that we can write $\hat{f}_X(0) = n^{-1}\sum_{i=1}^{n} \indc_{\{0\}}(X(\omega_i))$ and $\indc_{\{0\}}(X(\omega_i)) \sim \text{Bernoulli}(f_X(0))$.)
+\item Prove that the variance of $\hat{f}_X(0)$ is given by
+\begin{equation}
+\frac{f_X(0)(1 - f_X(0))}{n} \cdot \frac{N - n}{N - 1}.
+\label{eq:5.4.1}
+\end{equation}
+(Hint: Use the hint in part (a), but note that the $\indc_{\{0\}}(X(\omega_i))$ are not independent. Use Theorem 3.3.4(b) and evaluate $\text{Cov}(\indc_{\{0\}}(X(\omega_i)), \indc_{\{0\}}(X(\omega_i')))$ in terms of $f_X(0)$.)
+\item Repeat the calculations in parts (a) and (b), but this time assume that you take a sample of $n$ with replacement. (Hint: Use Exercise~\ref{exer:5.4.4}(c).)
+\item Explain why the factor $(N - n)/(N - 1)$ in~\eqref{eq:5.4.1} is called the \emph{finite population correction factor}.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item First, note that $\tilde{f}_X(0) = \frac{1}{n}\sum_{i=1}^{n} \indc_{\{0\}}(X(\pi_i))$, so
+    \[
+    \expc(\tilde{f}_X(0)) = \frac{1}{n}\expc\left(\sum_{i=1}^{n} \indc_{\{0\}}(X(\pi_i))\right) = \frac{1}{n}\sum_{i=1}^{n}\expc(\indc_{\{0\}}(X(\pi_i))) = \frac{1}{n}\sum_{i=1}^{n}\prb(X(\pi_i) = 0) = \frac{1}{n}\sum_{i=1}^{n} f_X(0) = f_X(0).
+    \]
+    
+    \item We have that
+    \begin{align*}
+    \var(\tilde{f}_X(0)) &= \frac{1}{n^2}\var\left(\sum_{i=1}^{n} \indc_{\{0\}}(X(\pi_i))\right) \\
+    &= \frac{1}{n^2}\sum_{i=1}^{n}\var(\indc_{\{0\}}(X(\pi_i))) + \frac{2}{n^2}\sum_{i<j}\cov(\indc_{\{0\}}(X(\pi_i)), \indc_{\{0\}}(X(\pi_j))) \\
+    &= \frac{1}{n}\var(\indc_{\{0\}}(X(\pi_i))) + \frac{2}{n^2}\frac{n(n-1)}{2}\cov(\indc_{\{0\}}(X(\pi_1)), \indc_{\{0\}}(X(\pi_2))) \\
+    &= \frac{f_X(0)(1 - f_X(0))}{n} + \frac{n-1}{n}\cov(\indc_{\{0\}}(X(\pi_1)), \indc_{\{0\}}(X(\pi_2)))
+    \end{align*}
+    and
+    \begin{align*}
+    \cov(\indc_{\{0\}}(X(\pi_1)), \indc_{\{0\}}(X(\pi_2))) &= \expc(\indc_{\{0\}}(X(\pi_1))\indc_{\{0\}}(X(\pi_2))) - (f_X(0))^2 \\
+    &= \prb(X(\pi_1) = 0, X(\pi_2) = 0) - (f_X(0))^2 \\
+    &= f_X(0)\left(\frac{Nf_X(0) - 1}{N - 1}\right) - (f_X(0))^2 \\
+    &= f_X(0)\left\{\frac{Nf_X(0) - 1 - Nf_X(0) + f_X(0)}{N - 1}\right\} = -\frac{f_X(0)(1 - f_X(0))}{N - 1}.
+    \end{align*}
+    Therefore,
+    \[
+    \var(\tilde{f}_X(0)) = \frac{f_X(0)(1 - f_X(0))}{n} - \frac{n-1}{n}\frac{f_X(0)(1 - f_X(0))}{N - 1} = \frac{f_X(0)(1 - f_X(0))}{n}\frac{N - n}{N - 1}.
+    \]
+    
+    \item If we take a sample with replacement, then we can assume this is an i.i.d.\ sample, so $n\tilde{f}_X(0) \sim \text{Binomial}(n, f_X(0))$. Therefore,
+    \[
+    \expc(\tilde{f}_X(0)) = \frac{1}{n}\expc(n\tilde{f}_X(0)) = \frac{1}{n}nf_X(0) = f_X(0),
+    \]
+    \[
+    \var(\tilde{f}_X(0)) = \frac{1}{n^2}\var(n\tilde{f}_X(0)) = \frac{nf_X(0)(1 - f_X(0))}{n^2} = \frac{f_X(0)(1 - f_X(0))}{n}.
+    \]
+    
+    \item The reason is that this factor is the only difference with the variance for sampling with and without replacement. Note that when $n$ is small relative to $N$, then this factor is approximately 1.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.16}
+Suppose we have a finite population $\Pi$ and we do not know $N = \#\Pi$. In addition, suppose we have a measurement variable $X : \Pi \to \{0, 1\}$ and we know that $N \cdot f_X(0) = a$ where $a$ is known. Based on a simple random sample of $n$ from $\Pi$, determine an estimator of $N$. (Hint: Use a function of $\hat{f}_X(0)$.)
+\end{exercise}
+
+\begin{solution}
+When $f_X(0) = a/N$ is unknown, then we estimate it by $\tilde{f}_X(0)$. Now $N = a/f_X(0)$, so we can estimate $N$ by setting $\hat{N} = a/\tilde{f}_X(0)$, provided $\tilde{f}_X(0) \neq 0$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.17}
+Suppose that $X$ is a quantitative variable defined on a population $\Pi$ and that we take a simple random sample of size $n$ from $\Pi$.
+\begin{enumerate}[(a)]
+\item If we estimate the population mean $\mu_X$ by the sample mean $\bar{X} = \frac{1}{n}\sum_{i=1}^{n} X(\omega_i)$, prove that $\expc(\bar{X}) = \mu_X$ where $\mu_X$ is defined in Problem~\ref{exer:5.4.14}(a). (Hint: What is the distribution of each $X(\omega_i)$?)
+\item Under the assumption that i.i.d.\ sampling makes sense, show that the variance of $\bar{X}$ equals $\sigma_X^2/n$, where $\sigma_X^2$ is defined in Problem~\ref{exer:5.4.14}(b).
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+If we knew $N$ but not $T$, then, based on a sample $X(\pi_1), \ldots, X(\pi_n)$, we would estimate $T/N$ by $\bar{X} = \frac{1}{n}\sum_{i=1}^{n} X(\pi_i)$. Therefore, when we know $T$ and do not know $N$, we can estimate $N$ by $T/\bar{X}$ provided $\bar{X} \neq 0$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.18}
+Suppose we have a finite population $\Pi$ and we do not know $N = \#\Pi$. In addition, suppose we have a measurement variable $X : \Pi \to R^1$ and we know $T = \sum_{\omega \in \Pi} X(\omega)$. Based on a simple random sample of $n$ from $\Pi$, determine an estimator of $N$. (Hint: Use a function of $\bar{X}$.)
+\end{exercise}
+
+\begin{solution}
+We have that $\bar{X} = \frac{1}{n}\sum_{i=1}^{n} X(\pi_i)$, so $\expc(\bar{X}) = \frac{1}{n}\sum_{i=1}^{n}\expc(X(\pi_i))$. Since each $X(\pi_i) \sim f_X$, we have that $\expc(X(\pi_i)) = \sum_x x f_X(x) = \mu_X$, so $\expc(\bar{X}) = \mu_X$.
+
+Under the assumption of i.i.d.\ sampling, each $X(\pi_i)$ has the same variance $\sigma_X^2 = \sum_x (x - \mu_X)^2 f_X(x)$. So we get $\var(\bar{X}) = \sigma_X^2/n$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.4.19}
+Under i.i.d.\ sampling, prove that $\hat{f}_X(x) \xrightarrow{D} f_X(x)$ as $n \to \infty$. (Hint: $\hat{f}_X(x) = n^{-1}\sum_{i=1}^{n} \indc_{\{x\}}(X(\omega_i))$.)
+\end{exercise}
+
+\begin{solution}
+Note that $\tilde{f}_X(x) = \frac{1}{n}\sum_{i=1}^{n} \indc_{\{x\}}(X(\pi_i))$, so it is an average of i.i.d.\ terms and $\expc(\indc_{\{x\}}(X(\pi_i))) = f_X(x)$. Then by the weak law of large numbers $\tilde{f}_X(x) \xrightarrow{P} f_X(x)$ as $n \to \infty$.
+\end{solution}
+
+\subsection*{Challenges}
+
+\begin{exercise}
+\label{exer:5.4.20}
+(Stratified sampling) Suppose that $X$ is a quantitative variable defined on a population $\Pi$ and that we can partition $\Pi$ into two subpopulations $\Pi_1$ and $\Pi_2$, such that a proportion $p$ of the full population is in $\Pi_1$. Let $f_{iX}$ denote the conditional population distribution of $X$ on $\Pi_i$.
+\begin{enumerate}[(a)]
+\item Prove that $f_X(x) = p f_{1X}(x) + (1 - p) f_{2X}(x)$.
+\item Establish that $\mu_X = p\mu_{1X} + (1 - p)\mu_{2X}$, where $\mu_{iX}$ is the mean of $X$ on $\Pi_i$.
+\item Establish that $\sigma_X^2 = p\sigma_{1X}^2 + (1 - p)\sigma_{2X}^2 + p(1 - p)(\mu_{1X} - \mu_{2X})^2$.
+\item Suppose that it makes sense to assume i.i.d.\ sampling whenever we take a sample from either the full population or either of the subpopulations, i.e., whenever the sample sizes we are considering are small relative to the sizes of these populations. We implement stratified sampling by taking a simple random sample of size $n_i$ from subpopulation $\Pi_i$. We then estimate $\mu_X$ by $p\bar{X}_1 + (1 - p)\bar{X}_2$, where $\bar{X}_i$ is the sample mean based on the sample from $\Pi_i$. Prove that $\expc(p\bar{X}_1 + (1 - p)\bar{X}_2) = \mu_X$ and
+\[
+\var(p\bar{X}_1 + (1 - p)\bar{X}_2) = \frac{p^2 \sigma_{1X}^2}{n_1} + \frac{(1 - p)^2 \sigma_{2X}^2}{n_2}.
+\]
+\item Under the assumptions of part (d), prove that
+\[
+\var(p\bar{X}_1 + (1 - p)\bar{X}_2) \leqslant \var(\bar{X})
+\]
+when $\bar{X}$ is based on a simple random sample of size $n$ from the full population and $n_1 = pn$, $n_2 = (1 - p)n$. This is called \emph{proportional stratified sampling}.
+\item Under what conditions is there no benefit to proportional stratified sampling? What do you conclude about situations in which stratified sampling will be most beneficial?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item 
+    \begin{align*}
+    f_X(x) &= \frac{|\{\pi \in \Pi : X(\pi) = x\}|}{|\Pi|} = \frac{|\{\pi \in \Pi_1 : X(\pi) = x\}| + |\{\pi \in \Pi_2 : X(\pi) = x\}|}{|\Pi|} \\
+    &= \frac{|\Pi_1|}{|\Pi|}\frac{|\{\pi \in \Pi_1 : X(\pi) = x\}|}{|\Pi_1|} + \frac{|\Pi_2|}{|\Pi|}\frac{|\{\pi \in \Pi_2 : X(\pi) = x\}|}{|\Pi_2|} \\
+    &= pf_{1X}(x) + (1 - p)f_{2X}(x)
+    \end{align*}
+    
+    \item 
+    \begin{align*}
+    \mu_X &= \sum_x x f_X(x) = \frac{1}{|\Pi|}\sum_{\pi \in \Pi} X(\pi) = \frac{|\Pi_1|}{|\Pi|}\frac{1}{|\Pi_1|}\sum_{\pi \in \Pi_1} X(\pi) + \frac{|\Pi_2|}{|\Pi|}\frac{1}{|\Pi_2|}\sum_{\pi \in \Pi_2} X(\pi) \\
+    &= p\mu_{1X} + (1 - p)\mu_{2X}
+    \end{align*}
+    
+    \item Using $\sum_{\pi \in \Pi_1}(X(\pi) - \mu_{1X}) = \sum_{\pi \in \Pi_2}(X(\pi) - \mu_{2X}) = 0$ we have that
+    \begin{align*}
+    \sigma_X^2 &= \frac{1}{|\Pi|}\sum_{\pi \in \Pi}(X(\pi) - \mu_X)^2 \\
+    &= \frac{|\Pi_1|}{|\Pi|}\frac{1}{|\Pi_1|}\sum_{\pi \in \Pi_1}(X(\pi) - \mu_X)^2 + \frac{|\Pi_2|}{|\Pi|}\frac{1}{|\Pi_2|}\sum_{\pi \in \Pi_2}(X(\pi) - \mu_X)^2 \\
+    &= p\frac{1}{|\Pi_1|}\sum_{\pi \in \Pi_1}(X(\pi) - p\mu_{1X} - (1 - p)\mu_{2X})^2 + (1 - p)\frac{1}{|\Pi_2|}\sum_{\pi \in \Pi_2}(X(\pi) - p\mu_{1X} - (1 - p)\mu_{2X})^2 \\
+    &= p\frac{1}{|\Pi_1|}\sum_{\pi \in \Pi_1}((X(\pi) - \mu_{1X}) + (1 - p)(\mu_{1X} - \mu_{2X}))^2 \\
+    &\quad + (1 - p)\frac{1}{|\Pi_2|}\sum_{\pi \in \Pi_2}((X(\pi) - \mu_{2X}) - p(\mu_{1X} - \mu_{2X}))^2 \\
+    &= p\sigma_{1X}^2 + p(1 - p)^2(\mu_{1X} - \mu_{2X})^2 + (1 - p)\sigma_{2X}^2 + (1 - p)p^2(\mu_{1X} - \mu_{2X})^2 \\
+    &= p\sigma_{1X}^2 + (1 - p)\sigma_{2X}^2 + p(1 - p)(\mu_{1X} - \mu_{2X})^2.
+    \end{align*}
+    
+    \item Under the assumption of i.i.d.\ sampling and using Problem~\ref{exer:5.4.15}
+    \[
+    \expc(p\bar{X}_1 + (1 - p)\bar{X}_2) = p\expc(\bar{X}_1) + (1 - p)\expc(\bar{X}_2) = p\mu_{1X} + (1 - p)\mu_{2X} = \mu_X
+    \]
+    and
+    \[
+    \var(p\bar{X}_1 + (1 - p)\bar{X}_2) = p^2\var(\bar{X}_1) + (1 - p)^2\var(\bar{X}_2) = p^2\frac{\sigma_{1X}^2}{n_1} + (1 - p)^2\frac{\sigma_{2X}^2}{n_2}.
+    \]
+    
+    \item Again, under the assumption of i.i.d.\ sampling and by Problem~\ref{exer:5.4.15}, part (c), and using $n_1 = pn$, $n_2 = (1 - p)n$ we have
+    \[
+    \var(\bar{X}) = \frac{\sigma_X^2}{n} = p\frac{\sigma_{1X}^2}{n} + (1 - p)\frac{\sigma_{2X}^2}{n} + \frac{p(1 - p)(\mu_{1X} - \mu_{2X})^2}{n} = p^2\frac{\sigma_{1X}^2}{n_1} + (1 - p)^2\frac{\sigma_{2X}^2}{n_2} + \frac{p(1 - p)(\mu_{1X} - \mu_{2X})^2}{n}
+    \]
+    so $\var(p\bar{X}_1 + (1 - p)\bar{X}_2) \leqslant \var(\bar{X})$.
+    
+    \item If $\mu_{1X} = \mu_{2X}$, then there are no benefits as the two estimators have the same variances. When the means $\mu_{1X}$ and $\mu_{2X}$ are quite different, then there will be a big improvement through the use of stratified sampling. This indicates that the populations $\Pi_1$ and $\Pi_2$ are quite different with respect to the measurement $X$.
+\end{enumerate}
+\end{solution}
+
+\subsection*{Discussion Topics}
+
+\begin{exercise}
+\label{exer:5.4.21}
+Sometimes it is argued that it is possible for a skilled practitioner to pick a more accurate representative sample of a population deterministically rather than by employing simple random sampling. This argument is based in part on the argument that it is always possible with simple random sampling that we could get a very unrepresentative sample through pure chance and that this can be avoided by an expert. Comment on this assertion.
+\end{exercise}
+
+\begin{exercise}
+\label{exer:5.4.22}
+Suppose it is claimed that a quantitative measurement $X$ defined on a finite population is approximately distributed according to a normal distribution with unknown mean and unknown variance. Explain fully what this claim means.
+\end{exercise}
+
+\section{Some Basic Inferences}
+\label{sec:5.5}
+
+Now suppose we are in a situation involving a measurement $X$ whose distribution is unknown, and we have obtained the data $x_1, x_2, \ldots, x_n$, i.e., observed $n$ values of $X$. Hopefully, these data were the result of simple random sampling, but perhaps they were collected as part of an observational study. Denote the associated unknown population relative frequency function, or an approximating density, by $f_X$ and the population distribution function by $F_X$.
+
+What we do now with the data depends on two things. First, we have to determine what we want to know about the underlying population distribution. Typically, our interest is in only a few characteristics of this distribution --- the mean and variance. Second, we have to use statistical theory to combine the data with the statistical model to make inferences about the characteristics of interest.
+
+We now discuss some typical characteristics of interest and present some informal estimation methods for these characteristics, known as \emph{descriptive statistics}. These are often used as a preliminary step before more formal inferences are drawn and are justified on simple intuitive grounds. They are called descriptive because they are estimating quantities that describe features of the underlying distribution.
+
+\subsection{Descriptive Statistics}
+\label{ssec:5.5.1}
+
+Statisticians often focus on various characteristics of distributions. We present some of these in the following examples.
+
+\begin{example}[Estimating Proportions and Cumulative Proportions]
+\label{ex:5.5.1}
+Often we want to make inferences about the value $f_X(x)$ or the value $F_X(x)$ for a specific $x$. Recall that $f_X(x)$ is the proportion of population members whose $X$ measurement equals $x$. In general, $F_X(x)$ is the proportion of population members whose $X$ measurement is less than or equal to $x$.
+
+Now suppose we have a sample $x_1, x_2, \ldots, x_n$ from $f_X$. A natural estimate of $f_X(x)$ is given by $\hat{f}_X(x)$, the proportion of sample values equal to $x$. A natural estimate of $F_X(x)$ is given by $\hat{F}_X(x) = n^{-1}\sum_{i=1}^{n} \indc_{(-\infty, x]}(x_i)$, the proportion of sample values less than or equal to $x$, otherwise known as the empirical distribution function evaluated at $x$.
+
+Suppose we obtained the following sample of $n = 10$ data values.
+\[
+\begin{array}{cccccccccc}
+1.2 & 2.1 & 0.4 & 3.3 & 2.2 & 1.4 & 0.3 & 2.2 & 1.5 & 5.0
+\end{array}
+\]
+In this case, $\hat{f}_X(x) = 0.1$ whenever $x$ is a data value and is 0 otherwise. To compute $\hat{F}_X(x)$ we simply count how many sample values are less than or equal to $x$ and divide by $n = 10$. For example, $\hat{F}_X(-3.0) = 0/10 = 0$, $\hat{F}_X(0.4) = 2/10 = 0.2$, and $\hat{F}_X(4) = 9/10 = 0.9$.
+\end{example}
+
+An important class of characteristics of the distribution of a quantitative variable $X$ is given by the following definition.
+
+\begin{definition}
+\label{def:5.5.1}
+For $p \in [0, 1]$, the \emph{$p$th quantile} (or \emph{$100p$th percentile}) $x_p$ for the distribution with cdf $F_X$ is defined to be the smallest number $x_p$ satisfying
+\[
+p \leqslant F_X(x_p).
+\]
+\end{definition}
+
+For example, if your mark on a test placed you at the 90th percentile, then your mark equals $x_{0.9}$ and 90\% of your fellow test takers achieved your mark or lower. Note that by the definition of the inverse cumulative distribution function (Definition 2.10.1), we can write $x_p = F_X^{-1}(p) = \min\{x : p \leqslant F_X(x)\}$.
+
+When $F_X$ is strictly increasing and continuous, then $F_X^{-1}(p)$ is the unique value $x_p$ satisfying
+\begin{equation}
+F_X(x_p) = p.
+\label{eq:5.5.1}
+\end{equation}
+Figure~\ref{fig:5.5.1} illustrates the situation in which there is a unique solution to~\eqref{eq:5.5.1}. When $F_X$ is not strictly increasing or continuous (as when $X$ is discrete), then there may be more than one, or no, solutions to~\eqref{eq:5.5.1}. Figure~\ref{fig:5.5.2} illustrates the situation in which there is no solution to~\eqref{eq:5.5.1}.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_5_1.pdf}
+\caption{The $p$th quantile $x_p$ when there is a unique solution to~\eqref{eq:5.5.1}.}
+\label{fig:5.5.1}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_5_2.pdf}
+\caption{The $p$th quantile $x_p$ determined by a cdf $F_X$ when there is no solution to~\eqref{eq:5.5.1}.}
+\label{fig:5.5.2}
+\end{figure}
+
+So, when $X$ is a continuous measurement, a proportion $p$ of the population have their $X$ measurement less than or equal to $x_p$. As particular cases, $x_{0.5} = F_X^{-1}(0.5)$ is the \emph{median}, while $x_{0.25} = F_X^{-1}(0.25)$ and $x_{0.75} = F_X^{-1}(0.75)$ are the \emph{first} and \emph{third quartiles}, respectively, of the distribution.
+
+\begin{example}[Estimating Quantiles]
+\label{ex:5.5.2}
+A natural estimate of a population quantile $x_p = F_X^{-1}(p)$ is to use $\hat{x}_p = \hat{F}_X^{-1}(p)$. Note, however, that $\hat{F}_X$ is not continuous, so there may not be a solution to~\eqref{eq:5.5.1} using $\hat{F}_X$.
+
+Applying Definition~\ref{def:5.5.1}, however, leads to the following estimate. First, order the observed sample values $x_1, \ldots, x_n$ to obtain the order statistics $x_{(1)} \leqslant \cdots \leqslant x_{(n)}$ (see Section \ref{ssec:2.8.4}). Then, note that $x_{(i)}$ is the $(i/n)$-th quantile of the empirical distribution, because
+\[
+\hat{F}_X(x_{(i)}) = \frac{i}{n}
+\]
+and $\hat{F}_X(x) < i/n$ whenever $x < x_{(i)}$. In general, we have that the sample $p$th quantile is $\hat{x}_p = x_{(i)}$ whenever
+\begin{equation}
+\frac{i - 1}{n} < p \leqslant \frac{i}{n}.
+\label{eq:5.5.2}
+\end{equation}
+A number of modifications to this estimate are sometimes used. For example, if we find $i$ such that~\eqref{eq:5.5.2} is satisfied and put
+\begin{equation}
+\hat{x}_p = x_{(i-1)} + n(x_{(i)} - x_{(i-1)})\left(p - \frac{i - 1}{n}\right),
+\label{eq:5.5.3}
+\end{equation}
+then $\hat{x}_p$ is the linear interpolation between $x_{(i-1)}$ and $x_{(i)}$. When $n$ is even, this definition gives the sample median as $\hat{x}_{0.5} = x_{(n/2)}$; a similar formula holds when $n$ is odd (Problem~\ref{exer:5.5.21}). Also see Problem~\ref{exer:5.5.22} for more discussion of~\eqref{eq:5.5.3}.
+
+Quite often the sample median is defined to be
+\begin{equation}
+\hat{x}_{0.5} = \begin{cases}
+x_{((n+1)/2)} & n \text{ odd} \\[1ex]
+\dfrac{1}{2}\left(x_{(n/2)} + x_{(n/2+1)}\right) & n \text{ even},
+\end{cases}
+\label{eq:5.5.4}
+\end{equation}
+namely, the middle value when $n$ is odd and the average of the two middle values when $n$ is even. For $n$ large enough, all these definitions will yield similar answers. The use of any of these is permissible in an application.
+
+Consider the data in Example~\ref{ex:5.5.1}. Sorting the data from smallest to largest, the order statistics are given by the following table.
+\[
+\begin{array}{ll}
+x_{(1)} = -2.1 & x_{(2)} = 0.3 \\
+x_{(3)} = 0.4 & x_{(4)} = 1.2 \\
+x_{(5)} = 1.5 & x_{(6)} = 2.1 \\
+x_{(7)} = 2.2 & x_{(8)} = 3.3 \\
+x_{(9)} = 4.0 & x_{(10)} = 5.0
+\end{array}
+\]
+Then, using~\eqref{eq:5.5.3}, the sample median is given by $\hat{x}_{0.5} = x_{(5)} = 1.5$, while the sample quartiles are given by
+\[
+\hat{x}_{0.25} = x_{(2)} + 10(x_{(3)} - x_{(2)})(0.25 - 0.2) = 0.3 + 10(0.4 - 0.3)(0.25 - 0.2) = 0.05
+\]
+and
+\[
+\hat{x}_{0.75} = x_{(7)} + 10(x_{(8)} - x_{(7)})(0.75 - 0.7) = 2.2 + 10(3.3 - 2.2)(0.75 - 0.7) = 2.75.
+\]
+So in this case, we estimate that 25\% of the population under study has an $X$ measurement less than 0.05, etc.
+\end{example}
+
+\begin{example}[Measuring Location and Scale of a Population Distribution]
+\label{ex:5.5.3}
+Often we are asked to make inferences about the value of the \emph{population mean}
+\[
+\mu_X = \frac{1}{\#\Pi}\sum_{\omega \in \Pi} X(\omega)
+\]
+and the \emph{population variance}
+\[
+\sigma_X^2 = \frac{1}{\#\Pi}\sum_{\omega \in \Pi} (X(\omega) - \mu_X)^2
+\]
+where $\Pi$ is a finite population and $X$ is a real-valued measurement defined on it. These are measures of the location and spread of the population distribution about the mean, respectively. Note that calculating a mean or variance makes sense only when $X$ is a quantitative variable.
+
+When $X$ is discrete, we can also write
+\[
+\mu_X = \sum_x x f_X(x)
+\]
+because $\#\Pi \cdot f_X(x)$ equals the number of elements $\omega$ with $X(\omega) = x$. In the continuous case, using an approximating density $f_X$, we can write
+\[
+\mu_X = \int_{-\infty}^{\infty} x f_X(x) \, \mathrm{d}x.
+\]
+Similar formulas exist for the population variance of $X$ (see Problem~\ref{exer:5.4.14}).
+
+It will probably occur to you that a natural estimate of the population mean $\mu_X$ is given by the \emph{sample mean}
+\[
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i.
+\]
+Also, a natural estimate of the population variance $\sigma_X^2$ is given by the \emph{sample variance}
+\begin{equation}
+s^2 = \frac{1}{n - 1}\sum_{i=1}^{n}(x_i - \bar{x})^2.
+\label{eq:5.5.5}
+\end{equation}
+Later we will explain why we divided by $n - 1$ in~\eqref{eq:5.5.5} rather than $n$. Actually, it makes little difference which we use, for even modest values of $n$. The \emph{sample standard deviation} is given by $s$, the positive square root of $s^2$. For the data in Example~\ref{ex:5.1.1}, we obtain $\bar{x} = 1.73$ and $s = 2.097$.
+
+The population mean $\mu_X$ and population standard deviation $\sigma_X$ serve as a pair, in which $\mu_X$ measures where the distribution is located on the real line and $\sigma_X$ measures how much spread there is in the distribution about $\mu_X$. Clearly, the greater the value of $\sigma_X$, the more variability there is in the distribution.
+
+Alternatively, we could use the population median $x_{0.5}$ as a measure of location of the distribution and the population \emph{interquartile range} $x_{0.75} - x_{0.25}$ as a measure of the amount of variability in the distribution around the median. The median and interquartile range are the preferred choice to measure these aspects of the distribution whenever the distribution is skewed, i.e., not symmetrical. This is because the median is insensitive to very extreme values, while the mean is not. For example, house prices in an area are well known to exhibit a right-skewed distribution. A few houses selling for very high prices will not change the median price but could result in a big change in the mean price.
+
+When we have a symmetric distribution, the mean and median will agree (provided the mean exists). The greater the skewness in a distribution, however, the greater will be the discrepancy between its mean and median. For example, in Figure~\ref{fig:5.5.3} we have plotted the density of a $\chi^2(4)$ distribution. This distribution is skewed to the right, and the mean is 4 while the median is 3.3567.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_5_3.pdf}
+\caption{The density $f$ of a $\chi^2(4)$ distribution.}
+\label{fig:5.5.3}
+\end{figure}
+
+We estimate the population interquartile range by the \emph{sample interquartile range} (IQR) given by $IQR = \hat{x}_{0.75} - \hat{x}_{0.25}$. For the data in Example~\ref{ex:5.5.1}, we obtain the sample median to be $\hat{x}_{0.5} = 1.5$ while $IQR = 2.75 - 0.05 = 2.70$.
+
+If we change the largest value in the sample from $x_{(10)} = 5.0$ to $x_{(10)} = 500.0$, the sample median remains $\hat{x}_{0.5} = 1.5$ but note that the sample mean goes from 1.73 to 51.23!
+\end{example}
+
+\subsection{Plotting Data}
+\label{ssec:5.5.2}
+
+It is always a good idea to plot the data. For discrete quantitative variables, we can plot $\hat{f}_X$, i.e., plot the sample proportions (relative frequencies). For continuous quantitative variables, we introduced the density histogram in section~\ref{ssec:5.4.3}. These plots give us some idea of the shape of the distribution from which we are sampling. For example, we can see if there is any evidence that the distribution is strongly skewed.
+
+We now consider another very useful plot for quantitative variables.
+
+\begin{example}[Boxplots and Outliers]
+\label{ex:5.5.4}
+Another useful plot for quantitative variables is known as a \emph{boxplot}. For example, Figure~\ref{fig:5.5.4} gives a boxplot for the data in Example~\ref{ex:5.5.1}. The line in the center of the box is the median. The line below the median is the first quartile, and the line above the median is the third quartile.
+
+The vertical lines from the quartiles are called \emph{whiskers}, which run from the quartiles to the \emph{adjacent values}. The adjacent values are given by the greatest value less than or equal to the \emph{upper limit} (the third quartile plus 1.5 times the $IQR$) and by the least value greater than or equal to the \emph{lower limit} (the first quartile minus 1.5 times the $IQR$). Values beyond the adjacent values, when these exist, are plotted with a $*$; in this case, there are none. If we changed $x_{(10)} = 5.0$ to $x_{(10)} = 15.0$, however, we see this extreme value plotted as a $*$, as shown in Figure~\ref{fig:5.5.5}.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_5_4.pdf}
+\caption{A boxplot of the data in Example~\ref{ex:5.5.1}.}
+\label{fig:5.5.4}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_5_5.pdf}
+\caption{A boxplot of the data in Example~\ref{ex:5.5.1}, changing $x_{(10)} = 5.0$ to $x_{(10)} = 15.0$.}
+\label{fig:5.5.5}
+\end{figure}
+
+Points outside the upper and lower limits, and thus plotted by $*$, are commonly referred to as \emph{outliers}. An outlier is a value that is extreme with respect to the rest of the observations. Sometimes outliers occur because a mistake has been made in collecting or recording the data, but they also occur simply because we are sampling from a long-tailed distribution. It is often difficult to ascertain which is the case in a particular application, but each such observation should be noted. We have seen in Example~\ref{ex:5.5.3} that outliers can have a big impact on statistical analyses. Their effects should be recorded when reporting the results of a statistical analysis.
+\end{example}
+
+For categorical variables, it is typical to plot the data in a bar chart, as described in the next example.
+
+\begin{example}[Bar Charts]
+\label{ex:5.5.5}
+For categorical variables, we code the values of the variable as equispaced numbers and then plot constant-width rectangles (the bars) over these values so that the height of the rectangle over a value equals the proportion of times that value is assumed. Such a plot is called a \emph{bar chart}. Note that the values along the $x$-axis are only labels and not to be treated as numbers that we can do arithmetic on, etc.
+
+For example, suppose we take a simple random sample of 100 students and record their favorite flavor of ice cream (from amongst four possibilities), obtaining the results given in the following table.
+\[
+\begin{array}{lcc}
+\text{Flavor} & \text{Count} & \text{Proportion} \\
+\hline
+\text{Chocolate} & 42 & 0.42 \\
+\text{Vanilla} & 28 & 0.28 \\
+\text{Butterscotch} & 22 & 0.22 \\
+\text{Strawberry} & 8 & 0.08
+\end{array}
+\]
+Coding Chocolate as 1, Vanilla as 2, Butterscotch as 3, and Strawberry as 4, Figure~\ref{fig:5.5.6} presents a bar chart of these data. It is typical for the bars in these charts not to touch.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_5_6.pdf}
+\caption{A bar chart for the data of Example~\ref{ex:5.5.5}.}
+\label{fig:5.5.6}
+\end{figure}
+\end{example}
+
+\subsection{Types of Inferences}
+\label{ssec:5.5.3}
+
+Certainly quoting descriptive statistics and plotting the data are methods used by a statistician to try to learn something about the underlying population distribution. There are difficulties with this approach, however, as we have just chosen these methods based on intuition. Often it is not clear which descriptive statistics we should use. Furthermore, these data summaries make no use of the information we have about the true population distribution as expressed by the statistical model, namely, $\{f_X = f_\theta : \theta \in \Omega\}$.
+
+Taking account of this information leads us to develop a theory of statistical inference, i.e., to specify how we should combine the model information together with the data to make inferences about population quantities. We will do this in Chapters \ref{ch:6}, \ref{ch:7}, and \ref{ch:8}, but first we discuss the types of inferences that are commonly used in applications.
+
+In Section~\ref{sec:5.2}, we discussed three types of inference in the context of a known probability model as specified by some density or probability function $f$. We noted that we might want to do any of the following concerning an unobserved response value $s$.
+\begin{enumerate}[(i)]
+\item Predict an unknown response value $s$ via a prediction $t$.
+\item Construct a subset $C$ of the sample space $S$ that has a high probability of containing an unknown response value $s$.
+\item Assess whether or not $s_0 \in S$ is a plausible value from the probability distribution specified by $f$.
+\end{enumerate}
+We refer to (i), (ii), and (iii) as inferences about the unobserved $s$. The examples of Section~\ref{sec:5.2} show that these are intuitively reasonable concepts.
+
+In an application, we do not know $f$; we know only that $f \in \{f_\theta : \theta \in \Omega\}$, and we observe the data $s$. We are uncertain about which candidate $f_\theta$ is correct, or, equivalently, which of the possible values of $\theta$ is correct.
+
+As mentioned in Section~\ref{ssec:5.5.1}, our primary goal may be to determine not the true $f_\theta$ but some characteristic of the true distribution such as its mean, median, or the value of the true distribution function $F_\theta$ at a specified value. We will denote this characteristic of interest by $\psi(\theta)$. For example, when the characteristic of interest is the mean of the true distribution of a continuous random variable, then
+\[
+\psi(\theta) = \int_{-\infty}^{\infty} x f_\theta(x) \, \mathrm{d}x.
+\]
+Alternatively, we might be interested in $\psi(\theta) = F_\theta^{-1}(0.5)$, the median of the distribution of a random variable with distribution function given by $F_\theta$.
+
+Different values of $\theta$ lead to possibly different values for the characteristic $\psi(\theta)$. After observing the data $s$, we want to make inferences about what the correct value is. We will consider the three types of inference for $\psi(\theta)$.
+\begin{enumerate}[(i)]
+\item Choose an estimate $T(s)$ of $\psi(\theta)$, referred to as the problem of \emph{estimation}.
+\item Construct a subset $C(s)$ of the set of possible values for $\psi(\theta)$ that we believe contains the true value, referred to as the problem of \emph{credible region} or \emph{confidence region} construction.
+\item Assess whether or not $\psi_0$ is a plausible value for $\psi(\theta)$ after having observed $s$, referred to as the problem of \emph{hypothesis assessment}.
+\end{enumerate}
+So estimates, credible or confidence regions, and hypothesis assessment are examples of types of inference. In particular, we want to construct estimates $T(s)$ of $\psi(\theta)$, construct credible or confidence regions $C(s)$ for $\psi(\theta)$, and assess the plausibility of a hypothesized value $\psi_0$ for $\psi(\theta)$.
+
+The problem of statistical inference entails determining how we should combine the information in the model $\{f_\theta : \theta \in \Omega\}$ and the data $s$ to carry out these inferences about $\psi(\theta)$.
+
+A very important statistical model for applications is the location-scale normal model introduced in Example~\ref{ex:5.3.4}. We illustrate some of the ideas discussed in this section via that model.
+
+\begin{example}[Application of the Location-Scale Normal Model]
+\label{ex:5.5.6}
+Suppose the following simple random sample of the heights (in inches) of 30 students has been collected.
+\[
+\begin{array}{cccccccccc}
+64.9 & 61.4 & 66.3 & 64.3 & 65.1 & 64.4 & 59.8 & 63.6 & 66.5 & 65.0 \\
+64.9 & 64.3 & 62.5 & 63.1 & 65.0 & 65.8 & 63.4 & 61.9 & 66.6 & 60.9 \\
+61.6 & 64.0 & 61.5 & 64.2 & 66.8 & 66.4 & 65.8 & 71.4 & 67.8 & 66.3
+\end{array}
+\]
+The statistician believes that the distribution of heights in the population can be well approximated by a normal distribution with some unknown mean and variance, and she is unwilling to make any further assumptions about the true distribution. Accordingly, the statistical model is given by the family of $\text{N}(\mu, \sigma^2)$ distributions, where $(\mu, \sigma^2) \in R^1 \times R^+$ is unknown.
+
+Does this statistical model make sense, i.e., is the assumption of normality appropriate for this situation? The density histogram (based on 12 equal-length intervals from 59.5 to 71.5) in Figure~\ref{fig:5.5.7} looks very roughly normal, but the extreme observation in the right tail might be some grounds for concern. In any case, we proceed as if this assumption is reasonable. In Chapter \ref{ch:9}, we will discuss more refined methods for assessing this assumption.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_5_7.pdf}
+\caption{Density histogram of heights in Example~\ref{ex:5.5.6}.}
+\label{fig:5.5.7}
+\end{figure}
+
+Suppose we are interested in making inferences about the population mean height, namely, the characteristic of interest is $\psi(\mu, \sigma^2) = \mu$. Alternatively, we might want to make inferences about the 90th percentile of this distribution, i.e., $\psi(\mu, \sigma^2) = x_{0.90} = \mu + \sigma z_{0.90}$ where $z_{0.90}$ is the 90th percentile of the $\text{N}(0, 1)$ distribution (when $X \sim \text{N}(\mu, \sigma^2)$ then $\prb(X \leqslant \mu + \sigma z_{0.90}) = \prb((X - \mu)/\sigma \leqslant z_{0.90}) = z_{0.90} = 0.90$). So 90\% of the population under study have height less than $x_{0.90}$, a value unknown to us because we do not know the value of $(\mu, \sigma^2)$. Obviously, there are many other characteristics of the true distribution about which we might want to make inferences.
+
+Just using our intuition, $T(x_1, \ldots, x_n) = \bar{x}$ seems like a sensible estimate of $\mu$ and $T(x_1, \ldots, x_n) = \bar{x} + sz_{0.90}$ seems like a sensible estimate of $\mu + \sigma z_{0.90}$. To justify the choice of these estimates, we will need the theories developed in later chapters. In this case, we obtain $\bar{x} = 64.517$ and from~\eqref{eq:5.5.5} we compute $s = 2.379$. From Table D.2 we obtain $z_{0.90} = 1.2816$, so that
+\[
+\bar{x} + sz_{0.90} = 64.517 + 2.379 \times 1.2816 = 67.566.
+\]
+
+How accurate is the estimate $\bar{x}$ of $\mu$? A natural approach to answering this question is to construct a credible interval, based on the estimate, that we believe has a high probability of containing the true value of $\mu$ and is as short as possible. For example, the theory in Chapter \ref{ch:6} leads to using confidence intervals for $\mu$ of the form
+\[
+[\bar{x} - sc, \, \bar{x} + sc]
+\]
+for some choice of the constant $c$. Notice that $\bar{x}$ is at the center of the interval. The theory in Chapter \ref{ch:6} will show that, in this case, choosing $c = 0.3734$ leads to what is known as a $0.95$-confidence interval for $\mu$. We then take the half-length of this interval, namely,
+\[
+sc = 2.379 \times 0.3734 = 0.888,
+\]
+as a measure of the accuracy of the estimate $\bar{x} = 64.517$ of $\mu$. In this case, we have enough information to say that we know the true value of $\mu$ to within one inch, at least with ``confidence'' equal to 0.95.
+
+Finally, suppose we have a hypothesized value $\mu_0$ for the population mean height. For example, we may believe that the mean height of the population of individuals under study is the same as the mean height of another population for which this quantity is known to equal $\mu_0 = 65$. Then, based on the observed sample of heights we want to assess whether or not the value $\mu_0 = 65$ makes sense. If the sample mean height $\bar{x}$ is far from $\mu_0$, this would seem to be evidence against the hypothesized value. In Chapter \ref{ch:6}, we will show that we can base our assessment on the value of
+\[
+t = \frac{\bar{x} - \mu_0}{s/\sqrt{n}} = \frac{64.517 - 65}{2.379/\sqrt{30}} = -1.112.
+\]
+If the value of $|t|$ is very large, then we will conclude that we have evidence against the hypothesized value $\mu_0 = 65$. We have to prescribe what we mean by large here, and we will do this in Chapter \ref{ch:6}. It turns out that $|t| = 1.112$ is a plausible value for $|t|$, when the true value of $\mu$ equals 65, so we have no evidence against the hypothesis.
+\end{example}
+
+\subsubsection*{Summary of Section~\ref{sec:5.5}}
+\begin{itemize}
+\item Descriptive statistics represent informal statistical methods that are used to make inferences about the distribution of a variable $X$ of interest, based on an observed sample from this distribution. These quantities summarize characteristics of the observed sample and can be thought of as estimates of the corresponding unknown population quantities. More formal methods are required to assess the error in these estimates or even to replace them with estimates having greater accuracy.
+\item It is important to plot the data using relevant plots. These give us some idea of the shape of the population distribution from which we are sampling.
+\item There are three main types of inference: estimates, credible or confidence intervals, and hypothesis assessment.
+\end{itemize}
+
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:5.5.1}
+Suppose the following data are obtained by recording $X$, the number of customers that arrive at an automatic banking machine during 15 successive one-minute time intervals.
+\[
+\begin{array}{cccccccc}
+2 & 1 & 3 & 2 & 0 & 1 & 4 & 2 \\
+0 & 2 & 3 & 1 & 0 & 0 & 4 &
+\end{array}
+\]
+\begin{enumerate}[(a)]
+\item Record estimates of $f_X(0)$, $f_X(1)$, $f_X(2)$, $f_X(3)$, and $f_X(4)$.
+\item Record estimates of $F_X(0)$, $F_X(1)$, $F_X(2)$, $F_X(3)$, and $F_X(4)$.
+\item Plot $\hat{f}_X$.
+\item Record the mean and variance.
+\item Record the median and IQR and provide a boxplot. Using the rule prescribed in Example~\ref{ex:5.5.4}, decide whether there are any outliers.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\tilde{f}_X(0) = 0.2667$, $\tilde{f}_X(1) = 0.2$, $\tilde{f}_X(2) = 0.2667$, $\tilde{f}_X(3) = \tilde{f}_X(4) = 0.1333$.
+    
+    \item $\tilde{F}_X(0) = 0.2667$, $\tilde{F}_X(1) = 0.4667$, $\tilde{F}_X(2) = 0.7333$, $\tilde{F}_X(3) = 0.8667$, $\tilde{F}_X(4) = 1.000$.
+    
+    \item A plot of $\tilde{f}_X$ is given below.
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_5_1c.pdf}
+      \caption{Plot of $\tilde{f}_X$}
+      \label{fig:empirical-pmf-5.5.1}
+    \end{figure}
+    
+    \item The mean $\bar{x} = 1.5$ and the variance $s^2 = 1.952$.
+    
+    \item The median is 2 and the IQR $= 3$. The boxplot is plotted below. According to the 1.5 IQR rule, there are no outliers.
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_5_1e.pdf}
+      \caption{Boxplot for Exercise 5.5.1}
+      \label{fig:boxplot-5.5.1}
+    \end{figure}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.2}
+Suppose the following sample of waiting times (in minutes) was obtained for customers in a queue at an automatic banking machine.
+\[
+\begin{array}{cccccccc}
+15.10 & 2.3 & 1.0 & 4.5 \\
+5.3 & 3.4 & 2.1 & 4.5
+\end{array}
+\]
+\begin{enumerate}[(a)]
+\item Record the empirical distribution function.
+\item Plot $\hat{f}_X$.
+\item Record the mean and variance.
+\item Record the median and IQR and provide a boxplot. Using the rule given in Example~\ref{ex:5.5.4}, decide whether there are any outliers.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The empirical distribution function is given by
+    \[
+    \tilde{F}_X(x) = \begin{cases}
+    0 & x < 0 \\
+    1/16 & 0 \leqslant x < 1 \\
+    3/16 & 1 \leqslant x < 2 \\
+    5/16 & 2 \leqslant x < 3 \\
+    8/16 & 3 \leqslant x < 4 \\
+    11/16 & 4 \leqslant x < 5 \\
+    14/16 & 5 \leqslant x < 10 \\
+    15/16 & 10 \leqslant x < 15 \\
+    1 & 15 \leqslant x.
+    \end{cases}
+    \]
+    
+    \item A plot of $\tilde{f}_X$ is given below.
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_5_2b.pdf}
+      \caption{Plot of $\tilde{f}_X$ for Exercise 5.5.2}
+      \label{fig:empirical-pmf-5.5.2}
+    \end{figure}
+    
+    \item The mean is $\bar{x} = 4.188$, the variance is $s^2 = 13.63$.
+    
+    \item The median is 3.5 and the IQR $= 3$. A boxplot is provided as follows.
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_5_2d.pdf}
+      \caption{Boxplot of Waiting time}
+      \label{fig:boxplot-5.5.2}
+    \end{figure}
+    
+    According to the 1.5 IQR rule, there are two outliers, namely 10 and 15.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.3}
+Suppose an experiment was conducted to see whether mosquitoes are attracted differentially to different colors. Three different colors of fabric were used and the number of mosquitoes landing on each piece was recorded over a 15-minute interval. The following data were obtained.
+\[
+\begin{array}{lc}
+& \text{Number of landings} \\
+\hline
+\text{Color 1} & 25 \\
+\text{Color 2} & 35 \\
+\text{Color 3} & 22
+\end{array}
+\]
+\begin{enumerate}[(a)]
+\item Record estimates of $f_X(1)$, $f_X(2)$, and $f_X(3)$, where we use $i$ for color $i$.
+\item Does it make sense to estimate $F_X(i)$? Explain why or why not.
+\item Plot a bar chart of these data.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item $\tilde{f}_X(1) = 25/82$, $\tilde{f}_X(2) = 35/82$, $\tilde{f}_X(3) = 22/82$.
+    
+    \item It does not make sense to estimate $F_X(i)$ since this is a categorical variable.
+    
+    \item A bar chart is given below.
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_5_3c.pdf}
+      \caption{Bar chart of flavor proportions}
+      \label{fig:barchart-5.5.3}
+    \end{figure}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.4}
+A student is told that his score on a test was at the 90th percentile in the population of all students who took the test. Explain exactly what this means.
+\end{exercise}
+
+\begin{solution}
+It means that 90\% of all students got a score equal to his or lower and only 10\% got a higher score.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.5}
+Determine the empirical distribution function based on the sample given below.
+\[
+\begin{array}{ccccc}
+1.0 & 1.2 & 0.4 & 1.3 & 0.3 \\
+1.4 & 0.4 & 0.5 & 0.2 & 1.3 \\
+0.0 & 1.0 & 1.3 & 2.0 & 1.0 \\
+0.9 & 0.4 & 2.1 & 0.0 & 1.3
+\end{array}
+\]
+Plot this function. Determine the sample median, the first and third quartiles, and the interquartile range. What is your estimate of $F(1)$?
+\end{exercise}
+
+\begin{solution}
+A plot of the empirical distribution function is given below (we have joined consecutive points by line segments).
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig5_5_5.pdf}
+  \caption{Empirical distribution function}
+  \label{fig:ecdf-5.5.5}
+\end{figure}
+
+The sample median is 0, first quartile is $-1.150$, third quartile is 0.975, and the IQR $= 2.125$. We estimate $F_X(1)$ by $\tilde{F}_X(1) = 17/20 = 0.85$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.6}
+Consider the density histogram in Figure~\ref{fig:5.5.8}. If you were asked to record measures of location and spread for the data corresponding to this plot, what would you choose? Justify your answer.
+
+\begin{figure}[!htbp]
+\centering
+%\includegraphics[scale=0.5]{fig5_5_8.pdf}
+\caption{Density histogram for Exercise~\ref{exer:5.5.6}.}
+\label{fig:5.5.8}
+\end{figure}
+\end{exercise}
+
+\begin{solution}
+Since the shape of the distribution is asymmetric, we should choose the median as a measure of location and the IQR as a measure of spread. This is because the distribution is skewed to the right.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.7}
+Suppose that a statistical model is given by the family of $\text{N}(\mu, \sigma_0^2)$ distributions where $\mu \in R^1$ is unknown, while $\sigma_0^2$ is known. If our interest is in making inferences about the first quartile of the true distribution, then determine $\psi(\mu)$.
+\end{exercise}
+
+\begin{solution}
+We have that $\psi(\mu) = x_{0.25} = \mu + \sigma_0 z_{0.25}$, where $z_{0.25}$ satisfies $\Phi(z_{0.25}) = 0.25$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.8}
+Suppose that a statistical model is given by the family of $\text{N}(\mu, \sigma_0^2)$ distributions where $\mu \in R^1$ is unknown, while $\sigma_0^2$ is known. If our interest is in making inferences about the third moment of the distribution, then determine $\psi(\mu)$.
+\end{exercise}
+
+\begin{solution}
+First, recall that the third moment of the distribution is $\expc_\mu(X^3)$. So $\psi(\mu)$ is given by
+\begin{align*}
+\psi(\mu) &= \expc_\mu(X^3) = \expc_\mu((X - \mu + \mu)^3) \\
+&= \expc_\mu((X - \mu)^3) + 3\mu\expc_\mu((X - \mu)^2) + 3\mu^2\expc_\mu((X - \mu)) + \mu^3 \\
+&= 0 + 3\mu\sigma_0^2 + 0 + \mu^3 = 3\mu\sigma_0^2 + \mu^3.
+\end{align*}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.9}
+Suppose that a statistical model is given by the family of $\text{N}(\mu, \sigma_0^2)$ distributions where $\mu \in R^1$ is unknown, while $\sigma_0^2$ is known. If our interest is in making inferences about the distribution function evaluated at 3, then determine $\psi(\mu)$.
+\end{exercise}
+
+\begin{solution}
+We have that $\psi(\mu) = F_\mu(3) = \prb_\mu(X \leqslant (3 - \mu)/\sigma_0) = \Phi((3 - \mu)/\sigma_0)$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.10}
+Suppose that a statistical model is given by the family of $\text{N}(\mu, \sigma^2)$ distributions where $(\mu, \sigma^2) \in R^1 \times R^+$ is unknown. If our interest is in making inferences about the first quartile of the true distribution, then determine $\psi(\mu, \sigma^2)$.
+\end{exercise}
+
+\begin{solution}
+We have that $\psi(\mu, \sigma^2) = x_{0.25} = \mu + \sigma z_{0.25}$, where $\Phi(z_{0.25}) = 0.25$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.11}
+Suppose that a statistical model is given by the family of $\text{N}(\mu, \sigma^2)$ distributions where $(\mu, \sigma^2) \in R^1 \times R^+$ is unknown. If our interest is in making inferences about the distribution function evaluated at 3, then determine $\psi(\mu, \sigma^2)$.
+\end{exercise}
+
+\begin{solution}
+We have that $\psi(\mu, \sigma^2) = F_{(\mu, \sigma^2)}(3) = \prb_{(\mu, \sigma^2)}(X \leqslant 3) = \prb(Z \leqslant (3 - \mu)/\sigma) = \Phi((3 - \mu)/\sigma)$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.12}
+Suppose that a statistical model is given by the family of Bernoulli$(\theta)$ distributions where $\theta \in [0, 1]$. If our interest is in making inferences about the probability that two independent observations from this model are the same, then determine $\psi(\theta)$.
+\end{exercise}
+
+\begin{solution}
+We have that $\psi(\theta) = (1 - \theta)^2 + \theta^2$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.13}
+Suppose that a statistical model is given by the family of Bernoulli$(\theta)$ distributions where $\theta \in [0, 1]$. If our interest is in making inferences about the probability that in two independent observations from this model we obtain a 0 and a 1, then determine $\psi(\theta)$.
+\end{exercise}
+
+\begin{solution}
+We have that $\psi(\theta) = 2\theta(1 - \theta)$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.14}
+Suppose that a statistical model is given by the family of Uniform$[0, \theta]$ distributions where $\theta \in (0, \infty)$. If our interest is in making inferences about the coefficient of variation (see Exercise~\ref{exer:5.3.5}) of the true distribution, then determine $\psi(\theta)$. What do you notice about this characteristic?
+\end{exercise}
+
+\begin{solution}
+First, recall that the coefficient of variation is given by $\sigma_X/\mu_X$. So $\psi(\theta) = \sqrt{\theta^2/12}/(\theta/2) = 1/\sqrt{3}$. So we know $\psi(\theta)$ exactly and do not require data to make inference about this quantity.
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.15}
+Suppose that a statistical model is given by the family of Gamma$(\alpha_0, \lambda)$ distributions where $\lambda \in (0, \infty)$. If our interest is in making inferences about the variance of the true distribution, then determine $\psi(\lambda)$.
+\end{exercise}
+
+\begin{solution}
+We have that $\psi(\theta) = \alpha_0/\beta^2$.
+\end{solution}
+
+\subsection*{Computer Exercises}
+
+\begin{exercise}
+\label{exer:5.5.16}
+Do the following based on the data in Exercise~\ref{exer:5.4.5}.
+\begin{enumerate}[(a)]
+\item Compute the order statistics for these data.
+\item Calculate the empirical distribution function at the data points.
+\item Calculate the sample mean and the sample standard deviation.
+\item Obtain the sample median and the sample interquartile range.
+\item Based on the histograms obtained in Exercise~\ref{exer:5.4.5}, which set of descriptive statistics do you feel are appropriate for measuring location and spread?
+\item Suppose the first data value was recorded incorrectly as 13.9 rather than as 3.9. Repeat parts (c) and (d) using this data set and compare your answers with those previously obtained. Can you draw any general conclusions about these measures? Justify your reasoning.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The order statistics are given by $x_{(1)} = 1.2$, $x_{(2)} = 1.8$, $x_{(3)} = 2.3$, $x_{(4)} = 2.5$, $x_{(5)} = 3.1$, $x_{(6)} = 3.4$, $x_{(7)} = 3.7$, $x_{(8)} = 3.9$, $x_{(9)} = 4.3$, $x_{(10)} = 4.4$, $x_{(11)} = 4.5$, $x_{(12)} = 4.8$, $x_{(13)} = 5.6$, $x_{(14)} = 5.8$, $x_{(15)} = 6.9$, $x_{(16)} = 7.2$, and $x_{(17)} = 8.5$.
+    
+    \item $\tilde{F}_X(x_{(i)}) = i/n$ (there are no ties).
+    
+    \item The sample mean $\bar{x} = 4.345$ and the sample variance $s^2 = 3.345$.
+    
+    \item The sample median is 4.350 and the IQR $= 2.225$.
+    
+    \item Since the distribution looks somewhat skewed, the descriptive statistics in part (c) are appropriate for measuring location and spread.
+    
+    \item The sample mean $\bar{x} = 4.845$ and the sample variance $s^2 = 7.874$, while the sample median is 4.450 and the IQR $= 2.575$. As we can see, the sample mean and sample variance changed quite a lot, while the sample median and the IQR have hardly changed. This suggests that the median and the IQR are more resistant to extreme observations.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.17}
+Do the following based on the data in Example~\ref{ex:5.5.6}.
+\begin{enumerate}[(a)]
+\item Compute the order statistics for these data.
+\item Plot the empirical distribution function (only at the sample points).
+\item Calculate the sample median and the sample interquartile range and obtain a boxplot. Are there any outliers?
+\item Based on the boxplot, which set of descriptive statistics do you feel is appropriate for measuring location and spread?
+\item Suppose the first data value was recorded incorrectly as 84.9 rather than as 64.9. Repeat parts (c) and (d) using this data set and see whether any observations are determined to be outliers.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The order statistics are given by $x_{(1)} = 59.8$, $x_{(2)} = 60.9$, $x_{(3)} = 61.4$, $x_{(4)} = 61.5$, $x_{(5)} = 61.6$, $x_{(6)} = 61.9$, $x_{(7)} = 62.5$, $x_{(8)} = 63.1$, $x_{(9)} = 63.4$, $x_{(10)} = 63.6$, $x_{(11)} = 64.0$, $x_{(12)} = 64.2$, $x_{(13)} = 64.3$, $x_{(14)} = 64.3$, $x_{(15)} = 64.4$, $x_{(16)} = 64.9$, $x_{(17)} = 64.9$, $x_{(18)} = 65.0$, $x_{(19)} = 65.0$, $x_{(20)} = 65.1$, $x_{(21)} = 65.8$, $x_{(22)} = 65.8$, $x_{(23)} = 66.3$, $x_{(24)} = 66.3$, $x_{(25)} = 66.4$, $x_{(26)} = 66.5$, $x_{(27)} = 66.6$, $x_{(28)} = 66.8$, $x_{(29)} = 67.8$, and $x_{(30)} = 71.4$.
+    
+    \item The graph of the empirical distribution function is plotted as follows. Note that there are two values at 64.3, two values at 64.9, two values at 65.0, two values at 65.8, and two values at 66.3, so the empirical cdf jumps by $2/30$ at these points. Otherwise, the jump is $1/30$ at a data point.
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_5_17b.pdf}
+      \caption{Empirical distribution function for Exercise 5.5.17}
+      \label{fig:ecdf-5.5.17}
+    \end{figure}
+    
+    \item The sample median is 64.650 and the sample IQR $= 66.300 - 62.950 = 3.35$. The boxplot is given below and there is one outlier, namely 71.4.
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_5_17c.pdf}
+      \caption{Boxplot for Exercise 5.5.17}
+      \label{fig:boxplot-5.5.17c}
+    \end{figure}
+    
+    \item Since the shape of the distribution is somewhat skewed to the left, the median and the IQR are the appropriate descriptive statistics for the location and spread.
+    
+    \item The sample median is still 64.650 and the sample IQR $= 66.325 - 62.950 = 3.375$, so these values barely change. The boxplot is given below and identifies two outliers, 71.4 and 84.9.
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_5_17e.pdf}
+      \caption{Boxplot with outliers for Exercise 5.5.17}
+      \label{fig:boxplot-5.5.17e}
+    \end{figure}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.18}
+Generate a sample of 30 from an $\text{N}(10, 2)$ distribution and a sample of 1 from an $\text{N}(30, 2)$ distribution. Combine these together to make a single sample of 31.
+\begin{enumerate}[(a)]
+\item Produce a boxplot of these data.
+\item What do you notice about this plot?
+\item Based on the boxplot, what characteristic do you think would be appropriate to measure the location and spread of the distribution? Explain why.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item 
+    \begin{listing}[!htbp]
+    \begin{minted}{R}
+set.seed(123)
+k1 <- sqrt(2)
+# Generate 30 random values from N(10, sqrt(2))
+c1 <- rnorm(30, mean = 10, sd = k1)
+# Generate 1 random value from N(30, sqrt(2))
+c2 <- rnorm(1, mean = 30, sd = k1)
+# Add the outlier
+c1[31] <- c2
+# Create boxplot
+boxplot(c1, main = "Boxplot with outlier")
+    \end{minted}
+    \caption{Generating data with outlier and boxplot}
+    \label{lst:5.5.18}
+    \end{listing}
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_5_18.pdf}
+      \caption{Boxplot for Exercise 5.5.18}
+      \label{fig:boxplot-5.5.18}
+    \end{figure}
+    
+    \item There is an outlier above the whisker.
+    
+    \item The median is an appropriate measure of location and the interquartile range is an appropriate measure of the spread of the data distribution. These measures are somewhat unaffected by outliers.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.19}
+Generate a sample of 50 from a $\chi^2(1)$ distribution.
+\begin{enumerate}[(a)]
+\item Produce a boxplot of these data.
+\item What do you notice about this plot?
+\item Based on the boxplot, what characteristic do you think would be appropriate to measure the location and spread of the distribution? Explain why.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item 
+    \begin{listing}[!htbp]
+    \begin{minted}{R}
+set.seed(123)
+# Generate 50 random values from chi-squared(1)
+c1 <- rchisq(50, df = 1)
+# Create boxplot
+boxplot(c1, main = "Boxplot of Chi-squared(1) sample")
+    \end{minted}
+    \caption{Chi-squared sample and boxplot}
+    \label{lst:5.5.19}
+    \end{listing}
+    
+    \begin{figure}[!htbp]
+      \centering
+      %\includegraphics[scale=0.5]{fig5_5_19.pdf}
+      \caption{Boxplot for Exercise 5.5.19}
+      \label{fig:boxplot-5.5.19}
+    \end{figure}
+    
+    \item There is an outlier in this plot and it is clear that it is skewed to the right.
+    
+    \item The median is an appropriate measure of location and the interquartile range is an appropriate measure of the spread of the data distribution. These measures are somewhat unaffected by outliers and the skewness.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.20}
+Generate a sample of 50 from an $\text{N}(4, 1)$ distribution. Suppose your interest is in estimating the 90th percentile $x_{0.9}$ of this distribution and we pretend that 4 and 1 are unknown.
+\begin{enumerate}[(a)]
+\item Compute an estimate of $x_{0.9}$ based on the appropriate order statistic.
+\item Compute an estimate based on the fact that $x_{0.9} = \mu + \sigma z_{0.9}$ where $z_{0.9}$ is the 90th percentile of the $\text{N}(0, 1)$ distribution.
+\item If you knew, or at least were willing to assume, that the sample came from a normal distribution, which of the estimates in parts (a) or (b) would you prefer? Explain why.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The estimate of the 90-th percentile is obtained as follows.
+    
+    \begin{listing}[!htbp]
+    \begin{minted}{R}
+set.seed(123)
+# Generate 50 random values from N(4, 1)
+c1 <- rnorm(50, mean = 4, sd = 1)
+# Sort the values
+c2 <- sort(c1)
+# Create index proportions
+c3 <- (1:50) / 50
+# Find the value at the 0.9 quantile
+estimate_90th <- c2[which(c3 == 0.9)]
+cat("Estimated 90th percentile:", estimate_90th, "\n")
+    \end{minted}
+    \caption{Estimating 90th percentile from empirical distribution}
+    \label{lst:5.5.20a}
+    \end{listing}
+    
+    Then reading off the cell in \texttt{c2} corresponding to the cell with the entry 0.9 in \texttt{c3} we get the estimate $\hat{x}_{0.9} = 5.20725$.
+    
+    \item We estimate the mean $\mu$ by $\bar{x}$ and the standard deviation $\sigma$ by $s$ so the estimate of the 90-th percentile is obtained as follows.
+    
+    \begin{listing}[!htbp]
+    \begin{minted}{R}
+# Get the 90th percentile of standard normal
+k1 <- qnorm(0.9)
+# Calculate sample mean and standard deviation
+k2 <- mean(c1)
+k3 <- sd(c1)
+# Estimate 90th percentile using normal assumption
+k4 <- k2 + k3 * k1
+cat("Estimated 90th percentile (normal):", k4, "\n")
+# [1] 5.37781
+    \end{minted}
+    \caption{Estimating 90th percentile using normal assumption}
+    \label{lst:5.5.20b}
+    \end{listing}
+    
+    \item Under the normal distribution assumption, (b) is more appropriate because all given information should be used. Note that the true 90th percentile of $N(4, 1)$ distribution is 5.28155.
+\end{enumerate}
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:5.5.21}
+Determine a formula for the sample median, based on interpolation (i.e., using~\eqref{eq:5.5.3}) when $n$ is odd. (Hint: Use the least integer function or ceiling $\lceil x \rceil =$ smallest integer greater than or equal to $x$.)
+\end{exercise}
+
+\begin{solution}
+Using (5.5.3), we have that $\hat{x}_{0.5} = x_{(i-1)} + n(x_{(i)} - x_{(i-1)})(0.5 - (i-1)/n)$, where $(i - 1)/n < 1/2 \leqslant i/n$. Now $i - 1 < n/2 \leqslant i$ implies that $i = n/2$ when $n$ is even and $i = \lceil n/2 \rceil$ when $n$ is odd. So we have that
+\[
+\hat{x}_{0.5} = \begin{cases}
+x_{(n/2)} & n \text{ even} \\
+x_{(\lceil n/2 \rceil - 1)} + n(x_{(\lceil n/2 \rceil)} - x_{(\lceil n/2 \rceil - 1)})(0.5 - (i-1)/n) & n \text{ odd}.
+\end{cases}
+\]
+\end{solution}
+
+\begin{exercise}
+\label{exer:5.5.22}
+An alternative to the empirical distribution function is to define a distribution function $\tilde{F}$ by $\tilde{F}(x) = 0$ if $x < x_{(1)}$, $\tilde{F}(x) = 1$ if $x \geqslant x_{(n)}$, $\tilde{F}(x_{(i)}) = \hat{F}(x_{(i)})$ if $x = x_{(i)}$, and
+\[
+\tilde{F}(x) = \tilde{F}(x_{(i)}) + \frac{\tilde{F}(x_{(i+1)}) - \tilde{F}(x_{(i)})}{x_{(i+1)} - x_{(i)}}(x - x_{(i)})
+\]
+if $x_{(i)} < x < x_{(i+1)}$ for $i = 1, \ldots, n$.
+\begin{enumerate}[(a)]
+\item Show that $\tilde{F}(x_{(i)}) = \hat{F}(x_{(i)})$ for $i = 1, \ldots, n$ and is increasing from 0 to 1.
+\item Prove that $\tilde{F}$ is continuous on $(x_{(1)}, \infty)$ and right continuous everywhere.
+\item Show that, for $p \in [1/n, 1]$, the value $\hat{x}_p$ defined in~\eqref{eq:5.5.3} is the solution to $\tilde{F}(\hat{x}_p) = p$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item We have that $\hat{F}(x_{(i)}) = \tilde{F}(x_{(i)}) = i/n$, $\hat{F}(x_{(i+1)}) = \tilde{F}(x_{(i+1)}) = (i + 1)/n$, and
+    \[
+    \frac{\tilde{F}(x_{(i+1)}) - \tilde{F}(x_{(i)})}{x_{(i+1)} - x_{(i)}} \geqslant 0
+    \]
+    shows that $\hat{F}(x)$ is an increasing function from 0 to 1.
+    
+    \item Since $\hat{F}$ is linear on each interval $(x_{(i)}, x_{(i+1)}]$ it is continuous there. Therefore, $\hat{F}$ is continuous on $(x_{(1)}, \infty)$. It is also continuous on $(-\infty, x_{(1)})$ and right-continuous at $x_{(1)}$. Therefore, $\hat{F}$ is right-continuous everywhere.
+    
+    \item From (a) there is an $i$ such that $(i - 1)/n < p \leqslant i/n$ and then
+    \[
+    p = \tilde{F}(x_{(i-1)}) + \frac{\tilde{F}(x_{(i)}) - \tilde{F}(x_{(i-1)})}{x_{(i)} - x_{(i-1)}}(\hat{x}_p - x_{(i-1)}) = \frac{i - 1}{n} + \frac{1}{n}\frac{1}{x_{(i)} - x_{(i-1)}}(\hat{x}_p - x_{(i-1)})
+    \]
+    so
+    \[
+    \hat{x}_p = x_{(i-1)} + n(x_{(i)} - x_{(i-1)})\left(p - \frac{i - 1}{n}\right).
+    \]
+\end{enumerate}
+\end{solution}
+
+\subsection*{Discussion Topics}
+
+\begin{exercise}
+\label{exer:5.5.23}
+Sometimes it is argued that statistics does not need a formal theory to prescribe inferences. Rather, statistical practice is better left to the skilled practitioner to decide what is a sensible approach in each problem. Comment on these statements.
+\end{exercise}
+
+\begin{exercise}
+\label{exer:5.5.24}
+How reasonable do you think it is for an investigator to assume that a random variable is normally distributed? Discuss the role of assumptions in scientific modelling.
+\end{exercise}
+

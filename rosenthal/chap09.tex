@@ -1,0 +1,1951 @@
+\chapter{Model Checking}
+\label{ch:9}
+
+\noindent\textbf{Chapter Outline}
+\begin{itemize}
+\item Section 1: Checking the Sampling Model
+\item Section 2: Checking for Prior--Data Conflict
+\item Section 3: The Problem with Multiple Checks
+\end{itemize}
+
+The statistical inference methods developed in Chapters~\ref{ch:6} through~\ref{ch:8} all depend on various assumptions. For example, in Chapter~\ref{ch:6} we assumed that the data $s$ were generated from a distribution in the statistical model $\{\prb_\theta : \theta \in \Omega\}$. In Chapter~\ref{ch:7}, we also assumed that our uncertainty concerning the true value of the model parameter $\theta$ could be described by a prior probability distribution $\pi$. As such, any inferences drawn are of questionable validity if these assumptions do not make sense in a particular application.
+
+In fact, all statistical methodology is based on assumptions or choices made by the statistical analyst, and these must be checked if we want to feel confident that our inferences are relevant. We refer to the process of checking these assumptions as \emph{model checking}, the topic of this chapter. Obviously, this is of enormous importance in applications of statistics, and good statistical practice demands that effective model checking be carried out. Methods range from fairly informal graphical methods to more elaborate hypothesis assessment, and we will discuss a number of these.
+
+\section{Checking the Sampling Model}
+\label{sec:9.1}
+
+Frequency-based inference methods start with a statistical model $\{f_\theta : \theta \in \Omega\}$, for the true distribution that generated the data $s$. This means we are assuming that the true distribution for the observed data is in this set. If this assumption is not true, then it seems reasonable to question the relevance of any subsequent inferences we make about $\theta$.
+
+Except in relatively rare circumstances, we can never know categorically that a model is correct. The most we can hope for is that we can assess whether or not the observed data $s$ could plausibly have arisen from the model.
+
+If the observed data are surprising for each distribution in the model, then we have evidence that the model is incorrect. This leads us to think in terms of computing a P-value to check the correctness of the model. Of course, in this situation the null hypothesis is that the model is correct; the alternative is that the model could be any of the other possible models for the type of data we are dealing with.
+
+We recall now our discussion of P-values in Chapter~\ref{ch:6}, where we distinguished between practical significance and statistical significance. It was noted that, while a P-value may indicate that a null hypothesis is false, in practical terms the deviation from the null hypothesis may be so small as to be immaterial for the application. When the sample size gets large, it is inevitable that any reasonable approach via P-values will detect such a deviation and indicate that the null hypothesis is false. This is also true when we are carrying out model checking using P-values. The resolution of this is to estimate, in some fashion, the size of the deviation of the model from correctness, and so determine whether or not the model will be adequate for the application. Even if we ultimately accept the use of the model, it is still valuable to know, however, that we have detected evidence of model incorrectness when this is the case.
+
+One P-value approach to model checking entails specifying a discrepancy statistic
+\[
+D : \mathcal{S} \to R^1
+\]
+that measures deviations from the model under consideration. Typically, large values of $D$ are meant to indicate that a deviation has occurred. The actual value $D(s)$ is, of course, not necessarily an indication of this. The relevant issue is whether or not the observed value $D(s)$ is surprising under the assumption that the model is correct. Therefore, we must assess whether or not $D(s)$ lies in a region of low probability for the distribution of this quantity when the model is correct. For example, consider the density of a potential $D$ statistic plotted in Figure~\ref{fig:9.1.1}. Here a value $D(s)$ in the left tail (near 0), right tail (out past 15), or between the two modes (in the interval from about 7 to 9) all would indicate that the model is incorrect, because such values have a low probability of occurrence when the model is correct.
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_1.pdf}
+  \caption{Plot of a density for a discrepancy statistic $D$.}
+  \label{fig:9.1.1}
+\end{figure}
+
+The above discussion places the restriction that, when the model is correct, $D$ must have a single distribution, i.e., the distribution cannot depend on $\theta$. For many commonly used discrepancy statistics, this distribution is unimodal. A value in the right tail then indicates a lack of fit, or underfitting, by the model (the discrepancies are unnaturally large); a value in the left tail then indicates overfitting by the model (the discrepancies are unnaturally small).
+
+There are two general methods available for obtaining a single distribution for the computation of P-values. One method requires that $D$ be ancillary.
+
+\begin{definition}
+\label{def:9.1.1}
+A statistic $D$ whose distribution under the model does not depend upon $\theta$ is called \emph{ancillary}, i.e., if $s \sim \prb_\theta$, then $D(s)$ has the same distribution for every $\theta \in \Omega$.
+\end{definition}
+
+If $D$ is ancillary, then it has a single distribution specified by the model. If $D(s)$ is a surprising value for this distribution, then we have evidence against the model being true.
+
+It is not the case that any ancillary $D$ will serve as a useful discrepancy statistic. For example, if $D$ is a constant, then it is ancillary, but it is obviously not useful for model checking. So we have to be careful in choosing $D$.
+
+Quite often we can find useful ancillary statistics for a model by looking at residuals. Loosely speaking, residuals are based on the information in the data that is left over after we have fit the model. If we have used all the relevant information in the data for fitting, then the residuals should contain no useful information for inference about the parameter $\theta$. Example~\ref{ex:9.1.1} will illustrate more clearly what we mean by residuals. Residuals play a major role in model checking.
+
+The second method works with any discrepancy statistic $D$. For this, we use the conditional distribution of $D$ given the value of a sufficient statistic $T$. By Theorem~\ref{thm:8.1.2}, this conditional distribution is the same for every value of $\theta$. If $D(s)$ is a surprising value for this distribution, then we have evidence against the model being true.
+
+Sometimes the two approaches we have just described agree, but not always. Consider some examples.
+
+\begin{example}[Location Normal]
+\label{ex:9.1.1}
+Suppose we assume that $x_1, \ldots, x_n$ is a sample from an $\text{N}(\mu, \sigma_0^2)$ distribution, where $\mu \in R^1$ is unknown and $\sigma_0^2$ is known. We know that $\bar{x}$ is a minimal sufficient statistic for this problem (see Example~\ref{ex:6.1.7}). Also, $\bar{x}$ represents the fitting of the model to the data, as it is the estimate of the unknown parameter value $\mu$.
+
+Now consider
+\[
+r = r(x_1, \ldots, x_n) = (r_1, \ldots, r_n) = (x_1 - \bar{x}, \ldots, x_n - \bar{x})
+\]
+as one possible definition of the residual. Note that we can reconstruct the original data from the values of $\bar{x}$ and $r$.
+
+It turns out that $R = (X_1 - \bar{X}, \ldots, X_n - \bar{X})$ has a distribution that is independent of $\mu$, with $\expc(R_i) = 0$ and $\text{Cov}(R_i, R_j) = \sigma_0^2(\delta_{ij} - 1/n)$ for every $i, j$ ($\delta_{ij} = 1$ when $i = j$ and $0$ otherwise). Moreover, $R$ is independent of $\bar{X}$ and $R_i \sim \text{N}(0, \sigma_0^2(1 - 1/n))$ (see Problems~\ref{exer:9.1.19} and~\ref{exer:9.1.20}).
+
+Accordingly, we have that $r$ is ancillary and so is any discrepancy statistic $D$ that depends on the data only through $r$. Furthermore, the conditional distribution of $D(R)$ given $\bar{X} = \bar{x}$ is the same as the marginal distribution of $D(R)$ because they are independent. Therefore, the two approaches to obtaining a P-value agree here, whenever the discrepancy statistic depends on the data only through $r$.
+
+By Theorem~\ref{thm:4.6.6}, we have that
+\[
+D(R) = \frac{1}{\sigma_0^2} \sum_{i=1}^{n} R_i^2 = \frac{1}{\sigma_0^2} \sum_{i=1}^{n} (X_i - \bar{X})^2
+\]
+is distributed $\chi^2(n-1)$, so this is a possible discrepancy statistic. Therefore, the P-value
+\begin{equation}
+\label{eq:9.1.1}
+\prb(D \geqslant D(r))
+\end{equation}
+where $D \sim \chi^2(n-1)$, provides an assessment of whether or not the model is correct.
+
+Note that values of \eqref{eq:9.1.1} near 0 or near 1 are both evidence against the model, as both indicate that $D(r)$ is in a region of low probability when assuming the model is correct. A value near 0 indicates that $D(r)$ is in the right tail, whereas a value near 1 indicates that $D(r)$ is in the left tail.
+
+The necessity of examining the left tail of the distribution of $D(r)$ as well as the right, is seen as follows. Consider the situation where we are in fact sampling from an $\text{N}(\mu, \sigma^2)$ distribution where $\sigma^2$ is much smaller than $\sigma_0^2$. In this case, we expect $D(r)$ to be a value in the left tail, because $\expc(D(R)) = (n-1)\sigma^2/\sigma_0^2$.
+
+There are obviously many other choices that could be made for the $D$ statistic. At present, there is not a theory that prescribes one choice over another. One caution should be noted, however. The choice of a statistic $D$ cannot be based upon looking at the data first. Doing so invalidates the computation of the P-value as described above, as then we must condition on the data feature that led us to choose that particular $D$.
+\end{example}
+
+\begin{example}[Location-Scale Normal]
+\label{ex:9.1.2}
+Suppose we assume that $x_1, \ldots, x_n$ is a sample from an $\text{N}(\mu, \sigma^2)$ distribution, where $(\mu, \sigma^2) \in R^1 \times (0, \infty)$ is unknown. We know that $(\bar{x}, s^2)$ is a minimal sufficient statistic for this model (Example~\ref{ex:6.1.8}). Consider
+\[
+r = r(x_1, \ldots, x_n) = (r_1, \ldots, r_n) = \left(\frac{x_1 - \bar{x}}{s}, \ldots, \frac{x_n - \bar{x}}{s}\right)
+\]
+as one possible definition of the residual. Note that we can reconstruct the data from the values of $\bar{x}$, $s^2$, and $r$.
+
+It turns out $R$ has a distribution that is independent of $(\mu, \sigma^2)$ (and hence is ancillary --- see Challenge~\ref{exer:9.1.28}) as well as independent of $(\bar{X}, S^2)$. So again, the two approaches to obtaining a P-value agree here, as long as the discrepancy statistic depends on the data only through $r$.
+
+One possible discrepancy statistic is given by
+\[
+D(r) = \frac{1}{n} \sum_{i=1}^{n} \ln\left(\frac{r_i^2}{n-1}\right).
+\]
+To use this statistic for model checking, we need to obtain its distribution when the model is correct. Then we compare the observed value $D(r)$ with this distribution, to see if it is surprising.
+
+We can do this via simulation. Because the distribution of $D(R)$ is independent of $(\mu, \sigma^2)$, we can generate $N$ samples of size $n$ from the $\text{N}(0, 1)$ distribution (or any other normal distribution) and calculate $D(R)$ for each sample. Then we look at histograms of the simulated values to see if $D(r)$, from the original sample, is a surprising value, i.e., if it lies in a region of low probability like a left or right tail.
+
+For example, suppose we observed the sample
+\[
+-2.08, \quad 0.28, \quad 2.01, \quad 1.37, \quad 40.08
+\]
+obtaining the value $D(r) = 4.93$. Then, simulating $10^4$ values from the distribution of $D$ under the assumption of model correctness, we obtained the density histogram given in Figure~\ref{fig:9.1.2}. See Appendix~B for some code used to carry out this simulation. The value $D(r) = 4.93$ is out in the right tail and thus indicates that the sample is not from a normal distribution. In fact, only $0.0057$ of the simulated values are larger, so this is definite evidence against the model being correct.
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_2.pdf}
+  \caption{A density histogram for a simulation of $10^4$ values of $D$ in Example~\ref{ex:9.1.2}.}
+  \label{fig:9.1.2}
+\end{figure}
+
+Obviously, there are other possible functions of $r$ that we could use for model checking here. In particular, $D_{\text{skew}}(r) = n^{-1}(3/2) \sum_{i=1}^{n} r_i^3$, the skewness statistic, and $D_{\text{kurtosis}}(r) = n^{-1}(2) \sum_{i=1}^{n} r_i^4$, the kurtosis statistic, are commonly used. The skewness statistic measures the symmetry in the data, while the kurtosis statistic measures the ``peakedness'' in the data. As just described, we can simulate the distribution of these statistics under the normality assumption and then compare the observed values with these distributions to see if we have any evidence against the model (see Computer Problem~\ref{exer:9.1.27}).
+\end{example}
+
+The following examples present contexts in which the two approaches to computing a P-value for model checking are not the same.
+
+\begin{example}[Location-Scale Cauchy]
+\label{ex:9.1.3}
+Suppose we assume that $x_1, \ldots, x_n$ is a sample from the distribution given by $\mu + \sigma Z$ where $Z \sim t(1)$ and $(\mu, \sigma^2) \in R^1 \times (0, \infty)$ is unknown. This time, $(\bar{x}, s^2)$ is not a minimal sufficient statistic, but the statistic $r$ defined in Example~\ref{ex:9.1.2} is still ancillary (Challenge~\ref{exer:9.1.28}). We can again simulate values from the distribution of $R$ (just generate samples from the $t(1)$ distribution and compute $r$ for each sample) to estimate P-values for any discrepancy statistic such as the $D(r)$ statistics discussed in Example~\ref{ex:9.1.2}.
+\end{example}
+
+\begin{example}[Fisher's Exact Test]
+\label{ex:9.1.4}
+Suppose we take a sample of $n$ from a population of students and observe the values $(a_1, b_1), \ldots, (a_n, b_n)$, where $a_i$ is gender ($A = 1$ indicating male, $A = 2$ indicating female) and $b_i$ is a categorical variable for part-time employment status ($B = 1$ indicating employed, $B = 2$ indicating unemployed). So each individual is being categorized into one of four categories, namely,
+\begin{align*}
+&\text{Category 1, when } A = 1, B = 1\\
+&\text{Category 2, when } A = 1, B = 2\\
+&\text{Category 3, when } A = 2, B = 1\\
+&\text{Category 4, when } A = 2, B = 2
+\end{align*}
+
+Suppose our model for this situation is that $A$ and $B$ are independent with $\prb(A = 1) = \theta_1$, $\prb(B = 1) = \theta_{\cdot 1}$, where $\theta_1 \in [0, 1]$ and $\theta_{\cdot 1} \in [0, 1]$ are completely unknown. Then letting $X_{ij}$ denote the count for the category, where $A = i$, $B = j$, Example~\ref{ex:2.8.5} gives that
+\[
+(X_{11}, X_{12}, X_{21}, X_{22}) \sim \text{Multinomial}(n, \theta_1\theta_{\cdot 1}, \theta_1\theta_{\cdot 2}, \theta_2\theta_{\cdot 1}, \theta_2\theta_{\cdot 2}).
+\]
+As we will see in Chapter~\ref{ch:10}, this model is equivalent to saying that there is no relationship between gender and employment status.
+
+Denoting the observed cell counts by $(x_{11}, x_{12}, x_{21}, x_{22})$, the likelihood function is given by
+\begin{align*}
+&(\theta_1\theta_{\cdot 1})^{x_{11}} (\theta_1\theta_{\cdot 2})^{x_{12}} (\theta_2\theta_{\cdot 1})^{x_{21}} (\theta_2\theta_{\cdot 2})^{x_{22}}\\
+&= \theta_1^{x_{11}+x_{12}} (1-\theta_1)^{n-x_{11}-x_{12}} \theta_{\cdot 1}^{x_{11}+x_{21}} (1-\theta_{\cdot 1})^{n-x_{11}-x_{21}}\\
+&= \theta_1^{x_{1\cdot}} (1-\theta_1)^{n-x_{1\cdot}} \theta_{\cdot 1}^{x_{\cdot 1}} (1-\theta_{\cdot 1})^{n-x_{\cdot 1}}
+\end{align*}
+where $(x_{1\cdot}, x_{\cdot 1}) = (x_{11} + x_{12}, x_{11} + x_{21})$. Therefore, the MLE (Problem~\ref{exer:9.1.14}) is given by
+\[
+(\hat{\theta}_1, \hat{\theta}_{\cdot 1}) = \left(\frac{x_{1\cdot}}{n}, \frac{x_{\cdot 1}}{n}\right).
+\]
+Note that $\hat{\theta}_1$ is the proportion of males in the sample and $\hat{\theta}_{\cdot 1}$ is the proportion of all employed in the sample. Because $(x_{1\cdot}, x_{\cdot 1})$ determines the likelihood function and can be calculated from the likelihood function, we have that $(x_{1\cdot}, x_{\cdot 1})$ is a minimal sufficient statistic.
+
+In this example, a natural definition of residual does not seem readily apparent. So we consider looking at the conditional distribution of the data, given the minimal sufficient statistic. The conditional distribution of the sample $(A_1, B_1), \ldots, (A_n, B_n)$ given the values $(x_{1\cdot}, x_{\cdot 1})$ is the uniform distribution on the set of all samples where the restrictions
+\begin{align}
+x_{11} + x_{12} &= x_{1\cdot} \notag\\
+x_{11} + x_{21} &= x_{\cdot 1} \notag\\
+x_{11} + x_{12} + x_{21} + x_{22} &= n \label{eq:9.1.2}
+\end{align}
+are satisfied. Notice that, given $(x_{1\cdot}, x_{\cdot 1})$, all the other values in \eqref{eq:9.1.2} are determined when we specify a value for $x_{11}$.
+
+It can be shown that the number of such samples is equal to (see Problem~\ref{exer:9.1.21})
+\[
+\binom{n}{x_{1\cdot}} \binom{n}{x_{\cdot 1}}.
+\]
+Now the number of samples with prescribed values for $(x_{1\cdot}, x_{\cdot 1})$ and $x_{11} = i$ is given by
+\[
+\binom{n}{x_{1\cdot}} \binom{x_{1\cdot}}{i} \binom{n - x_{1\cdot}}{x_{\cdot 1} - i}.
+\]
+Therefore, the conditional probability function of $x_{11}$ given $(x_{1\cdot}, x_{\cdot 1})$ is
+\[
+\prb(x_{11} = i \mid x_{1\cdot}, x_{\cdot 1}) = \frac{\binom{n}{x_{1\cdot}} \binom{x_{1\cdot}}{i} \binom{n - x_{1\cdot}}{x_{\cdot 1} - i}}{\binom{n}{x_{1\cdot}} \binom{n}{x_{\cdot 1}}} = \frac{\binom{x_{1\cdot}}{i} \binom{n - x_{1\cdot}}{x_{\cdot 1} - i}}{\binom{n}{x_{\cdot 1}}}.
+\]
+This is the Hypergeometric$(n, x_{\cdot 1}, x_{1\cdot})$ probability function.
+
+So we have evidence against the model holding whenever $x_{11}$ is out in the tails of this distribution. Assessing this requires a tabulation of this distribution or the use of a statistical package with the hypergeometric distribution function built in.
+
+As a simple numerical example, suppose that we took a sample of $n = 20$ students, obtaining $x_{\cdot 1} = 12$ unemployed, $x_{1\cdot} = 6$ males, and $x_{11} = 2$ employed males. Then the Hypergeometric$(20, 12, 6)$ probability function is given by the following table.
+\begin{center}
+\begin{tabular}{c|ccccccc}
+$i$ & 0 & 1 & 2 & 3 & 4 & 5 & 6\\
+\hline
+$p(i)$ & 0.001 & 0.017 & 0.119 & 0.318 & 0.358 & 0.163 & 0.024
+\end{tabular}
+\end{center}
+The probability of getting a value as far, or farther, out in the tails than $x_{11} = 2$ is equal to the probability of observing a value of $x_{11}$ with probability of occurrence as small as or smaller than $x_{11} = 2$. This P-value equals
+\[
+0.119 + 0.017 + 0.001 + 0.024 = 0.161.
+\]
+Therefore, we have no evidence against the model of independence between $A$ and $B$. Of course, the sample size is quite small here.
+
+There is another approach here to testing the independence of $A$ and $B$. In particular, we could only assume the independence of the initial unclassified sample, and then we always have
+\[
+(X_{11}, X_{12}, X_{21}, X_{22}) \sim \text{Multinomial}(n, \theta_{11}, \theta_{12}, \theta_{21}, \theta_{22})
+\]
+where the $\theta_{ij}$ comprise an unknown probability distribution. Given this model, we could then test for the independence of $A$ and $B$. We will discuss this in Section~\ref{sec:10.2}.
+\end{example}
+
+Another approach to model checking proceeds as follows. We enlarge the model to include more distributions and then test the null hypothesis that the true model is the submodel we initially started with. If we can apply the methods of Section~\ref{sec:8.2} to come up with a uniformly most powerful (UMP) test of this null hypothesis, then we will have a check of departures from the model of interest --- at least as expressed by the possible alternatives in the enlarged model. If the model passes such a check, however, we are still required to check the validity of the enlarged model. This can be viewed as a technique for generating relevant discrepancy statistics $D$.
+
+\subsection{Residual and Probability Plots}
+\label{ssec:9.1.1}
+
+There is another, more informal approach to checking model correctness that is often used when we have residuals available. These methods involve various plots of the residuals that should exhibit specific characteristics if the model is correct. While this approach lacks the rigor of the P-value approach, it is good at demonstrating gross deviations from model assumptions. We illustrate this via some examples.
+
+\begin{example}[Location and Location-Scale Normal Models]
+\label{ex:9.1.5}
+Using the residuals for the location normal model discussed in Example~\ref{ex:9.1.1}, we have that $\expc(R_i) = 0$ and $\var(R_i) = \sigma_0^2(1 - 1/n)$. We standardize these values so that they also have variance 1, and so obtain the standardized residuals $r_1^*, \ldots, r_n^*$ given by
+\begin{equation}
+\label{eq:9.1.3}
+r_i^* = \sqrt{\frac{n}{\sigma_0^2(n-1)}}(x_i - \bar{x}).
+\end{equation}
+The standardized residuals are distributed $\text{N}(0, 1)$ and, assuming that $n$ is reasonably large, it can be shown that they are approximately independent. Accordingly, we can think of $r_1^*, \ldots, r_n^*$ as an approximate sample from the $\text{N}(0, 1)$ distribution.
+
+Therefore, a plot of the points $(i, r_i^*)$ should not exhibit any discernible pattern. Furthermore, all the values in the $y$-direction should lie in $(-3, 3)$ unless of course $n$ is very large, in which case we might expect a few values outside this interval. A discernible pattern, or several extreme values, can be taken as some evidence that the model assumption is not correct. Always keep in mind, however, that any observed pattern could have arisen simply from sampling variability when the true model is correct. Simulating a few of these residual plots (just generating several samples of $n$ from the $\text{N}(0, 1)$ distribution and obtaining a residual plot for each sample) will give us some idea of whether or not the observed pattern is unusual.
+
+Figure~\ref{fig:9.1.3} shows a plot of the standardized residuals \eqref{eq:9.1.3} for a sample of 100 from the $\text{N}(0, 1)$ distribution. Figure~\ref{fig:9.1.4} shows a plot of the standardized residuals for a sample of 100 from the distribution given by $3^{-1/2}Z$ where $Z \sim t(3)$. Note that a $t(3)$ distribution has mean 0 and variance equal to 3, so $\var(3^{-1/2}Z) = 1$ (Problem~\ref{exer:4.6.16}). Figure~\ref{fig:9.1.5} shows the standardized residuals for a sample of 100 from an Exponential$(1)$ distribution.
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_3.pdf}
+  \caption{A plot of the standardized residuals for a sample of 100 from an $\text{N}(0, 1)$ distribution.}
+  \label{fig:9.1.3}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_4.pdf}
+  \caption{A plot of the standardized residuals for a sample of 100 from $X = 3^{-1/2}Z$ where $Z \sim t(3)$.}
+  \label{fig:9.1.4}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_5.pdf}
+  \caption{A plot of the standardized residuals for a sample of 100 from an Exponential$(1)$ distribution.}
+  \label{fig:9.1.5}
+\end{figure}
+
+Note that the distributions of the standardized residuals for all these samples have mean 0 and variance equal to 1. The difference in Figures~\ref{fig:9.1.3} and~\ref{fig:9.1.4} is due to the fact that the $t$ distribution has much longer tails. This is reflected in the fact that a few of the standardized residuals are outside $(-3, 3)$ in Figure~\ref{fig:9.1.4} but not in Figure~\ref{fig:9.1.3}. Even though the two distributions are quite different --- e.g., the $\text{N}(0, 1)$ distribution has all of its moments whereas the $3^{-1/2}t(3)$ distribution has only two moments --- the plots of the standardized residuals are otherwise very similar. The difference in Figures~\ref{fig:9.1.3} and~\ref{fig:9.1.5} is due to the asymmetry in the Exponential$(1)$ distribution, as it is skewed to the right.
+
+Using the residuals for the location-scale normal model discussed in Example~\ref{ex:9.1.2}, we define the standardized residuals $r_1^*, \ldots, r_n^*$ by
+\begin{equation}
+\label{eq:9.1.4}
+r_i^* = \sqrt{\frac{n}{s^2(n-1)}}(x_i - \bar{x}).
+\end{equation}
+Here, the unknown variance is estimated by $s^2$. Again, it can be shown that when $n$ is large, then $r_1^*, \ldots, r_n^*$ is an approximate sample from the $\text{N}(0, 1)$ distribution. So we plot the values $(i, r_i^*)$ and interpret the plot just as we described for the location normal model.
+\end{example}
+
+It is very common in statistical applications to assume some basic form for the distribution of the data, e.g., we might assume we are sampling from a normal distribution with some mean and variance. To assess such an assumption, the use of a \emph{probability plot} has proven to be very useful.
+
+To illustrate, suppose that $x_1, \ldots, x_n$ is a sample from an $\text{N}(\mu, \sigma^2)$ distribution. Then it can be shown that when $n$ is large, the expectation of the $i$-th order statistic satisfies
+\begin{equation}
+\label{eq:9.1.5}
+\expc(X_{(i)}) \approx \mu + \sigma\Phi^{-1}\left(\frac{i}{n+1}\right).
+\end{equation}
+If the data value $x_j$ corresponds to order statistic $x_{(i)}$ (i.e., $x_{(i)} = x_j$), then we call $\Phi^{-1}(i/(n+1))$ the \emph{normal score} of $x_j$ in the sample. Then \eqref{eq:9.1.5} indicates that if we plot the points $(x_{(i)}, \Phi^{-1}(i/(n+1)))$, these should lie approximately on a line with intercept $-\mu/\sigma$ and slope $1/\sigma$. We call such a plot a \emph{normal probability plot} or \emph{normal quantile plot}. Similar plots can be obtained for other distributions.
+
+\begin{example}[Location-Scale Normal]
+\label{ex:9.1.6}
+Suppose we want to assess whether or not the following data set can be considered a sample of size $n = 10$ from some normal distribution.
+\[
+2.00, \quad 0.28, \quad 0.47, \quad 3.33, \quad 1.66, \quad 8.17, \quad 1.18, \quad 4.15, \quad 6.43, \quad 1.77
+\]
+The order statistics and associated normal scores for this sample are given in the following table.
+\begin{center}
+\begin{tabular}{c|ccccc}
+$i$ & 1 & 2 & 3 & 4 & 5\\
+\hline
+$x_{(i)}$ & 0.28 & 0.47 & 1.18 & 1.66 & 1.77\\
+$\Phi^{-1}(i/(n+1))$ & $-1.34$ & $-0.91$ & $-0.61$ & $-0.35$ & $-0.12$
+\end{tabular}
+\end{center}
+\begin{center}
+\begin{tabular}{c|ccccc}
+$i$ & 6 & 7 & 8 & 9 & 10\\
+\hline
+$x_{(i)}$ & 2.00 & 3.33 & 4.15 & 6.43 & 8.17\\
+$\Phi^{-1}(i/(n+1))$ & 0.11 & 0.34 & 0.60 & 0.90 & 1.33
+\end{tabular}
+\end{center}
+The values $(x_{(i)}, \Phi^{-1}(i/(n+1)))$ are then plotted in Figure~\ref{fig:9.1.6}. There is some definite deviation from a straight line here, but note that it is difficult to tell whether this is unexpected in a sample of this size from a normal distribution. Again, simulating a few samples of the same size (say, from an $\text{N}(0, 1)$ distribution) and looking at their normal probability plots is recommended. In this case, we conclude that the plot in Figure~\ref{fig:9.1.6} looks reasonable.
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_6.pdf}
+  \caption{Normal probability plot of the data in Example~\ref{ex:9.1.6}.}
+  \label{fig:9.1.6}
+\end{figure}
+\end{example}
+
+We will see in Chapter~\ref{ch:10} that the use of normal probability plots of standardized residuals is an important part of model checking for more complicated models. So, while they are not really needed here, we consider some of the characteristics of such plots when assessing whether or not a sample is from a location normal or location-scale normal model.
+
+Assume that $n$ is large so that we can consider the standardized residuals, given by \eqref{eq:9.1.3} or \eqref{eq:9.1.4} as an approximate sample from the $\text{N}(0, 1)$ distribution. Then a normal probability plot of the standardized residuals should be approximately linear, with $y$-intercept approximately equal to 0 and slope approximately equal to 1. If we get a substantial deviation from this, then we have evidence that the assumed model is incorrect.
+
+In Figure~\ref{fig:9.1.7}, we have plotted a normal probability plot of the standardized residuals for a sample of $n = 25$ from an $\text{N}(0, 1)$ distribution. In Figure~\ref{fig:9.1.8}, we have plotted a normal probability plot of the standardized residuals for a sample of $n = 25$ from the distribution given by $X = 3^{-1/2}Z$ where $Z \sim t(3)$. Both distributions have mean 0 and variance 1, so the difference in the normal probability plots is due to other distributional differences.
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_7.pdf}
+  \caption{Normal probability plot of the standardized residuals of a sample of 25 from an $\text{N}(0, 1)$ distribution.}
+  \label{fig:9.1.7}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_8.pdf}
+  \caption{Normal probability plot of the standardized residuals of a sample of 25 from $X = 3^{-1/2}Z$ where $Z \sim t(3)$.}
+  \label{fig:9.1.8}
+\end{figure}
+
+\subsection{The Chi-Squared Goodness of Fit Test}
+\label{ssec:9.1.2}
+
+The chi-squared goodness of fit test has an important historical place in any discussion of assessing model correctness. We use this test to assess whether or not a categorical random variable $W$, which takes its values in the finite sample space $\{1, 2, \ldots, k\}$, has a specified probability measure $P$, after having observed a sample $\omega_1, \ldots, \omega_n$. When we have a random variable that is discrete and takes infinitely many values, then we partition the possible values into $k$ categories and let $W$ simply indicate which category has occurred. If we have a random variable that is quantitative, then we partition $R^1$ into $k$ subintervals and let $W$ indicate in which interval the response occurred. In effect, we want to check whether or not a specific probability model, as given by $P$, is correct for $W$ based on an observed sample.
+
+Let $X_1, \ldots, X_k$ be the observed counts or frequencies of $1, \ldots, k$ respectively. If $P$ is correct, then, from Example~\ref{ex:2.8.5},
+\[
+(X_1, \ldots, X_k) \sim \text{Multinomial}(n, p_1, \ldots, p_k)
+\]
+where $p_i = P(\{i\})$. This implies that $\expc(X_i) = np_i$ and $\var(X_i) = np_i(1 - p_i)$ (recall that $X_i \sim \text{Binomial}(n, p_i)$). From this, we deduce that
+\begin{equation}
+\label{eq:9.1.6}
+R_i = \frac{X_i - np_i}{\sqrt{np_i(1 - p_i)}} \xrightarrow{D} \text{N}(0, 1)
+\end{equation}
+as $n \to \infty$ (see Example~\ref{ex:4.4.9}).
+
+For finite $n$, the distribution of $R_i$, when the model is correct, is dependent on $P$, but the limiting distribution is not. Thus we can think of the $R_i$ as standardized residuals when $n$ is large. Therefore, it would seem that a reasonable discrepancy statistic is given by the sum of the squares of the standardized residuals with $\sum_{i=1}^{k} R_i^2$ approximately distributed $\chi^2(k)$. The restriction $x_1 + \cdots + x_k = n$ holds, however, so the $R_i$ are not independent and the limiting distribution is not $\chi^2(k)$. We do, however, have the following result, which provides a similar discrepancy statistic.
+
+\begin{theorem}
+\label{thm:9.1.1}
+If $(X_1, \ldots, X_k) \sim \text{Multinomial}(n, p_1, \ldots, p_k)$, then
+\[
+X^2 = \sum_{i=1}^{k} (1 - p_i) R_i^2 = \sum_{i=1}^{k} \frac{(X_i - np_i)^2}{np_i} \xrightarrow{D} \chi^2(k-1)
+\]
+as $n \to \infty$.
+\end{theorem}
+
+The proof of this result is a little too involved for this text, so see, for example, Theorem~17.2 of \emph{Asymptotic Statistics} by A.~W.\ van der Vaart (Cambridge University Press, Cambridge, 1998), which we will use here.
+
+We refer to $X^2$ as the \emph{chi-squared statistic}. The process of assessing the correctness of the model by computing the P-value $\prb(X^2 \geqslant X_0^2)$, where $X^2 \sim \chi^2(k-1)$ and $X_0^2$ is the observed value of the chi-squared statistic, is referred to as the \emph{chi-squared goodness of fit test}. Small P-values near 0 provide evidence of the incorrectness of the probability model. Small P-values indicate that some of the residuals are too large.
+
+Note that the $i$th term of the chi-squared statistic can be written as
+\[
+\frac{(X_i - np_i)^2}{np_i} = \frac{(\text{number in the }i\text{th cell} - \text{expected number in the }i\text{th cell})^2}{\text{expected number in the }i\text{th cell}}.
+\]
+It is recommended, for example, in \emph{Statistical Methods}, by G.~Snedecor and W.~Cochran (Iowa State Press, 6th ed., Ames, 1967) that grouping (combining cells) be employed to ensure that $\expc(X_i) = np_i \geqslant 1$ for every $i$, as simulations have shown that this improves the accuracy of the approximation to the P-value.
+
+We consider an important application.
+
+\begin{example}[Testing the Accuracy of a Random Number Generator]
+\label{ex:9.1.7}
+In effect, every Monte Carlo simulation can be considered to be a set of mathematical operations applied to a stream of numbers $U_1, U_2, \ldots$ in $[0, 1]$ that are supposed to be i.i.d.\ Uniform$[0, 1]$. Of course, they cannot satisfy this requirement exactly because they are generated according to some deterministic function. Typically, a function $f : [0, 1]^m \to [0, 1]$ is chosen and is applied iteratively to obtain the sequence. So we select $U_1, \ldots, U_m$ as initial seed values and then $U_{m+1} = f(U_1, \ldots, U_m)$, $U_{m+2} = f(U_2, \ldots, U_{m+1})$, etc. There are many possibilities for $f$, and a great deal of research and study have gone into selecting functions that will produce sequences that adequately mimic the properties of an i.i.d.\ Uniform$[0, 1]$ sequence.
+
+Of course, it is always possible that the underlying $f$ used in a particular statistical package or other piece of software is very poor. In such a case, the results of the simulations can be grossly in error. How do we assess whether a particular $f$ is good or not? One approach is to run a battery of statistical tests to see whether the sequence is behaving as we know an ideal sequence would.
+
+For example, if the sequence $U_1, U_2, \ldots$ is i.i.d.\ Uniform$[0, 1]$, then
+\[
+\lceil 10U_1 \rceil, \lceil 10U_2 \rceil, \ldots
+\]
+is i.i.d.\ Uniform$\{1, 2, \ldots, 10\}$ ($\lceil x \rceil$ denotes the smallest integer greater than $x$, e.g., $\lceil 3.2 \rceil = 4$). So we can test the adequacy of the underlying function $f$ by generating $U_1, \ldots, U_n$ for large $n$, putting $x_i = \lceil 10U_i \rceil$, and then carrying out a chi-squared goodness of fit test with the 10 categories $\{1, \ldots, 10\}$ with each cell probability equal to $1/10$.
+
+Doing this using a popular statistical package (with $n = 10^4$) gave the following table of counts $x_i$ and standardized residuals $r_i$ as specified in \eqref{eq:9.1.6}.
+\begin{center}
+\begin{tabular}{c|cc}
+$i$ & $x_i$ & $r_i$\\
+\hline
+1 & 993 & $-0.23333$\\
+2 & 1044 & $1.46667$\\
+3 & 1061 & $2.03333$\\
+4 & 1021 & $0.70000$\\
+5 & 1017 & $0.56667$\\
+6 & 973 & $-0.90000$\\
+7 & 975 & $-0.83333$\\
+8 & 965 & $-1.16667$\\
+9 & 996 & $-0.13333$\\
+10 & 955 & $-1.50000$
+\end{tabular}
+\end{center}
+All the standardized residuals look reasonable as possible values from an $\text{N}(0, 1)$ distribution. Furthermore,
+\begin{align*}
+X_0^2 &= (1 - 0.1)\bigl[(-0.23333)^2 + (1.46667)^2 + (2.03333)^2\\
+&\quad + (0.70000)^2 + (0.56667)^2 + (-0.90000)^2\\
+&\quad + (-0.83333)^2 + (-1.16667)^2 + (-0.13333)^2\\
+&\quad + (-1.50000)^2\bigr]\\
+&= 11.0560
+\end{align*}
+gives the P-value $\prb(X^2 \geqslant 11.0560) = 0.27190$ when $X^2 \sim \chi^2(9)$. This indicates that we have no evidence that the random number generator is defective.
+
+Of course, the story does not end with a single test like this. Many other features of the sequence should be tested. For example, we might want to investigate the independence properties of the sequence and so test if each possible combination of $(i, j)$ occurs with probability $1/100$, etc.
+\end{example}
+
+More generally, we will not have a prescribed probability distribution $P$ for $X$ but rather a statistical model $\{\prb_\theta : \theta \in \Omega\}$ where each $\prb_\theta$ is a probability measure on the finite set $\{1, 2, \ldots, k\}$. Then, based on the sample from the model, we have that
+\[
+(X_1, \ldots, X_k) \sim \text{Multinomial}(n, p_1(\theta), \ldots, p_k(\theta))
+\]
+where $p_i(\theta) = \prb_\theta(\{i\})$.
+
+Perhaps a natural way to assess whether or not this model fits the data is to find the MLE $\hat{\theta}$ from the likelihood function
+\[
+L_{\theta}(x_1, \ldots, x_k) = p_1(\theta)^{x_1} \cdots p_k(\theta)^{x_k}
+\]
+and then look at the standardized residuals
+\[
+r_i = \frac{x_i - np_i(\hat{\theta})}{\sqrt{np_i(\hat{\theta})(1 - p_i(\hat{\theta}))}}.
+\]
+We have the following result, which we state without proof.
+
+\begin{theorem}
+\label{thm:9.1.2}
+Under conditions (similar to those discussed in Section~\ref{sec:6.5}), we have that $R_i \xrightarrow{D} \emph{N}(0, 1)$ and
+\[
+X^2 = \sum_{i=1}^{k} (1 - p_i(\hat{\theta})) R_i^2 = \sum_{i=1}^{k} \frac{(X_i - np_i(\hat{\theta}))^2}{np_i(\hat{\theta})} \xrightarrow{D} \chi^2(k - 1 - \dim(\Omega))
+\]
+as $n \to \infty$.
+\end{theorem}
+
+By $\dim(\Omega)$ we mean the dimension of the set $\Omega$. Loosely speaking, this is the minimum number of coordinates required to specify a point in the set, e.g., a line requires one coordinate (positive or negative distance from a fixed point), a circle requires one coordinate, a plane in $R^3$ requires two coordinates, etc. Of course, this result implies that the number of cells must satisfy $k - 1 > \dim(\Omega)$.
+
+Consider an example.
+
+\begin{example}[Testing for Exponentiality]
+\label{ex:9.1.8}
+Suppose that a sample of lifelengths of light bulbs (measured in thousands of hours) is supposed to be from an Exponential$(\lambda)$ distribution, where $\lambda > 0$ is unknown. So here $\dim(\Omega) = 1$ and we require at least two cells for the chi-squared test. The manufacturer expects that most bulbs will last at least 1000 hours, 50\% will last less than 2000 hours, and most will have failed by 3000 hours. So based on this, we partition the sample space as
+\[
+(0, \infty) = (0, 1] \cup (1, 2] \cup (2, 3] \cup (3, \infty).
+\]
+
+Suppose that a sample of $n = 30$ light bulbs was taken and that the counts $x_1 = 5$, $x_2 = 16$, $x_3 = 8$, and $x_4 = 1$ were obtained for the four intervals, respectively. Then the likelihood function based on these counts is given by
+\[
+L_\lambda(x_1, \ldots, x_4) = (1 - e^{-\lambda})^5 (e^{-\lambda} - e^{-2\lambda})^{16} (e^{-2\lambda} - e^{-3\lambda})^8 (e^{-3\lambda})^1
+\]
+because, for example, the probability of a value falling in $(1, 2]$ is $e^{-\lambda} - e^{-2\lambda}$ and we have $x_2 = 16$ observations in this interval. Figure~\ref{fig:9.1.9} is a plot of the log-likelihood.
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_9.pdf}
+  \caption{Plot of the log-likelihood function in Example~\ref{ex:9.1.8}.}
+  \label{fig:9.1.9}
+\end{figure}
+
+By successively plotting the likelihood on shorter and shorter intervals, the MLE was determined to be $\hat{\lambda} = 0.603535$. This value leads to the probabilities
+\begin{align*}
+\hat{p}_1 &= 1 - e^{-0.603535} = 0.453125\\
+\hat{p}_2 &= e^{-0.603535} - e^{-2(0.603535)} = 0.247803\\
+\hat{p}_3 &= e^{-2(0.603535)} - e^{-3(0.603535)} = 0.135517\\
+\hat{p}_4 &= e^{-3(0.603535)} = 0.163555
+\end{align*}
+the fitted values
+\begin{align*}
+30\hat{p}_1 &= 13.59375\\
+30\hat{p}_2 &= 7.43409\\
+30\hat{p}_3 &= 4.06551\\
+30\hat{p}_4 &= 4.90665
+\end{align*}
+and the standardized residuals
+\begin{align*}
+r_1 &= \frac{5 - 13.59375}{\sqrt{30 \cdot 0.453125 \cdot (1 - 0.453125)}} = -3.151875\\
+r_2 &= \frac{16 - 7.43409}{\sqrt{30 \cdot 0.247803 \cdot (1 - 0.247803)}} = 3.622378\\
+r_3 &= \frac{8 - 4.06551}{\sqrt{30 \cdot 0.135517 \cdot (1 - 0.135517)}} = 2.098711\\
+r_4 &= \frac{1 - 4.90665}{\sqrt{30 \cdot 0.163555 \cdot (1 - 0.163555)}} = -1.928382
+\end{align*}
+Note that two of the standardized residuals look large. Finally, we compute
+\begin{align*}
+X_0^2 &= (1 - 0.453125)(-3.151875)^2 + (1 - 0.247803)(3.622378)^2\\
+&\quad + (1 - 0.135517)(2.098711)^2 + (1 - 0.163555)(-1.928382)^2\\
+&= 22.221018
+\end{align*}
+and
+\[
+\prb(X^2 \geqslant 22.221018) = 0.0000
+\]
+when $X^2 \sim \chi^2(2)$. Therefore, we have strong evidence that the Exponential model is not correct for these data and we would not use this model to make inference about $\lambda$.
+
+Note that we used the MLE of $\lambda$ based on the count data and not the original sample! If instead we were to use the MLE for $\lambda$ based on the original sample (in this case, equal to $\bar{x}$ and so much easier to compute), then Theorem~\ref{thm:9.1.2} would no longer be valid.
+\end{example}
+
+The chi-squared goodness of fit test is but one of many discrepancy statistics that have been proposed for model checking in the statistical literature. The general approach is to select a discrepancy statistic $D$ like $X^2$ such that the exact or asymptotic distribution of $D$ is independent of $\theta$ and known. We then compute a P-value based on $D$. The Kolmogorov--Smirnov test and the Cramer--von Mises test are further examples of such discrepancy statistics, but we do not discuss these here.
+
+\subsection{Prediction and Cross-Validation}
+\label{ssec:9.1.3}
+
+Perhaps the most rigorous test that a scientific model or theory can be subjected to is assessing how well it predicts new data after it has been fit to an independent data set. In fact, this is a crucial step in the acceptance of any new empirically developed scientific theory --- to be accepted, it must predict new results beyond the data that led to its formulation.
+
+If a model does not do a good job at predicting new data, then it is reasonable to say that we have evidence against the model being correct. If the model is too simple, then the fitted model will underfit the observed data and also the future data. If the model is too complicated, then the model will overfit the original data, and this will be detected when we consider the new data in light of this fitted model.
+
+In statistical applications, we typically cannot wait until new data are generated to check the model. So statisticians use a technique called \emph{cross-validation}. For this, we split an original data set $x_1, \ldots, x_n$ into two parts: the \emph{training set} $T$ comprising $k$ of the data values and used to fit the model; and the \emph{validation set} $V$, which comprises the remaining $n - k$ data values. Based on the training data, we construct predictors of various aspects of the validation data. Using the discrepancies between the predicted and actual values, we then assess whether or not the validation set $V$ is surprising as a possible future sample from the model.
+
+Of course, there are
+\[
+\binom{n}{k}
+\]
+possible such splits of the data and we would not want to make a decision based on just one of these. So a cross-validational analysis will have to take this into account. Furthermore, we will have to decide how to measure the discrepancies between $T$ and $V$ and choose a value for $k$. We do not pursue this topic any further in this text.
+
+\subsection{What Do We Do When a Model Fails?}
+\label{ssec:9.1.4}
+
+So far we have been concerned with determining whether or not an assumed model is appropriate given observed data. Suppose the result of our model checking is that we decide a particular model is inappropriate. What do we do now?
+
+Perhaps the obvious response is to say that we have to come up with a more appropriate model --- one that will pass our model checking. It is not obvious how we should go about this, but statisticians have devised some techniques.
+
+One of the simplest techniques is the method of transformations. For example, suppose that we observe a sample $y_1, \ldots, y_n$ from the distribution given by $Y = \exp(X)$ with $X \sim \text{N}(\mu, \sigma^2)$. A normal probability plot based on the $y_i$, as in Figure~\ref{fig:9.1.10}, will detect evidence of the nonnormality of the distribution. Transforming these $y_i$ values to $\ln y_i$ will, however, yield a reasonable looking normal probability plot, as in Figure~\ref{fig:9.1.11}.
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_10.pdf}
+  \caption{A normal probability plot of a sample of $n = 50$ from the distribution given by $Y = \exp(X)$ with $X \sim \text{N}(0, 1)$.}
+  \label{fig:9.1.10}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_1_11.pdf}
+  \caption{A normal probability plot of a sample of $n = 50$ from the distribution given by $\ln Y$, where $Y = \exp(X)$ and $X \sim \text{N}(0, 1)$.}
+  \label{fig:9.1.11}
+\end{figure}
+
+So in this case, a simple transformation of the sample yields a data set that passes this check. In fact, this is something statisticians commonly do. Several transformations from the family of power transformations given by $Y^p$ for $p \neq 0$ or the logarithm transformation $\ln Y$ are tried to see if a distributional assumption can be satisfied by a transformed sample. We will see some applications of this in Chapter~\ref{ch:10}. Surprisingly, this simple technique often works, although there are no guarantees that it always will.
+
+Perhaps the most commonly applied transformation is the logarithm when our data values are positive (note that this is a necessity for this transformation). Another very common transformation is the square root transformation, i.e., $p = 1/2$, when we have count data. Of course, it is not correct to try many, many transformations until we find one that makes the probability plots or residual plots look acceptable. Rather, we try a few simple transformations.
+
+\bigskip
+\noindent\textbf{Summary of Section~\ref{sec:9.1}}
+
+\begin{itemize}
+\item Model checking is a key component of the practical application of statistics.
+\item One approach to model checking involves choosing a discrepancy statistic $D$ and then assessing whether or not the observed value of $D$ is surprising by computing a P-value.
+\item Computation of the P-value requires that the distribution of $D$ be known under the assumption that the model is correct. There are two approaches to accomplishing this. One involves choosing $D$ to be ancillary, and the other involves computing the P-value using the conditional distribution of the data given the minimal sufficient statistic.
+\item The chi-squared goodness of fit statistic is a commonly used discrepancy statistic. For large samples, with the expected cell counts determined by the MLE based on the multinomial likelihood, the chi-squared goodness of fit statistic is approximately ancillary.
+\item There are also many informal methods of model checking based on various plots of residuals.
+\item If a model is rejected, then there are several techniques for modifying the model. These typically involve transformations of the data. Also, a model that fails a model-checking procedure may still be useful, if the deviation from correctness is small.
+\end{itemize}
+
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:9.1.1}
+Suppose the following sample is assumed to be from an $\text{N}(\mu, 4)$ distribution with $\mu \in R^1$ unknown.
+\[
+1.8, \; 2.1, \; 3.8, \; 1.7, \; 1.3, \; 1.1, \; 1.0, \; 0.0, \; 3.3, \; 1.0,
+\]
+\[
+0.4, \; 0.1, \; 2.3, \; 1.6, \; 1.1, \; 1.3, \; 3.3, \; 4.9, \; 1.1, \; 1.9
+\]
+Check this model using the discrepancy statistic of Example~\ref{ex:9.1.1}.
+\end{exercise}
+
+\begin{solution}
+The observed discrepancy statistic is given by $D(r) = \frac{1}{\sigma_0^2} \sum_{i=1}^{n} (x_i - \bar{x})^2 = \frac{19}{4} \cdot 4.79187 = 22.761$. Now $D(R) \sim \chi^2(19)$ distribution, so the $P$-value is then given by $\prb(D(R) > 22.761) = 0.248$, which does not suggest evidence against the model.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.2}
+Suppose the following sample is assumed to be from an $\text{N}(\mu, \sigma^2)$ distribution with $(\mu, \sigma^2)$ unknown.
+\[
+0.4, \; 1.9, \; 0.3, \; 0.2, \; 0.0, \; 0.0, \; 0.1, \; 1.1, \; 2.0, \; 0.4
+\]
+\begin{enumerate}[(a)]
+\item Plot the standardized residuals.
+\item Construct a normal probability plot of the standardized residuals.
+\item What conclusions do you draw based on the results of parts (a) and (b)?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The plot of the standardized residuals is given below.
+    \begin{figure}[!htbp]
+        \centering
+        %\includegraphics[scale=0.5]{fig9_1_2a.pdf}
+        \caption{Standardized residuals plot for Exercise 9.1.2(a)}
+        %\label{fig:ex9-1-2a-residuals}
+    \end{figure}
+    
+    \item The normal probability plot of the standardized residuals is given below.
+    \begin{figure}[!htbp]
+        \centering
+        %\includegraphics[scale=0.5]{fig9_1_2b.pdf}
+        \caption{Normal probability plot for Exercise 9.1.2(b)}
+        %\label{fig:ex9-1-2b-qqplot}
+    \end{figure}
+    
+    \item The preceding plots suggest that the sample is probably not from a normal distribution.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.3}
+Suppose the following sample is assumed to be from an $\text{N}(\mu, \sigma^2)$ distribution, where $(\mu, \sigma^2) \in R^1 \times (0, \infty)$ is unknown.
+\[
+14.0, \; 9.4, \; 12.1, \; 13.4, \; 6.3, \; 8.5, \; 7.1, \; 12.4, \; 13.3, \; 9.1
+\]
+\begin{enumerate}[(a)]
+\item Plot the standardized residuals.
+\item Construct a normal probability plot of the standardized residuals.
+\item What conclusions do you draw based on the results of parts (a) and (b)?
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The plot of the standardized residuals is given below.
+    \begin{figure}[!htbp]
+        \centering
+        %\includegraphics[scale=0.5]{fig9_1_3a.pdf}
+        \caption{Standardized residuals plot for Exercise 9.1.3(a)}
+        %\label{fig:ex9-1-3a-residuals}
+    \end{figure}
+    
+    \item The normal probability plot of the standardized residuals is given below.
+    \begin{figure}[!htbp]
+        \centering
+        %\includegraphics[scale=0.5]{fig9_1_3b.pdf}
+        \caption{Normal probability plot for Exercise 9.1.3(b)}
+        %\label{fig:ex9-1-3b-qqplot}
+    \end{figure}
+    
+    \item The preceding plots suggest that the normal assumption seems reasonable.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.4}
+Suppose the following table was obtained from classifying members of a sample of $n = 10$ from a student population according to the classification variables $A$ and $B$, where $A = 0, 1$ indicates male, female and $B = 0, 1$ indicates conservative, liberal.
+\begin{center}
+\begin{tabular}{c|cc}
+ & $B = 0$ & $B = 1$\\
+\hline
+$A = 0$ & 2 & 1\\
+$A = 1$ & 3 & 4
+\end{tabular}
+\end{center}
+Check the model that says gender and political orientation are independent, using Fisher's exact test.
+\end{exercise}
+
+\begin{solution}
+We have $f_{\cdot 1} = 5$ conservative, $f_{1 \cdot} = 3$ males, and $f_{11} = 2$ conservative males. The Hypergeometric$(10, 5, 3)$ probability function is given by the following table.
+
+\begin{center}
+\begin{tabular}{c|cccc}
+$i$ & 0 & 1 & 2 & 3 \\
+\hline
+$p(i)$ & 0.083 & 0.417 & 0.417 & 0.083
+\end{tabular}
+\end{center}
+
+The $P$-value is then equal to 1. Hence, we have no evidence against the model of independence between gender and political orientation.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.5}
+The following sample of $n = 20$ is supposed to be from a Uniform$[0, 1]$ distribution.
+\[
+0.11, \; 0.56, \; 0.72, \; 0.18, \; 0.26, \; 0.32, \; 0.42, \; 0.22, \; 0.96, \; 0.04,
+\]
+\[
+0.45, \; 0.22, \; 0.08, \; 0.65, \; 0.32, \; 0.88, \; 0.76, \; 0.32, \; 0.21, \; 0.80
+\]
+After grouping the data, using a partition of five equal-length intervals, carry out the chi-squared goodness of fit test to assess whether or not we have evidence against this assumption. Record the standardized residuals.
+\end{exercise}
+
+\begin{solution}
+By grouping the data into five equal intervals each having length 0.2, the expected counts for each interval are $np_i = 4$, and the observed counts are given in the following table.
+
+\begin{center}
+\begin{tabular}{c|c}
+Interval & Count \\
+\hline
+$(0.0, 0.2]$ & 4 \\
+$(0.2, 0.4]$ & 7 \\
+$(0.4, 0.6]$ & 3 \\
+$(0.6, 0.8]$ & 4 \\
+$(0.8, 1]$ & 2
+\end{tabular}
+\end{center}
+
+The Chi-squared statistic is equal to 3.50 and the $P$-value is given by ($X^2 \sim \chi^2(4)$) $\prb(X^2 \geqslant 3.5) = 0.4779$. Therefore, we have no evidence against the Uniform model being correct.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.6}
+Suppose a die is tossed 1000 times, and the following frequencies are obtained for the number of pips up when the die comes to a rest.
+\begin{center}
+\begin{tabular}{cccccc}
+$x_1$ & $x_2$ & $x_3$ & $x_4$ & $x_5$ & $x_6$\\
+\hline
+163 & 178 & 142 & 150 & 183 & 184
+\end{tabular}
+\end{center}
+Using the chi-squared goodness of fit test, assess whether we have evidence that this is not a symmetrical die. Record the standardized residuals.
+\end{exercise}
+
+\begin{solution}
+First note that if the die is fair, the expected number of counts for each possible outcome is 166.667. The Chi-squared statistic is equal to 9.5720 and the $P$-value is given by ($X^2 \sim \chi^2(5)$) $\prb(X^2 \geqslant 9.5720) = 0.08831$. Therefore, we have some evidence that the die might not be fair. The standardized residuals are given in the following table.
+
+\begin{center}
+\begin{tabular}{c|cccccc}
+$i$ & 1 & 2 & 3 & 4 & 5 & 6 \\
+\hline
+$r_i$ & $-0.069541$ & $0.214944$ & $-0.467818$ & $-0.316093$ & $0.309772$ & $0.328737$
+\end{tabular}
+\end{center}
+
+None of these look unusual.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.7}
+Suppose the sample space for a response is given by $\mathcal{S} = \{0, 1, 2, 3, \ldots\}$.
+\begin{enumerate}[(a)]
+\item Suppose that a statistician believes that in fact the response will lie in the set $\mathcal{S}^* = \{10, 11, 12, 13, \ldots\}$ and so chooses a probability measure $P$ that reflects this. When the data are collected, however, the value $s = 3$ is observed. What is an appropriate P-value to quote as a measure of how surprising this value is as a potential value from $P$?
+\item Suppose instead $P$ is taken to be a Geometric$(0.1)$ distribution. Determine an appropriate P-value to quote as a measure of how surprising $s = 3$ is as a potential value from $P$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The probability of the event $s = 3$ is 0 based on the probability measure $P$ having $S$ as its support. Also the event $s = 3$ is surely surprising. Hence, the most appropriate $P$-value is 0.
+    
+    \item Since $P$ is Geometric$(0.1)$, the probability $\prb(s = k) = \theta(1 - \theta)^k$ for $k = 0, 1, \ldots$ where $\theta = 0.1$. Since $\prb(s = k)$ is decreasing as $k$ increases, the probability of the set of $k$ such that $s = k$ is at least surprising as much as $(s = 3)$ is $\prb(s \geqslant 3) = \sum_{i=3}^{\infty} \theta(1 - \theta)^i = (1 - \theta)^3 = 0.9^3 = 0.729$. Hence, 0.729 is an appropriate $P$-value for checking whether $(s = 3)$ comes from Geometric$(0.1)$ or not.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.8}
+Suppose we observe $s = 3$ heads in $n = 10$ independent tosses of a purportedly fair coin. Compute a P-value that assesses how surprising this value is as a potential value from the distribution prescribed. Do not use the chi-squared test.
+\end{exercise}
+
+\begin{solution}
+We measure the probability of the set having the same or less degree of surprise than $s = 3$. The values $k$ having $\prb(s = k) \leqslant \prb(s = 3)$ are at least as surprising as $s = 3$ and this set is given by $\{s : s \leqslant 3 \text{ or } s \geqslant 7\}$. Therefore a $P$-value representing the surprise of $(s = 3)$ is
+\[
+    \prb(\{s : s \leqslant 3 \text{ or } s \geqslant 7\}) = 1 - 2\prb(s = 4) - \prb(s = 5) = 1 - 420(1/2)^{10} - 252(1/2)^{10} = 11/32 = 0.34375.
+\]
+Hence, it is not that surprising.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.9}
+Suppose you check a model by computing a P-value based on some discrepancy statistic and conclude that there is no evidence against the model. Does this mean the model is correct? Explain your answer.
+\end{exercise}
+
+\begin{solution}
+A discrepancy statistic looks for a particular kind of deviation from model correctness. Hence, the model might be incorrect even though no evidence against the model is found using a particular discrepancy statistic. Also there might not be enough data to detect a deviation from model correctness even when one exists.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.10}
+Suppose you are told that standardized scores on a test are distributed $\text{N}(0, 1)$. A student's standardized score is 4. Compute an appropriate P-value to assess whether or not the statement is correct.
+\end{exercise}
+
+\begin{solution}
+The probability of the scores that is at least as surprising as $-4$ is considered. The set of scores at least as surprising as $-4$ is $\{|s| \geqslant 4\}$. Hence, the $P$-value is $\prb(\{|s| \geqslant 4\}) = \Phi(-4) + 1 - \Phi(4) = 2\Phi(-4) = 0.00006334$. Thus, the value $-4$ is very surprising and this is strong evidence that the statement is incorrect.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.11}
+It is asserted that a coin is being tossed in independent tosses. You are somewhat skeptical about the independence of the tosses because you know that some people practice tossing coins so that they can increase the frequency of getting a head. So you wish to assess the independence of $x_1, \ldots, x_n$ from a Bernoulli$(\theta)$ distribution.
+\begin{enumerate}[(a)]
+\item Show that the conditional distribution of $x_1, \ldots, x_n$ given $\bar{x}$ is uniform on the set of all sequences of length $n$ with entries from $\{0, 1\}$.
+\item Using this conditional distribution, determine the distribution of the number of 1's observed in the first $n/2$ observations. (Hint: The hypergeometric distribution.)
+\item Suppose you observe $1, 1, 1, 1, 1, 0, 0, 0, 0, 1$. Compute an appropriate P-value to assess the independence of these tosses using (b).
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item Under the assumption that the coin is unbiased and it is tossed independently, the probability of observing $(x_1, \ldots, x_n)$ is $\theta^{n\bar{x}}(1 - \theta)^{n(1-\bar{x})}$. The distribution of $n\bar{x}$ is Binomial$(n, \theta)$. Therefore, the conditional probability function of $(x_1, \ldots, x_n)$ is $\theta^{n\bar{x}}(1 - \theta)^{n(1-\bar{x})} / \binom{n}{n\bar{x}} \theta^{n\bar{x}}(1 - \theta)^{n(1-\bar{x})} = 1/\binom{n}{n\bar{x}}$. This is the probability function of a uniform distribution on the set of all sequences of zeros and ones of length $n$ containing $n\bar{x}$ ones.
+    
+    \item The probability distribution of $k =$ the number of ones in the first $\lfloor n/2 \rfloor$ observations, given that there are $n\bar{x}$ ones overall, is a Hypergeometric$(n, \lfloor n/2 \rfloor, n\bar{x}_0)$ distribution. (Think of taking a sample of size $n\bar{x}_0$ without replacement from a population of $n$ sequence positions and counting the number of sequence positions in the sample less than or equal to $\lfloor n/2 \rfloor$.)
+    
+    \item Let $y$ be the number of 1's in the first $\lfloor n/2 \rfloor$ observations. The probability $\prb(y = k \mid n\bar{x} = 6)$ is $\binom{5}{k}\binom{5}{6-k} / \binom{10}{6}$ for $k = 1, \ldots, 5$. Hence, $\prb(y = 1 \mid n\bar{x} = 6) = \prb(y = 5 \mid n\bar{x} = 6) = 1/42$, $\prb(y = 2 \mid n\bar{x} = 6) = \prb(y = 4 \mid n\bar{x} = 6) = 10/42$ and $\prb(y = 3 \mid n\bar{x} = 6) = 20/42$. Thus, the $P$-value is $\prb(y \in \{1, 5\} \mid n\bar{x} = 6) = 1/21 = 0.0476$. Therefore, the observation $(1, 1, 1, 1, 1, 0, 0, 0, 0, 1)$ is surprising at level 5\%.
+\end{enumerate}
+\end{solution}
+
+\subsection*{Computer Exercises}
+
+\begin{exercise}
+\label{exer:9.1.12}
+For the data of Exercise~\ref{exer:9.1.1}, present a normal probability plot of the standardized residuals and comment on it.
+\end{exercise}
+
+\begin{solution}
+The plot is given below.
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_1_12.pdf}
+    \caption{Normal probability plot of standardized residuals for Exercise 9.1.12}
+    %\label{fig:ex9-1-12-qqplot}
+\end{figure}
+
+From this we have no evidence against the normality assumption.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.13}
+Generate 25 samples from the $\text{N}(0, 1)$ distribution with $n = 10$ and look at their normal probability plots. Draw any general conclusions.
+\end{exercise}
+
+\begin{solution}
+Not all the graphs look like straight lines. With a small sample size like $n = 10$, we should expect a fairly wide variety of shapes.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.14}
+Suppose the following table was obtained from classifying members of a sample on $n = 100$ from a student population according to the classification variables $A$ and $B$, where $A = 0, 1$ indicates male, female and $B = 0, 1$ indicates conservative, liberal.
+\begin{center}
+\begin{tabular}{c|cc}
+ & $B = 0$ & $B = 1$\\
+\hline
+$A = 0$ & 20 & 15\\
+$A = 1$ & 36 & 29
+\end{tabular}
+\end{center}
+Check the model that gender and political orientation are independent using Fisher's exact test.
+\end{exercise}
+
+\begin{solution}
+We have $X_{\cdot 1} = 56$ conservative, $X_{1 \cdot} = 35$ males and $X_{11} = 20$ conservative males. Using the Hypergeometric$(100, 56, 35)$ probability function to calculate the probability of observing a value with probability less than or equal to $\prb(X_{11} = 20 \mid X_{1 \cdot}, X_{\cdot 1}) = 0.164941$, we obtain that the $P$-value is 1. Therefore, we have no evidence against the model of independence between gender and political orientation.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.15}
+Using software, generate a sample of $n = 1000$ from the Binomial$(10, 0.2)$ distribution. Then, using the chi-squared goodness of fit test, check that this sample is indeed from this distribution. Use grouping to ensure $\expc(X_i) = np_i \geqslant 1$. What would you conclude if you got a P-value close to 0?
+\end{exercise}
+
+\begin{solution}
+The Binomial$(10, 0.2)$ distribution gives rise to the following cell probabilities and cell expected numbers.
+
+\begin{center}
+\begin{tabular}{c|cc}
+$x$ & $\prb(X = x)$ & expected numbers \\
+\hline
+0 & 0.107374 & 1.07347 \\
+1 & 0.268435 & 2.68435 \\
+2 & 0.301990 & 3.01990 \\
+3 & 0.201327 & 2.01327 \\
+4 & 0.088080 & 0.88080 \\
+5 & 0.026424 & 0.26424 \\
+6 & 0.005505 & 0.05505 \\
+7 & 0.000786 & 0.00786 \\
+8 & 0.000074 & 0.00074 \\
+9 & 0.000004 & 0.00004 \\
+10 & 0.000000 & 0.00000
+\end{tabular}
+\end{center}
+
+So we grouped from the elements having the smallest probability, i.e., $x = 10$, until the expected number of the group is greater than or equal to 1. It turns out the last 7 cells are grouped, say $G_5$, to ensure $\expc[\indc_{G_5}(X)] = n\prb(G_5) \geqslant 1$. Let $G_i = \{i - 1\}$ for $i = 1, \ldots, 4$. Then, the expected numbers of all groups are at least 1. The next table summarizes this result.
+
+\begin{center}
+\begin{tabular}{c|ccc}
+$i$ & $G_i$ & $\prb(X = x)$ & expected numbers \\
+\hline
+1 & $\{0\}$ & 0.107374 & 1.07347 \\
+2 & $\{1\}$ & 0.268435 & 2.68435 \\
+3 & $\{2\}$ & 0.301990 & 3.01990 \\
+4 & $\{3\}$ & 0.201327 & 2.01327 \\
+5 & $\{4,5,6,7,8,9,10\}$ & 0.120874 & 1.20874
+\end{tabular}
+\end{center}
+
+The Chi-squared statistic obtained from the simulated sample of 1000 was equal to 2.09987 with $P$-value 0.71740. Hence, there is no evidence that the sample is not from this distribution. If a $P$-value close to 0 is obtained, we would conclude the data may not come from Binomial$(10, 0.20)$ distribution. However, it didn't happen in the simulation study. The R code for the simulation is given below.
+
+\begin{listing}[!htbp]
+\begin{minted}{R}
+# Solution 9.1.15
+set.seed(123)
+M <- 1000  # sample size
+
+# Binomial(10, 0.2) probabilities
+x <- 0:10
+probs <- dbinom(x, size = 10, prob = 0.2)
+expected_full <- M * probs
+
+# Display original probabilities
+cat("x\tP(X=x)\t\tExpected\n")
+for (i in 1:11) {
+  cat(x[i], "\t", sprintf("%.6f", probs[i]), "\t", 
+      sprintf("%.5f", expected_full[i]), "\n")
+}
+
+# Group cells: {0}, {1}, {2}, {3}, {4,5,6,7,8,9,10}
+group_probs <- c(probs[1:4], sum(probs[5:11]))
+group_expected <- M * group_probs
+
+# Generate sample from Binomial(10, 0.2)
+sample_data <- rbinom(M, size = 10, prob = 0.2)
+
+# Count observations in each group
+observed <- c(
+  sum(sample_data == 0),
+  sum(sample_data == 1),
+  sum(sample_data == 2),
+  sum(sample_data == 3),
+  sum(sample_data >= 4)
+)
+
+# Chi-squared statistic
+chi_sq <- sum((observed - group_expected)^2 / group_expected)
+p_value <- 1 - pchisq(chi_sq, df = 4)
+
+cat("\nGrouped probabilities and expected counts:\n")
+print(data.frame(Group = 1:5, Prob = group_probs, Expected = group_expected))
+cat("\nChi-square:", chi_sq, "\n")
+cat("P-value:", p_value, "\n")
+\end{minted}
+\caption{R code for Exercise 9.1.15}
+\label{lst:solution9115}
+\end{listing}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.16}
+Using a statistical package, generate a sample of $n = 1000$ from the Poisson$(5)$ distribution. Then, using the chi-squared goodness of fit test based on grouping the observations into five cells chosen to ensure $\expc(X_i) = np_i \geqslant 1$, check that this sample is indeed from this distribution. What would you conclude if you got a P-value close to 0?
+\end{exercise}
+
+\begin{solution}
+A contiguous grouping is applied as long as the grouped probability is bigger than 0.13. So we get a grouping, $0$--$3$, $4$, $5$, $6$--$7$, $8$--$\infty$. The group probabilities, expected cell counts and the observed cell counts in a simulation are summarized in the next table.
+
+\begin{center}
+\begin{tabular}{c|ccccc}
+group & start $x$ & end $x$ & probability & expected counts & observed counts \\
+\hline
+$G_1$ & 0 & 3 & 0.2650 & 265.0 & 255 \\
+$G_2$ & 4 & 4 & 0.1755 & 175.5 & 186 \\
+$G_3$ & 5 & 5 & 0.1755 & 175.5 & 168 \\
+$G_4$ & 6 & 7 & 0.2507 & 250.7 & 238 \\
+$G_5$ & 8 & $\infty$ & 0.1334 & 133.4 & 153
+\end{tabular}
+\end{center}
+
+The chi-squared statistic obtained from the above table is equal to 4.8582 with $P$-value 0.3022. Hence, there is no evidence that the sample is not from this distribution. If a $P$-value close to 0 is obtained, we would conclude that the data may not come from Poisson$(5)$ distribution. However, it did not happen in the simulation study. The R code for the simulation is given below.
+
+\begin{listing}[!htbp]
+\begin{minted}{R}
+# Solution 9.1.16
+set.seed(123)
+M <- 1000  # sample size
+
+# Poisson(5) grouping probabilities
+# Groups: 0-3, 4, 5, 6-7, 8+
+p1 <- ppois(3, lambda = 5)
+p2 <- dpois(4, lambda = 5)
+p3 <- dpois(5, lambda = 5)
+p4 <- ppois(7, lambda = 5) - ppois(5, lambda = 5)
+p5 <- 1 - ppois(7, lambda = 5)
+
+group_probs <- c(p1, p2, p3, p4, p5)
+group_expected <- M * group_probs
+
+# Generate sample from Poisson(5)
+sample_data <- rpois(M, lambda = 5)
+
+# Count observations in each group
+observed <- c(
+  sum(sample_data <= 3),
+  sum(sample_data == 4),
+  sum(sample_data == 5),
+  sum(sample_data >= 6 & sample_data <= 7),
+  sum(sample_data >= 8)
+)
+
+# Chi-squared statistic
+chi_sq <- sum((observed - group_expected)^2 / group_expected)
+p_value <- 1 - pchisq(chi_sq, df = 4)
+
+cat("Group probabilities:", group_probs, "\n")
+cat("Expected counts:", group_expected, "\n")
+cat("Observed counts:", observed, "\n")
+cat("\nChi-square:", chi_sq, "\n")
+cat("P-value:", p_value, "\n")
+\end{minted}
+\caption{R code for Exercise 9.1.16}
+\label{lst:solution9116}
+\end{listing}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.17}
+Using a statistical package, generate a sample of $n = 1000$ from the $\text{N}(0, 1)$ distribution. Then, using the chi-squared goodness of fit test based on grouping the observations into five cells chosen to ensure $\expc(X_i) = np_i \geqslant 1$, check that this sample is indeed from this distribution. What would you conclude if you got a P-value close to 0?
+\end{exercise}
+
+\begin{solution}
+We separate $\mathbb{R}^1$ into 5 cells having the same $N(0, 1)$ probability. Simply, $\mathbb{R}^1$ is separated using the first four quintile points, i.e., the five cells are $(-\infty, z_{0.2}]$, $(z_{0.2}, z_{0.4}]$, $(z_{0.4}, z_{0.6}]$, $(z_{0.6}, z_{0.8}]$, and $(z_{0.8}, \infty)$. The group probabilities, expected cell counts and the observed cell counts in a simulation are summarized in the next table.
+
+\begin{center}
+\begin{tabular}{c|cccc}
+group & group range & prob. & expected counts & observed counts \\
+\hline
+$G_1$ & $(-\infty, -0.8416]$ & 0.2 & 200 & 202 \\
+$G_2$ & $(-0.8416, -0.2533]$ & 0.2 & 200 & 214 \\
+$G_3$ & $(-0.2533, 0.2533]$ & 0.2 & 200 & 200 \\
+$G_4$ & $(0.2533, 0.8416]$ & 0.2 & 200 & 203 \\
+$G_5$ & $(0.8416, \infty)$ & 0.2 & 200 & 181
+\end{tabular}
+\end{center}
+
+The chi-squared statistic obtained from the above table is equal to 2.8500 with $P$-value 0.5832. Hence, there is no evidence that the sample is not from this distribution. The R code for the simulation is given below.
+
+\begin{listing}[!htbp]
+\begin{minted}{R}
+# Solution 9.1.17
+set.seed(123)
+M <- 1000  # sample size
+
+# Quintile points for N(0,1)
+quintiles <- qnorm(c(0.2, 0.4, 0.6, 0.8))
+cat("Quintile points:", quintiles, "\n")
+
+# Each group has probability 0.2
+group_probs <- rep(0.2, 5)
+group_expected <- M * group_probs
+
+# Generate sample from N(0,1)
+sample_data <- rnorm(M, mean = 0, sd = 1)
+
+# Count observations in each group
+observed <- c(
+  sum(sample_data <= quintiles[1]),
+  sum(sample_data > quintiles[1] & sample_data <= quintiles[2]),
+  sum(sample_data > quintiles[2] & sample_data <= quintiles[3]),
+  sum(sample_data > quintiles[3] & sample_data <= quintiles[4]),
+  sum(sample_data > quintiles[4])
+)
+
+# Chi-squared statistic
+chi_sq <- sum((observed - group_expected)^2 / group_expected)
+p_value <- 1 - pchisq(chi_sq, df = 4)
+
+cat("Expected counts:", group_expected, "\n")
+cat("Observed counts:", observed, "\n")
+cat("\nChi-square:", chi_sq, "\n")
+cat("P-value:", p_value, "\n")
+\end{minted}
+\caption{R code for Exercise 9.1.17}
+\label{lst:solution9117}
+\end{listing}
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}[Multivariate normal distribution]
+\label{exer:9.1.18}
+A random vector $Y = (Y_1, \ldots, Y_k)$ is said to have a \emph{multivariate normal distribution} with mean vector $\mu \in R^k$ and variance matrix $(\sigma_{ij}) \in R^{k \times k}$ if
+\[
+a_1 Y_1 + \cdots + a_k Y_k \sim \text{N}\left(\sum_{i=1}^{k} a_i \mu_i, \sum_{i=1}^{k} \sum_{j=1}^{k} a_i a_j \sigma_{ij}\right)
+\]
+for every choice of $a_1, \ldots, a_k \in R^1$. We write $Y \sim \text{N}_k(\mu, \Sigma)$. Prove that $\expc(Y_i) = \mu_i$, $\text{Cov}(Y_i, Y_j) = \sigma_{ij}$, and that $Y_i \sim \text{N}(\mu_i, \sigma_{ii})$. (Hint: Theorem~\ref{thm:3.3.4}.)
+\end{exercise}
+
+\begin{solution}
+We have $\expc[a_1 Y_1 + \cdots + a_k Y_k] = a_1 \mu_1 + \cdots + a_k \mu_k$, so $\expc[Y_i] = \mu_i$ by taking $a_i = 1$ and $a_j = 0$ whenever $j \neq i$. By Theorem \ref{thm:3.3.3}(b) we have $\var(a_1 Y_1 + \cdots + a_k Y_k) = a_1^2 \var(Y_1) + \cdots + a_k^2 \var(Y_k) + 2\sum_{i<j} a_i a_j \cov(Y_i, Y_j) = \sum_{i=1}^{k} \sum_{j=1}^{k} a_i a_j \sigma_{ij}$. Putting $a_i = 1$ and $a_j = 0$ whenever $i \neq j$, we obtain $\var(Y_i) = \sigma_{ii}$ and this implies that $Y_i \sim N(\mu_i, \sigma_{ii})$.
+
+Putting $a_i = a_j = 1$ and $a_l = 0$ whenever $l \notin \{i, j\}$, we obtain $\var(Y_i + Y_j) = \sigma_{ii} + \sigma_{jj} + 2\sigma_{ij} = \var(Y_i) + \var(Y_j) + 2\cov(Y_i, Y_j)$. This immediately implies that $\cov(Y_i, Y_j) = \sigma_{ij}$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.19}
+In Example~\ref{ex:9.1.1}, prove that the residual $R = (R_1, \ldots, R_n)$ is distributed multivariate normal (see Problem~\ref{exer:9.1.18}) with mean vector $(0, \ldots, 0)$ and variance matrix $(\sigma_{ij}) \in R^{k \times k}$, where $\sigma_{ij} = \sigma_0^2/n$ when $i \neq j$ and $\sigma_{ii} = \sigma_0^2(1 - 1/n)$. (Hint: Theorem~\ref{thm:4.6.1}.)
+\end{exercise}
+
+\begin{solution}
+Using Theorem \ref{thm:4.6.1}, we have that
+\[
+    \sum_{i=1}^{n} a_i R_i = \sum_{i=1}^{n} a_i (X_i - \bar{X}) = \sum_{i=1}^{n} a_i X_i - \frac{1}{n} \left(\sum_{i=1}^{n} a_i\right) \sum_{i=1}^{n} X_i = \sum_{i=1}^{n} (a_i - \bar{a}) X_i \sim N\left(\sum_{i=1}^{n} (a_i - \bar{a}) \mu, \sigma_0^2 \sum_{i=1}^{n} (a_i - \bar{a})^2\right) = N\left(0, \sigma_0^2 \sum_{i=1}^{n} (a_i - \bar{a})^2\right).
+\]
+Therefore, by Problem \ref{exer:9.1.18}, $R$ is multivariate normal with mean vector given by $(0, \ldots, 0)$ and variance matrix given by $\Sigma = (\cov(R_i, R_j))$ and $\sum_{i=1}^{k} \sum_{j=1}^{k} a_i a_j \cov(R_i, R_j) = \sigma_0^2 \sum_{i=1}^{n} (a_i - \bar{a})^2$. Putting $a_i = 1$ and $a_j = 0$ whenever $i \neq j$, we have that $\var(R_i) = \sigma_0^2 \{(1 - 1/n)^2 + (n-1)/n^2\} = \sigma_0^2 (1 - 1/n)$. Putting $a_i = a_j = 1$ and $a_l = 0$ whenever $l \notin \{i, j\}$, we obtain $\var(R_i) + \var(R_j) + 2\cov(R_i, R_j) = \sigma_0^2 \sum_{i=1}^{n} (a_i - \bar{a})^2 = 2\sigma_0^2 (1 - 2/n)^2 + \sigma_0^2(n-2)4/n^2 = \sigma_0^2(2 - 8/n + 8/n^2 + 4/n - 8/n^2) = \sigma_0^2(2 - 4/n)$. Therefore, $\cov(R_i, R_j) = \sigma_0^2(1 - 2/n - 1 + 1/n) = -\sigma_0^2/n$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.20}
+If $Y = (Y_1, \ldots, Y_k)$ is distributed multivariate normal with mean vector $\mu \in R^k$ and variance matrix $(\sigma_{ij}) \in R^{k \times k}$, and if $X = (X_1, \ldots, X_l)$ is distributed multivariate normal with mean vector $\nu \in R^l$ and variance matrix $(\tau_{ij}) \in R^{l \times l}$, then it can be shown that $Y$ and $X$ are independent whenever $\sum_{i=1}^{k} a_i Y_i$ and $\sum_{i=1}^{l} b_i X_i$ are independent for every choice of $a_1, \ldots, a_k$ and $b_1, \ldots, b_l$. Use this fact to show that, in Example~\ref{ex:9.1.1}, $\bar{X}$ and $R$ are independent. (Hint: Theorem~\ref{thm:4.6.2} and Problem~\ref{exer:9.1.19}.)
+\end{exercise}
+
+\begin{solution}
+We have that (arguing as in the solution to Problem \ref{exer:9.1.18})
+\begin{align*}
+    \cov\left(\bar{X}, \sum_{i=1}^{n} a_i R_i\right) &= \cov\left(\sum_{i=1}^{n} \frac{1}{n} X_i, \sum_{i=1}^{n} (a_i - \bar{a}) X_i\right) = \sum_{i=1}^{n} \sum_{j=1}^{n} \frac{1}{n} (a_j - \bar{a}) \cov(X_i, X_j) = \frac{1}{n} \sum_{i=1}^{n} (a_i - \bar{a}) \cov(X_i, X_i) \\
+    &= \frac{1}{n} \sum_{i=1}^{n} (a_i - \bar{a}) \var(X_i) = \frac{\sigma_0^2}{n} \sum_{i=1}^{n} (a_i - \bar{a}) = 0.
+\end{align*}
+Theorem \ref{thm:4.6.2} gives the result.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.21}
+In Example~\ref{ex:9.1.4}, prove that $(\hat{\theta}_1, \hat{\theta}_{\cdot 1}) = (x_{1\cdot}/n, x_{\cdot 1}/n)$ is the MLE.
+\end{exercise}
+
+\begin{solution}
+The likelihood function is given by
+\[
+    L(\alpha_1, \beta_1) = \alpha_1^{x_{1\cdot}} (1 - \alpha_1)^{n-x_{1\cdot}} \beta_1^{x_{\cdot 1}} (1 - \beta_1)^{n-x_{\cdot 1}}.
+\]
+The log-likelihood function is then $\ell(\alpha_1, \beta_1) = x_{1\cdot} \ln(\alpha_1) + (n - x_{1\cdot}) \ln(1 - \alpha_1) + x_{\cdot 1} \ln(\beta_1) + (n - x_{\cdot 1}) \ln(1 - \beta_1)$. If we fix $\beta_1$, then the partial derivative with respect to $\alpha_1$ is
+\[
+    \frac{x_{1\cdot}}{\alpha_1} - \frac{n - x_{1\cdot}}{1 - \alpha_1}
+\]
+with second derivative
+\[
+    -\frac{x_{1\cdot}}{\alpha_1^2} - \frac{n - x_{1\cdot}}{(1 - \alpha_1)^2}.
+\]
+Solving
+\[
+    \frac{x_{1\cdot}}{\alpha_1} - \frac{n - x_{1\cdot}}{1 - \alpha_1} = 0
+\]
+leads to $\hat{\alpha}_1 = x_{1\cdot}/n$. That this is a maximum is seen from the second derivative as it is negative at this point. Since it does not involve $\beta_1$, this is the MLE of $\alpha_1$. A similar argument leads to the value $\hat{\beta}_1 = x_{\cdot 1}/n$ as the MLE of $\beta_1$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.22}
+In Example~\ref{ex:9.1.4}, prove that the number of samples satisfying the constraints \eqref{eq:9.1.2} equals
+\[
+\binom{n}{x_{1\cdot}} \binom{n}{x_{\cdot 1}}.
+\]
+(Hint: Using $i$ for the count $x_{11}$, show that the number of such samples equals
+\[
+\binom{n}{x_{1\cdot}} \sum_{i=\max(0, x_{1\cdot} + x_{\cdot 1} - n)}^{\min(x_{1\cdot}, x_{\cdot 1})} \binom{x_{1\cdot}}{i} \binom{n - x_{1\cdot}}{x_{\cdot 1} - i}
+\]
+and sum this using the fact that the sum of Hypergeometric$(n, x_{\cdot 1}, x_{1\cdot})$ probabilities equals 1.)
+\end{exercise}
+
+\begin{solution}
+Consider the set of all sequences of ordered pairs $((a_1, b_1), \ldots, (a_n, b_n))$ where $x_{1\cdot}$ of the $a_i$ equal 1 (with the rest equal to 2), and $x_{\cdot 1}$ of the $b_i$ equal 1 (with the rest equal to 2). We are required to count the number of such sequences.
+
+We can select $x_{1\cdot}$ of these pairs to have $a_i = 1$ in $\binom{n}{x_{1\cdot}}$ ways. Let us suppose that we have made these choices.
+
+Now let $i$ denote the number of pairs where $a_i = 1$ and $b_i = 1$. Clearly $\max\{0, x_{1\cdot} + x_{\cdot 1} - n\} \leqslant i \leqslant \min\{x_{1\cdot}, x_{\cdot 1}\}$. We can pick $i$ of the pairs where $a_i = 1$ so that $b_i = 1$ in $\binom{x_{1\cdot}}{i}$ ways and then choose the remaining pairs that will have $a_i = 2$ and $b_i = 1$ in $\binom{n-x_{1\cdot}}{x_{\cdot 1}-i}$ ways. The multiplication principle then implies that there are $\binom{n}{x_{1\cdot}}\binom{x_{1\cdot}}{i}\binom{n-x_{1\cdot}}{x_{\cdot 1}-i}$ such sequences. Therefore, the number of samples satisfying the constraints (9.1.2) is equal to
+\[
+    \binom{n}{x_{1\cdot}} \sum_{i=\max\{0, x_{1\cdot}+x_{\cdot 1}-n\}}^{\min\{x_{1\cdot}, x_{\cdot 1}\}} \binom{x_{1\cdot}}{i} \binom{n - x_{1\cdot}}{x_{\cdot 1} - i}.
+\]
+Using the fact that the probability function of Hypergeometric$(n, f_{1\cdot}, f_{\cdot 1})$ is given by
+\[
+    \prb(X_{11} = i) = \frac{\binom{x_{1\cdot}}{i}\binom{n-x_{1\cdot}}{x_{\cdot 1}-i}}{\binom{n}{x_{\cdot 1}}},
+\]
+for $\max\{0, x_{1\cdot} + x_{\cdot 1} - n\} \leqslant i \leqslant \min\{x_{1\cdot}, x_{\cdot 1}\}$, we get that the number of such samples is equal to
+\[
+    \binom{n}{x_{1\cdot}} \binom{n}{x_{\cdot 1}} \sum_{i=\max\{0, x_{1\cdot}+x_{\cdot 1}-n\}}^{\min\{x_{1\cdot}, x_{\cdot 1}\}} \frac{\binom{x_{1\cdot}}{i}\binom{n-x_{1\cdot}}{x_{\cdot 1}-i}}{\binom{n}{x_{\cdot 1}}} = \binom{n}{x_{1\cdot}} \binom{n}{x_{\cdot 1}}
+\]
+as claimed.
+\end{solution}
+
+\subsection*{Computer Problems}
+
+\begin{exercise}
+\label{exer:9.1.23}
+For the data of Exercise~\ref{exer:9.1.3}, carry out a simulation to estimate the P-value for the discrepancy statistic of Example~\ref{ex:9.1.2}. Plot a density histogram of the simulated values. (Hint: See Appendix~B for appropriate code.)
+\end{exercise}
+
+\begin{solution}
+A density histogram of a sample of $10^4$ from the distribution of $D(R) = -\frac{1}{n} \sum_{i=1}^{10} \ln\left(\frac{R_i^2}{n-1}\right)$, when the model is correct, is given below.
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_1_23.pdf}
+    \caption{Density histogram of $D$ for Computer Problem 9.1.23}
+    %\label{fig:cp9-1-23-histogram}
+\end{figure}
+
+Using the data of Exercise \ref{exer:9.1.3} we obtained the value $D(r) = -\frac{1}{n} \sum_{i=1}^{n} \ln(r_i^2/(n-1)) = 2.60896$, and the proportion of sample values of $D$ in the simulation that were greater is 0.9864. This can be viewed as evidence that the normal location-scale model is not correct as the observed value of $D$ is surprisingly small.
+
+The following code was used for this simulation.
+
+\begin{listing}[!htbp]
+\begin{minted}{R}
+# Solution 9.1.23: Goodness of fit test
+set.seed(34256734)
+
+n <- 10  # size of data set
+num_sim <- 10000
+
+# Vector to store D values
+D_values <- numeric(num_sim)
+
+for (k in 1:num_sim) {
+  # Generate sample from N(0,1)
+  x <- rnorm(n)
+  
+  # Compute standardized residuals
+  x_mean <- mean(x)
+  x_sd <- sd(x) * sqrt(n - 1)
+  residuals <- (x - x_mean) / x_sd
+  
+  # Compute D statistic
+  D_values[k] <- -mean(log(residuals^2))
+}
+
+# Plot histogram
+hist(D_values, breaks = 30, freq = FALSE, 
+     main = "Density histogram of D", 
+     xlab = "D", ylab = "density")
+\end{minted}
+\caption{R code for Computer Problem 9.1.23}
+\label{lst:goodnessoffit9123}
+\end{listing}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.24}
+When $n = 10$, generate $10^4$ values of the discrepancy statistic in Example~\ref{ex:9.1.2} when we have a sample from an $\text{N}(0, 1)$ distribution. Plot these in a density histogram. Repeat this, but now generate from a Cauchy distribution. Compare the histograms (do not forget to make sure both plots have the same scales).
+\end{exercise}
+
+\begin{solution}
+We get the following histogram (using the code below) when we are sampling from a normal distribution.
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_1_24a.pdf}
+    \caption{Density histogram of $D$ when sampling from normal distribution}
+    %\label{fig:cp9-1-24a-normal}
+\end{figure}
+
+We get the following histogram (using the code below) when we are sampling from a Cauchy distribution.
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_1_24b.pdf}
+    \caption{Density histogram of $D$ when sampling from Cauchy distribution}
+    %\label{fig:cp9-1-24b-cauchy}
+\end{figure}
+
+We see that the distribution of $D$ is quite different under a normal model than under a Cauchy model. The distribution when sampling under Cauchy sampling has a longer right tail and a sharp peak at its mode. Note that a larger sample size than $10^4$ is required to get a smoother histogram.
+
+\begin{listing}[!htbp]
+\begin{minted}{R}
+# Solution 9.1.24: Compare D under Normal vs Cauchy
+set.seed(34256734)
+
+n <- 10  # size of data set
+num_sim <- 10000
+
+# Vectors to store D values
+D_normal <- numeric(num_sim)
+D_cauchy <- numeric(num_sim)
+
+for (k in 1:num_sim) {
+  # Normal sample
+  x_norm <- rnorm(n)
+  x_mean <- mean(x_norm)
+  x_sd <- sd(x_norm) * sqrt(n - 1)
+  residuals <- (x_norm - x_mean) / x_sd
+  D_normal[k] <- -mean(log(residuals^2))
+  
+  # Cauchy sample (Student's t with df=1)
+  x_cauchy <- rt(n, df = 1)
+  x_mean <- mean(x_cauchy)
+  x_sd <- sd(x_cauchy) * sqrt(n - 1)
+  residuals <- (x_cauchy - x_mean) / x_sd
+  D_cauchy[k] <- -mean(log(residuals^2))
+}
+
+# Plot histograms
+par(mfrow = c(2, 1))
+hist(D_normal, breaks = 30, freq = FALSE, xlim = c(2, 9),
+     main = "D under Normal sampling", xlab = "D", ylab = "density")
+hist(D_cauchy, breaks = 30, freq = FALSE, xlim = c(2, 9),
+     main = "D under Cauchy sampling", xlab = "D", ylab = "density")
+\end{minted}
+\caption{R code for Computer Problem 9.1.24}
+\label{lst:goodnessoffit9124}
+\end{listing}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.25}
+The following data are supposed to have come from an Exponential$(\lambda)$ distribution, where $\lambda > 0$ is unknown.
+\[
+1.5, \; 1.6, \; 1.4, \; 9.7, \; 12.1, \; 2.7, \; 2.2, \; 1.6, \; 6.8, \; 0.1,
+\]
+\[
+0.8, \; 1.7, \; 8.0, \; 0.2, \; 12.3, \; 2.2, \; 0.2, \; 0.6, \; 10.1, \; 4.9
+\]
+Check this model using a chi-squared goodness of fit test based on the intervals
+\[
+(0, 2.0], \; (2.0, 4.0], \; (4.0, 6.0], \; (6.0, 8.0], \; (8.0, 10.0], \; (10.0, \infty).
+\]
+(Hint: Calculate the MLE by plotting the log-likelihood over successively smaller intervals.)
+\end{exercise}
+
+\begin{solution}
+The interval counts are 10, 3, 1, 2, 1, 3. The likelihood function is then given by
+\[
+    L(\theta \mid f_1, \ldots, f_6) = (1 - e^{-2\theta})^{10} (e^{-2\theta} - e^{-4\theta})^3 (e^{-4\theta} - e^{-6\theta}) (e^{-6\theta} - e^{-8\theta})^2 (e^{-8\theta} - e^{-10\theta}) (e^{-10\theta})^3,
+\]
+so the log-likelihood is given by
+\[
+    10 \ln(1 - e^{-2\theta}) + 3 \ln(e^{-2\theta} - e^{-4\theta}) + \ln(e^{-4\theta} - e^{-6\theta}) + 2 \ln(e^{-6\theta} - e^{-8\theta}) + \ln(e^{-8\theta} - e^{-10\theta}) - 30\theta.
+\]
+This is plotted below.
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_1_25.pdf}
+    \caption{Log-likelihood plot for Computer Problem 9.1.25}
+    %\label{fig:cp9-1-25-loglik}
+\end{figure}
+
+By successively plotting the log-likelihood over smaller and smaller intervals, the MLE was determined to be $\hat{\theta} = 0.22448$. Accordingly, we get the following expected counts: $20(1 - e^{-2\hat{\theta}}) = 7.2342$, $20(e^{-2\hat{\theta}} - e^{-4\hat{\theta}}) = 4.6175$, $20(e^{-4\hat{\theta}} - e^{-6\hat{\theta}}) = 2.9473$, $20(e^{-6\hat{\theta}} - e^{-8\hat{\theta}}) = 1.8812$, $20(e^{-8\hat{\theta}} - e^{-10\hat{\theta}}) = 1.2008$, $20e^{-10\hat{\theta}} = 2.1190$, and the chi-squared statistic equals
+\begin{align*}
+    X_0^2 &= \frac{(7.2342 - 10)^2}{7.2342} + \frac{(4.6175 - 3)^2}{4.6175} + \frac{(2.9473 - 1)^2}{2.9473} + \frac{(1.8812 - 2)^2}{1.8812} \\
+    &\quad + \frac{(1.2008 - 1)^2}{1.2008} + \frac{(2.1190 - 3)^2}{2.1190} \\
+    &= 3.3180.
+\end{align*}
+The $P$-value equals ($X^2 \sim \chi^2(1)$) $\prb(X^2 \geqslant 3.3180) = 1 - 0.4939 = 0.5061$. Hence, we do not have evidence against the model.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.26}
+The following table, taken from \emph{Introduction to the Practice of Statistics}, by D.~Moore and G.~McCabe (W.~H.~Freeman, New York, 1999), gives the measurements in milligrams of daily calcium intake for 38 women between the ages of 18 and 24 years.
+\begin{center}
+\begin{tabular}{cccccccccc}
+808 & 882 & 1062 & 970 & 909 & 802 & 374 & 416 & 784 & 997\\
+651 & 716 & 438 & 1420 & 1425 & 948 & 1050 & 976 & 572 & 403\\
+626 & 774 & 1253 & 549 & 1325 & 446 & 465 & 1269 & 671 & 696\\
+1156 & 684 & 1933 & 748 & 1203 & 2433 & 1255 & 110 & &
+\end{tabular}
+\end{center}
+\begin{enumerate}[(a)]
+\item Suppose that the model specifies a location normal model for these data with $\sigma_0^2 = 500^2$. Carry out a chi-squared goodness of fit test on these data using the intervals $(-\infty, 600]$, $(600, 1200]$, $(1200, 1800]$, $(1800, \infty)$. (Hint: Plot the log-likelihood over successively smaller intervals to determine the MLE to about one decimal place. To determine the initial range for plotting, use the overall MLE of $\mu$ minus three standard errors to the overall MLE plus three standard errors.)
+\item Compare the MLE of $\mu$ obtained in part (a) with the ungrouped MLE.
+\item It would be more realistic to assume that the variance $\sigma^2$ is unknown as well. Record the log-likelihood for the grouped data. (More sophisticated numerical methods are needed to find the MLE of $\sigma^2$ in this case.)
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item We have that
+    \begin{align*}
+        \prb((-\infty, 600]) &= \Phi\left(\frac{600 - \mu}{500}\right), \\
+        \prb((600, 1200]) &= \Phi\left(\frac{1200 - \mu}{500}\right) - \Phi\left(\frac{600 - \mu}{500}\right), \\
+        \prb((1200, 1800]) &= \Phi\left(\frac{1800 - \mu}{500}\right) - \Phi\left(\frac{1200 - \mu}{500}\right), \\
+        \prb((1800, \infty)) &= 1 - \Phi\left(\frac{1800 - \mu}{500}\right),
+    \end{align*}
+    so the log likelihood is given by
+    \[
+        9 \ln \Phi\left(\frac{600 - \mu}{500}\right) + 20 \ln\left(\Phi\left(\frac{1200 - \mu}{500}\right) - \Phi\left(\frac{600 - \mu}{500}\right)\right) + 7 \ln\left(\Phi\left(\frac{1800 - \mu}{500}\right) - \Phi\left(\frac{1200 - \mu}{500}\right)\right) + 2 \ln\left(1 - \Phi\left(\frac{1800 - \mu}{500}\right)\right).
+    \]
+    This is plotted below.
+    
+    \begin{figure}[!htbp]
+        \centering
+        %\includegraphics[scale=0.5]{fig9_1_26a.pdf}
+        \caption{Log-likelihood plot for Computer Problem 9.1.26(a)}
+        %\label{fig:cp9-1-26a-loglik}
+    \end{figure}
+    
+    Plotting the log-likelihood over successively smaller intervals, we obtain the MLE as $\hat{\mu} = 914.3$. This leads to the expected counts
+    \begin{align*}
+        38 \, \Phi\left(\frac{600 - \hat{\mu}}{500}\right) &= 10.063, \\
+        38 \left(\Phi\left(\frac{1200 - \hat{\mu}}{500}\right) - \Phi\left(\frac{600 - \hat{\mu}}{500}\right)\right) &= 17.151, \\
+        38 \left(\Phi\left(\frac{1800 - \hat{\mu}}{500}\right) - \Phi\left(\frac{1200 - \hat{\mu}}{500}\right)\right) &= 9.333, \\
+        38 \left(1 - \Phi\left(\frac{1800 - \hat{\mu}}{500}\right)\right) &= 1.453,
+    \end{align*}
+    and the Chi-squared statistic is given by
+    \[
+        X_0^2 = \frac{(10.063 - 9)^2}{10.063} + \frac{(17.151 - 20)^2}{17.151} + \frac{(9.333 - 7)^2}{9.333} + \frac{(1.453 - 2)^2}{1.453} = 1.375.
+    \]
+    The $P$-value in this case is given by ($X^2 \sim \chi^2(2)$) $\prb(X^2 \geqslant 1.375) = 1 - 0.4972 = 0.5028$, so we have no evidence against the model.
+    
+    \item The overall MLE of $\mu$, namely without grouping, is $\hat{\mu} = \bar{x} = 900$, so there is a difference.
+    
+    \item We have that
+    \begin{align*}
+        \prb((-\infty, 600]) &= \Phi\left(\frac{600 - \mu}{\sigma}\right), \\
+        \prb((600, 1200]) &= \Phi\left(\frac{1200 - \mu}{\sigma}\right) - \Phi\left(\frac{600 - \mu}{\sigma}\right), \\
+        \prb((1200, 1800]) &= \Phi\left(\frac{1800 - \mu}{\sigma}\right) - \Phi\left(\frac{1200 - \mu}{\sigma}\right), \\
+        \prb((1800, \infty)) &= 1 - \Phi\left(\frac{1800 - \mu}{\sigma}\right),
+    \end{align*}
+    so the log likelihood is given by
+    \[
+        9 \ln \Phi\left(\frac{600 - \mu}{\sigma}\right) + 20 \ln\left(\Phi\left(\frac{1200 - \mu}{\sigma}\right) - \Phi\left(\frac{600 - \mu}{\sigma}\right)\right) + 7 \ln\left(\Phi\left(\frac{1800 - \mu}{\sigma}\right) - \Phi\left(\frac{1200 - \mu}{\sigma}\right)\right) + 2 \ln\left(1 - \Phi\left(\frac{1800 - \mu}{\sigma}\right)\right).
+    \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.1.27}
+Generate $10^4$ values of the discrepancy statistics $D_{\text{skew}}$ and $D_{\text{kurtosis}}$ in Example~\ref{ex:9.1.2} when we have a sample of $n = 10$ from an $\text{N}(0, 1)$ distribution. Plot these in density histograms. Indicate how you would use these histograms to assess the normality assumption when we had an actual sample of size 10. Repeat this for $n = 20$ and compare the distributions.
+\end{exercise}
+
+\begin{solution}
+The symmetry of a $N(0, 1)$ distribution implies that $-r$ and $r$ have the same distribution. Since $D_{\mathrm{skew}}(-r) = n^{1/2}(n-1)^{-3/2} \sum_{i=1}^{n} (-r_i)^3 = -D_{\mathrm{skew}}(r)$, both $D_{\mathrm{skew}}(-r)$ and $D_{\mathrm{skew}}(r)$ have the same distribution. Thus, $D_{\mathrm{skew}}$ is symmetric. The density histogram of $D_{\mathrm{skew}}$ and $D_{\mathrm{kurtosis}}$, when $n = 10$, is drawn below based on $m = 10^4$ samples.
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_1_27a.pdf}
+    \caption{Density histogram of $D_{\mathrm{skew}}$ for $n = 10$}
+    %\label{fig:cp9-1-27a-skew}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_1_27b.pdf}
+    \caption{Density histogram of $D_{\mathrm{kurtosis}}$ for $n = 10$}
+    %\label{fig:cp9-1-27b-kurtosis}
+\end{figure}
+
+In the graphs, both statistics are unimodal. Since the skewness is symmetric, the $P$-value for assessing the normality is
+\[
+    \prb(|D_{\mathrm{skew}}(r)| > |D_{\mathrm{skew}}(r_0)|).
+\]
+
+The density histogram for kurtosis is not symmetric but skewed to the right. To measure the surprise of a value $r_0$, we compute a $P$-value, i.e., the probability of the set of more surprising values to $r_0$. If the observed discrepancy $d_0 = D_{\mathrm{kurtosis}}(r_0)$ is around the peak, there will be no evidence against the sample coming from a normal distribution. If $d_0$ is placed on the right side of the peak, we must find a left side boundary $l_b$ of the peak giving the same density to $d_0$. Then, compute $p = \prb(D \leqslant l_b \text{ or } D \geqslant d_0)$ based on the simulation. It is the $P$-value for checking normality using the kurtosis statistic. If $d_0$ is placed on the left side of the peak, then find a right side boundary $r_b$ and compute $p = \prb(D \leqslant d_0 \text{ or } D \geqslant r_b)$.
+
+The same graphs are provided below when $n = 20$.
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_1_27c.pdf}
+    \caption{Density histogram of $D_{\mathrm{skew}}$ for $n = 20$}
+    %\label{fig:cp9-1-27c-skew20}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_1_27d.pdf}
+    \caption{Density histogram of $D_{\mathrm{kurtosis}}$ for $n = 20$}
+    %\label{fig:cp9-1-27d-kurtosis20}
+\end{figure}
+
+The graphs look similar, with the $n = 20$ case perhaps a bit more regular. The R code for this simulation is given below.
+
+\begin{listing}[!htbp]
+\begin{minted}{R}
+# Solution 9.1.27: Skewness and Kurtosis statistics
+simulate_skew_kurt <- function(N, M) {
+  # N is the sample size
+  # M is the number of repetitions
+  
+  skewness <- numeric(M)
+  kurtosis <- numeric(M)
+  
+  k3 <- N^0.5 * (N - 1)^(-1.5)
+  k4 <- N * (N - 1)^(-2)
+  
+  for (i in 1:M) {
+    x <- rnorm(N)
+    z <- (x - mean(x)) / sd(x)
+    skewness[i] <- k3 * sum(z^3)
+    kurtosis[i] <- k4 * sum(z^4)
+  }
+  
+  # Plot histograms
+  par(mfrow = c(2, 1))
+  hist(skewness, breaks = 30, freq = FALSE,
+       main = paste("Skewness (n =", N, ")"),
+       xlab = "skewness", ylab = "density")
+  hist(kurtosis, breaks = 30, freq = FALSE,
+       main = paste("Kurtosis (n =", N, ")"),
+       xlab = "kurtosis", ylab = "density")
+  
+  return(list(skewness = skewness, kurtosis = kurtosis))
+}
+
+# Run simulations
+set.seed(123)
+result_n10 <- simulate_skew_kurt(N = 10, M = 10000)
+result_n20 <- simulate_skew_kurt(N = 20, M = 10000)
+\end{minted}
+\caption{R code for Computer Problem 9.1.27}
+\label{lst:skewkurt9127}
+\end{listing}
+\end{solution}
+
+\subsection*{Challenges}
+
+\begin{exercise}[MV]
+\label{exer:9.1.28}
+Prove that when $x_1, \ldots, x_n$ is a sample from the distribution given by $\mu + \sigma Z$, where $Z$ has a known distribution and $(\mu, \sigma^2) \in R^1 \times (0, \infty)$ is unknown, then the statistic
+\[
+r(x_1, \ldots, x_n) = \left(\frac{x_1 - \bar{x}}{s}, \ldots, \frac{x_n - \bar{x}}{s}\right)
+\]
+is ancillary. (Hint: Write a sample element as $x_i = \mu + \sigma z_i$ and then show that $r(x_1, \ldots, x_n)$ can be written as a function of the $z_i$.)
+\end{exercise}
+
+\begin{solution}
+We have that $X_i = \mu + \sigma Z_i$ where $Z_1, \ldots, Z_n$ is a sample from $f$. Now observe that $\bar{x} = \mu + \sigma \bar{z}$ and $\sum_{i=1}^{n} (x_i - \bar{x})^2 = \sum_{i=1}^{n} (\mu + \sigma z_i - \mu - \sigma \bar{z})^2 = \sigma^2 \sum_{i=1}^{n} (z_i - \bar{z})^2$. Therefore,
+\[
+    r(x_1, \ldots, x_n) = \left(\frac{x_1 - \bar{x}}{s}, \ldots, \frac{x_n - \bar{x}}{s}\right) = \left(\frac{z_1 - \bar{z}}{\sqrt{\sum_{i=1}^{n} (z_i - \bar{z})^2}}, \ldots, \frac{z_n - \bar{z}}{\sqrt{\sum_{i=1}^{n} (z_i - \bar{z})^2}}\right),
+\]
+and so is a function of the $z_i$. This implies that the distribution of $R$ is independent of $(\mu, \sigma)$ and so is ancillary.
+\end{solution}
+
+\section{Checking for Prior--Data Conflict}
+\label{sec:9.2}
+
+Bayesian methodology adds the prior probability measure $\pi$ to the statistical model $\{\prb_\theta : \theta \in \Omega\}$ for the subsequent statistical analysis. The methods of Section~\ref{sec:9.1} are designed to check that the observed data can realistically be assumed to have come from a distribution in $\{\prb_\theta : \theta \in \Omega\}$. When we add the prior, we are in effect saying that our knowledge about the true distribution leads us to assign the prior predictive probability $M$ given by $M(A) = \expc_\pi(\prb_\theta(A))$ for $A \subseteq \mathcal{S}$ to describe the process generating the data. So it would seem, then, that a sensible Bayesian model-checking approach would be to compare the observed data $s$ with the distribution given by $M$ to see if it is surprising or not.
+
+Suppose that we were to conclude that the Bayesian model was incorrect after deciding that $s$ is a surprising value from $M$. This only tells us, however, that the probability measure $M$ is unlikely to have produced the data and not that the model $\{\prb_\theta : \theta \in \Omega\}$ was wrong. Consider the following example.
+
+\begin{example}[Prior--Data Conflict]
+\label{ex:9.2.1}
+Suppose we obtain a sample consisting of $n = 20$ values of $s = 1$ from the model with $\Omega = \{1, 2\}$ and probability functions for the basic response given by the following table.
+\begin{center}
+\begin{tabular}{c|cc}
+ & $s = 0$ & $s = 1$\\
+\hline
+$f_1(s)$ & 0.9 & 0.1\\
+$f_2(s)$ & 0.1 & 0.9
+\end{tabular}
+\end{center}
+Then the probability of obtaining this sample from $f_2$ is given by $0.9^{20} = 0.12158$, which is a reasonable value, so we have no evidence against the model $\{f_1, f_2\}$.
+
+Suppose we place a prior on $\theta$ given by $\pi(\{1\}) = 0.9999$ so that we are virtually certain that $\theta = 1$. Then the probability of getting these data from the prior predictive $M$ is
+\[
+0.9999 \times 0.1^{20} + 0.0001 \times 0.9^{20} = 1.2158 \times 10^{-5}.
+\]
+The prior probability of observing a sample of 20, whose prior predictive probability is no greater than $1.2158 \times 10^{-5}$, can be calculated (using statistical software to tabulate the prior predictive) to be approximately $0.04$. This tells us that the observed data are ``in the tails'' of the prior predictive and thus are surprising, which leads us to conclude that we have evidence that $M$ is incorrect.
+
+So in this example, checking the model $\{f_\theta : \theta \in \Omega\}$ leads us to conclude that it is plausible for the data observed. On the other hand, checking the model given by $M$ leads us to the conclusion that the Bayesian model is implausible.
+\end{example}
+
+The lesson of Example~\ref{ex:9.2.1} is that we can have model failure in the Bayesian context in two ways. First, the data $s$ may be surprising in light of the model $\{f_\theta : \theta \in \Omega\}$. Second, even when the data are plausibly from this model, the prior and the data may conflict. This conflict will occur whenever the prior assigns most of its probability to distributions in the model for which the data are surprising. In either situation, inferences drawn from the Bayesian model may be flawed.
+
+If, however, the prior assigns positive probability (or density) to every possible value of $\theta$, then the consistency results for Bayesian inference mentioned in Chapter~\ref{ch:7} indicate that a large amount of data will overcome a prior--data conflict (see Example~\ref{ex:9.2.4}). This is because the effect of the prior decreases with increasing amounts of data. So the existence of a prior--data conflict does not necessarily mean that our inferences are in error. Still, it is useful to know whether or not this conflict exists, as it is often difficult to detect whether or not we have sufficient data to avoid the problem.
+
+Therefore, we should first use the checks discussed in Section~\ref{sec:9.1} to ensure that the data $s$ is plausibly from the model $\{f_\theta : \theta \in \Omega\}$. If we accept the model, then we look for any prior--data conflict. We now consider how to go about this.
+
+The prior predictive distribution of any ancillary statistic is the same as its distribution under the sampling model, i.e., its prior predictive distribution is not affected by the choice of the prior. So the observed value of any ancillary statistic cannot tell us anything about the existence of a prior--data conflict. We conclude from this that, if we are going to use some function of the data to assess whether or not there is prior--data conflict, then its marginal distribution has to depend on $\theta$.
+
+We now show that the prior predictive conditional distribution of the data given a minimal sufficient statistic $T$ is independent of the prior.
+
+\begin{theorem}
+\label{thm:9.2.1}
+Suppose $T$ is a sufficient statistic for the model $\{f_\theta : \theta \in \Omega\}$ for data $s$. Then the conditional prior predictive distribution of the data $s$ given $T$ is independent of the prior $\pi$.
+\end{theorem}
+
+\begin{proof}
+We will prove this in the case that each sample distribution $f_\theta$ and the prior $\pi$ are discrete. A similar argument can be developed for the more general case.
+
+By Theorem~\ref{thm:6.1.1} (factorization theorem) we have that
+\[
+f_\theta(s) = h(s) g_\theta(T(s))
+\]
+for some functions $g_\theta$ and $h$. Therefore the prior predictive probability function of $s$ is given by
+\[
+m(s) = h(s) \sum_{\theta} g_\theta(T(s)) \pi(\{\theta\}).
+\]
+The prior predictive probability function of $T$ at $t$ is given by
+\[
+m(t) = \sum_{s': T(s') = t} h(s') \cdot \sum_{\theta} g_\theta(t) \pi(\{\theta\}).
+\]
+Therefore, the conditional prior predictive probability function of the data $s$ given $T(s) = t$ is
+\[
+m(s \mid T = t) = \frac{h(s) \sum_{\theta} g_\theta(t) \pi(\{\theta\})}{\sum_{s': T(s') = t} h(s') \cdot \sum_{\theta} g_\theta(t) \pi(\{\theta\})} = \frac{h(s)}{\sum_{s': T(s') = t} h(s')}
+\]
+which is independent of $\pi$.
+\end{proof}
+
+So, from Theorem~\ref{thm:9.2.1}, we conclude that any aspects of the data, beyond the value of a minimal sufficient statistic, can tell us nothing about the existence of a prior--data conflict. Therefore, if we want to base our check for a prior--data conflict on the prior predictive, then we must use the prior predictive for a minimal sufficient statistic. Consider the following examples.
+
+\begin{example}[Checking a Beta Prior for a Bernoulli Model]
+\label{ex:9.2.2}
+Suppose that $x_1, \ldots, x_n$ is a sample from a Bernoulli$(\theta)$ model, where $\theta \in [0, 1]$ is unknown, and $\theta$ is given a Beta$(\alpha, \beta)$ prior distribution. Then we have that the sample count $y = \sum_{i=1}^{n} x_i$ is a minimal sufficient statistic and is distributed Binomial$(n, \theta)$. Therefore, the prior predictive probability function for $y$ is given by
+\begin{align*}
+m(y) &= \binom{n}{y} \int_0^1 \theta^y (1-\theta)^{n-y} \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)} \theta^{\alpha-1} (1-\theta)^{\beta-1} \, \mathrm{d}\theta\\
+&= \binom{n}{y} \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)} \cdot \frac{\Gamma(y + \alpha)\Gamma(n - y + \beta)}{\Gamma(n + \alpha + \beta)}.
+\end{align*}
+
+Now observe that when $\alpha = \beta = 1$, then $m(y) = 1/(n+1)$, i.e., the prior predictive of $y$ is Uniform$\{0, 1, \ldots, n\}$ and no values of $y$ are surprising. This is not unexpected, as with the uniform prior on $\theta$ we are implicitly saying that any count $y$ is reasonable.
+
+On the other hand, when $\alpha = \beta = 2$, the prior puts more weight around $1/2$. The prior predictive is then proportional to $(y+1)(n-y+1)$. This prior predictive is plotted in Figure~\ref{fig:9.2.1} when $n = 20$. Note that counts near 0 or 20 lead to evidence that there is a conflict between the data and the prior. For example, if we obtain the count $y = 3$, we can assess how surprising this value is by computing the probability of obtaining a value with a lower probability of occurrence. Using the symmetry of the prior predictive, we have that this probability equals (using statistical software for the computation) $m(0) + \cdots + m(2) + m(19) + m(20) = 0.0688876$. Therefore, the observation $y = 3$ is not surprising at the 5\% level.
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_2_1.pdf}
+  \caption{Plot of the prior predictive of the sample count $y$ in Example~\ref{ex:9.2.2} when $\alpha = \beta = 2$ and $n = 20$.}
+  \label{fig:9.2.1}
+\end{figure}
+
+Suppose now that $n = 50$ and $(\alpha, \beta) = (2, 4)$. The mean of this prior is $2/(2+4) = 1/3$ and the prior is right-skewed. The prior predictive is plotted in Figure~\ref{fig:9.2.2}. Clearly, values of $y$ near 50 give evidence against the model in this case. For example, if we observe $y = 35$, then the probability of getting a count with smaller probability of occurrence is given by (using statistical software for the computation) $m(36) + \cdots + m(50) = 0.0500457$. Only values more extreme than this would provide evidence against the model at the 5\% level.
+
+\begin{figure}[!htbp]
+  \centering
+  %\includegraphics[scale=0.5]{fig9_2_2.pdf}
+  \caption{Plot of the prior predictive of the sample count $y$ in Example~\ref{ex:9.2.2} when $(\alpha, \beta) = (2, 4)$ and $n = 50$.}
+  \label{fig:9.2.2}
+\end{figure}
+\end{example}
+
+\begin{example}[Checking a Normal Prior for a Location Normal Model]
+\label{ex:9.2.3}
+Suppose that $x_1, \ldots, x_n$ is a sample from an $\text{N}(\mu, \sigma_0^2)$ distribution, where $\mu \in R^1$ is unknown and $\sigma_0^2$ is known. Suppose we take the prior distribution of $\mu$ to be an $\text{N}(\mu_0, \tau_0^2)$ for some specified choice of $\mu_0$ and $\tau_0^2$. Note that $\bar{x}$ is a minimal sufficient statistic for this model, so we need to compare the observed value of this statistic to its prior predictive distribution to assess whether or not there is prior--data conflict.
+
+Now we can write $\bar{x} = \mu + z$ where $\mu \sim \text{N}(\mu_0, \tau_0^2)$ independent of $z \sim \text{N}(0, \sigma_0^2/n)$. From this, we immediately deduce (see Exercise~\ref{exer:9.2.3}) that the prior predictive distribution of $\bar{x}$ is $\text{N}(\mu_0, \tau_0^2 + \sigma_0^2/n)$. From the symmetry of the prior predictive density about $\mu_0$, we immediately see that the appropriate P-value is
+\begin{equation}
+\label{eq:9.2.1}
+M(|\bar{X} - \mu_0| \geqslant |\bar{x} - \mu_0|) = 2\left(1 - \Phi\left(\frac{|\bar{x} - \mu_0|}{(\tau_0^2 + \sigma_0^2/n)^{1/2}}\right)\right).
+\end{equation}
+So a small value of \eqref{eq:9.2.1} is evidence that there is a conflict between the observed data and the prior, i.e., the prior is putting most of its mass on values of $\mu$ for which the observed data are surprising.
+\end{example}
+
+Another possibility for model checking in this context is to look at the posterior predictive distribution of the data. Consider, however, the following example.
+
+\begin{example}[Example~\ref{ex:9.2.1} continued]
+\label{ex:9.2.4}
+Recall that, in Example~\ref{ex:9.2.1}, we concluded that a prior--data conflict existed. Note, however, that the posterior probability of $\theta = 2$ is
+\[
+\frac{0.0001 \times 0.9^{20}}{0.9999 \times 0.1^{20} + 0.0001 \times 0.9^{20}} \approx 1.
+\]
+Therefore, the posterior predictive probability of the observed sequence of 20 values of 1 is $\approx 0.12158$, which does not indicate any prior--data conflict. We note, however, that in this example, the amount of data are sufficient to overwhelm the prior; thus we are led to a sensible inference about $\theta$.
+\end{example}
+
+The problem with using the posterior predictive to assess whether or not a prior--data conflict exists is that we have an instance of the so-called \emph{double use of the data}. For we have fit the model, i.e., constructed the posterior predictive, using the observed data, and then we tried to use this posterior predictive to assess whether or not a prior--data conflict exists. The double use of the data results in overly optimistic assessments of the validity of the Bayesian model and will often not detect discrepancies. We will not discuss posterior model checking further in this text.
+
+We have only touched on the basics of checking for prior--data conflict here. With more complicated models, the possibility exists of checking individual components of a prior, e.g., the components of the prior specified in Example~\ref{ex:7.1.4} for the location-scale normal model, to ascertain more precisely where a prior--data conflict is arising. Also, ancillary statistics play a role in checking for prior--data conflict as we must remove any ancillary variation when computing the P-value because this variation does not depend on the prior. Furthermore, when the prior predictive distribution of a minimal sufficient statistic is continuous, then issues concerning exactly how P-values are to be computed must be addressed. These are all topics for a further course in statistics.
+
+\bigskip
+\noindent\textbf{Summary of Section~\ref{sec:9.2}}
+
+\begin{itemize}
+\item In Bayesian inference, there are two potential sources of model incorrectness. First, the sampling model for the data may be incorrect. Second, even if the sampling model is correct, the prior may conflict with the data in the sense that most of the prior probability is assigned to distributions in the model for which the data are surprising.
+\item We first check for the correctness of the sampling model using the methods of Section~\ref{sec:9.1}. If we do not find evidence against the sampling model, we next check for prior--data conflict by seeing if the observed value of a minimal sufficient statistic is surprising or not, with respect to the prior predictive distribution of this quantity.
+\item Even if a prior--data conflict exists, posterior inferences may still be valid if we have enough data.
+\end{itemize}
+
+\subsection*{Exercises}
+
+\begin{exercise}
+\label{exer:9.2.1}
+Suppose we observe the value $s = 2$ from the model, given by the following table.
+\begin{center}
+\begin{tabular}{c|ccc}
+ & $s = 1$ & $s = 2$ & $s = 3$\\
+\hline
+$f_1(s)$ & $1/3$ & $1/3$ & $1/3$\\
+$f_2(s)$ & $1/3$ & $0$ & $2/3$
+\end{tabular}
+\end{center}
+\begin{enumerate}[(a)]
+\item Do the observed data lead us to doubt the validity of the model? Explain why or why not.
+\item Suppose the prior, given by $\pi(\{1\}) = 0.3$, is placed on the parameter $\theta \in \{1, 2\}$. Is there any evidence of a prior--data conflict? (Hint: Compute the prior predictive for each possible data set and assess whether or not the observed data set is surprising.)
+\item Repeat part (b) using the prior given by $\pi(\{1\}) = 0.01$.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The probability of obtaining $s = 2$ from $f_1$ is $1/3$, which is a reasonable value, so we have no evidence against the model $\{f_1, f_2\}$.
+    
+    \item The prior predictive $M$ distribution is given by
+    \begin{align*}
+        m(1) &= \frac{3}{10} \cdot \frac{1}{3} + \frac{7}{10} \cdot \frac{1}{3} = \frac{1}{3}, \\
+        m(2) &= \frac{3}{10} \cdot \frac{1}{3} + \frac{7}{10} \cdot 0 = \frac{1}{10}, \\
+        m(3) &= \frac{3}{10} \cdot \frac{1}{3} + \frac{7}{10} \cdot \frac{2}{3} = \frac{17}{30}.
+    \end{align*}
+    So the probability of a data set occurring with probability as small as or smaller than $m(2)$ is $1/10$, so the observation 2 is not very surprising. Accordingly, there is no evidence of a prior-data conflict.
+    
+    \item The prior predictive $M$ now is given by
+    \begin{align*}
+        m(1) &= \frac{1}{100} \cdot \frac{1}{3} + \frac{99}{100} \cdot \frac{1}{3} = \frac{1}{3}, \\
+        m(2) &= \frac{1}{100} \cdot \frac{1}{3} + \frac{99}{100} \cdot 0 = \frac{1}{300}, \\
+        m(3) &= \frac{1}{100} \cdot \frac{1}{3} + \frac{99}{100} \cdot \frac{2}{3} = \frac{199}{300}.
+    \end{align*}
+    So the probability of a data set occurring with probability as small as or smaller than $m(2)$ is $1/300$, and the observation 2 is surprising. Accordingly, there is some evidence of a prior-data conflict.
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.2.2}
+Suppose a sample of $n = 6$ is taken from a Bernoulli$(\theta)$ distribution, where $\theta$ has a Beta$(3, 3)$ prior distribution. If the value $n\bar{x} = 2$ is obtained, then determine whether there is any prior--data conflict.
+\end{exercise}
+
+\begin{solution}
+The prior predictive probability function for the minimal sufficient statistic $y = n\bar{x} = \sum_{i=1}^{n} x_i$ is given by
+\[
+    m(y) = \frac{\Gamma(7)}{\Gamma(12)} \frac{\Gamma(6)}{(\Gamma(3))^2} \frac{\Gamma(y + 3) \Gamma(9 - y)}{\Gamma(y + 1) \Gamma(7 - y)}.
+\]
+A tabulation and a plot of this is given below.
+
+\begin{center}
+\begin{tabular}{c|c}
+$y$ & $m(y)$ \\
+\hline
+0 & 0.060606 \\
+1 & 0.136364 \\
+2 & 0.194805 \\
+3 & 0.216450 \\
+4 & 0.194805 \\
+5 & 0.136364 \\
+6 & 0.060606
+\end{tabular}
+\end{center}
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_2_2.pdf}
+    \caption{Prior predictive distribution for Exercise 9.2.2}
+    %\label{fig:ex9-2-2-prior-predictive}
+\end{figure}
+
+Using the symmetry of the prior predictive, the probability of obtaining a value with probability of occurrence no greater than $y = n\bar{x} = 2$ is equal to $m(0) + m(1) + m(2) + m(4) + m(5) + m(6) = 2(0.060606) + 2(0.194805) + 2(0.136364) = 0.78355$. Therefore, the observation $y = n\bar{x} = 2$ is not surprising and we conclude that there is not any prior-data conflict.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.2.3}
+In Example~\ref{ex:9.2.3}, establish that the prior predictive distribution of $\bar{x}$ is given by the $\text{N}(\mu_0, \tau_0^2 + \sigma_0^2/n)$ distribution.
+\end{exercise}
+
+\begin{solution}
+The distribution of $\bar{x}$ given the parameter $\mu$ is $\bar{x} \mid \mu \sim N(\mu, \sigma_0^2/n)$. Hence, we can write $\bar{x} = \mu + z$ where $z \sim N(0, \sigma_0^2/n)$ is independent of $\mu$. Since $\mu \sim N(\mu_0, \tau_0^2)$ in the prior specification, the prior predictive distribution of $\bar{x}$ is $N(\mu_0, \tau_0^2) + N(0, \sigma_0^2/n) \sim N(\mu_0, \tau_0^2 + \sigma_0^2/n)$ by Theorem \ref{thm:4.6.1}.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.2.4}
+Suppose we have a sample of $n = 5$ from an $\text{N}(\mu, 2)$ distribution where $\mu$ is unknown and the value $\bar{x} = 7.3$ is observed. An $\text{N}(0, 1)$ prior is placed on $\mu$. Compute the appropriate P-value to check for prior--data conflict.
+\end{exercise}
+
+\begin{solution}
+The prior predictive distribution is $M_{\bar{x}} \sim N(0, 1 + 2/5) \sim N(0, 1.4)$ as is in Example \ref{ex:9.2.3}. We compute the prior probability of the event $m_{\bar{x}}(s) \leqslant m_{\bar{x}}(7.3) = (|s| \geqslant 7.3)$ to assess whether or not observing $\bar{x} = 7.3$ is surprising. Hence we get
+\[
+    p = \prb(|s| \geqslant 7.3) = \prb(s \geqslant 7.3) + \prb(s \leqslant -7.3) = 1 - \Phi(7.3/\sqrt{1.4}) + \Phi(-7.3/\sqrt{1.4}) = 6.845 \times 10^{-10}.
+\]
+It is very surprising. Hence, we find strong evidence that there is a prior-data conflict.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.2.5}
+Suppose that $x \sim \text{Uniform}[0, \theta]$ and $\theta \sim \text{Uniform}[0, 1]$. If the value $x = 2.2$ is observed, then determine an appropriate P-value for checking for prior--data conflict.
+\end{exercise}
+
+\begin{solution}
+The maximum possible value of $x$ from $x \sim \text{Uniform}[0, \theta]$ is $x = \theta$. And the maximum possible value of $\theta$ from the prior is 1. Hence, the gross maximum possible value of $x$ is 1. However, $x = 2.2$ is observed. It is very surprising. Hence, an appropriate $P$-value for checking for prior-data conflict must be 0.
+
+We will show the same result mathematically. The prior predictive distribution is $m(x) = \int_0^1 f_\theta(x) \, \mathrm{d}\theta = \int_0^1 \indc_{[0,\theta]}(x)/\theta \, \mathrm{d}\theta = \int_x^1 1/\theta \, \mathrm{d}\theta = \ln \theta \big|_{\theta=x}^{\theta=1} = -\ln x$ for $x \in [0, 1]$ and 0 for $x \notin [0, 1]$. Since $m(2.2) = -\indc_{[0,1]}(2.2) \ln 2.2 = 0$, the $P$-value for checking prior-data conflict is
+\[
+    p = M(m(x) \leqslant m(2.2)) = M(m(x) \leqslant 0) = 0.
+\]
+Hence, there is definitely a prior-data conflict.
+\end{solution}
+
+\subsection*{Computer Exercises}
+
+\begin{exercise}
+\label{exer:9.2.6}
+Suppose a sample of $n = 20$ is taken from a Bernoulli$(\theta)$ distribution, where $\theta$ has a Beta$(3, 3)$ prior distribution. If the value $n\bar{x} = 6$ is obtained, then determine whether there is any prior--data conflict.
+\end{exercise}
+
+\begin{solution}
+The prior predictive probability function for the minimal sufficient statistic $y = n\bar{x} = \sum_{i=1}^{n} x_i$ is given by
+\[
+    m(y) = \frac{\Gamma(21)}{\Gamma(26)} \frac{\Gamma(6)}{(\Gamma(3))^2} \frac{\Gamma(y + 3) \Gamma(23 - y)}{\Gamma(y + 1) \Gamma(21 - y)}.
+\]
+A tabulation and plot of this is given below.
+
+\begin{center}
+\begin{tabular}{c|c||c|c}
+$y$ & $m(y)$ & $y$ & $m(y)$ \\
+\hline
+0 & 0.0043478 & 11 & 0.0807453 \\
+1 & 0.0118577 & 12 & 0.0770751 \\
+2 & 0.0214568 & 13 & 0.0711462 \\
+3 & 0.0321852 & 14 & 0.0632411 \\
+4 & 0.0431959 & 15 & 0.0537549 \\
+5 & 0.0537549 & 16 & 0.0431959 \\
+6 & 0.0632411 & 17 & 0.0321852 \\
+7 & 0.0711462 & 18 & 0.0214568 \\
+8 & 0.0770751 & 19 & 0.0118577 \\
+9 & 0.0807453 & 20 & 0.0043478 \\
+10 & 0.0819876 & &
+\end{tabular}
+\end{center}
+
+\begin{figure}[!htbp]
+    \centering
+    %\includegraphics[scale=0.5]{fig9_2_6.pdf}
+    \caption{Prior predictive distribution for Exercise 9.2.6}
+    %\label{fig:ex9-2-6-prior-predictive}
+\end{figure}
+
+Using the symmetry of the prior predictive, the probability of obtaining a value with probability of occurrence no greater than $y = n\bar{x} = 6$ equals $2m(0) + 2m(1) + 2m(2) + 2m(3) + 2m(4) + 2m(5) + 2m(6) = 0.460079$. Therefore, the observation $y = n\bar{x} = 6$ is not surprising and we conclude that there is not any prior-data conflict.
+\end{solution}
+
+\subsection*{Problems}
+
+\begin{exercise}
+\label{exer:9.2.7}
+Suppose that $x_1, \ldots, x_n$ is a sample from an $\text{N}(\mu, \sigma_0^2)$ distribution, where $\mu \sim \text{N}(\mu_0, \tau_0^2)$. Determine the prior predictive distribution of $\bar{x}$.
+\end{exercise}
+
+\begin{solution}
+First, by Corollary 4.6.1 we have $\bar{X} \sim N(\mu, \sigma_0^2/n)$. Then we can write $\bar{X}$ as $\bar{X} = \mu + Z/\sqrt{n}$, where $Z \sim N(0, \sigma_0^2)$ is independent of $\mu \sim N(\mu_0, \tau_0^2)$. Hence, by Theorem \ref{thm:4.6.1} we have that the prior predictive distribution of $\bar{X}$ is the $N(\mu_0, \tau_0^2 + \sigma_0^2/n)$ distribution.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.2.8}
+Suppose that $x_1, \ldots, x_n$ is a sample from an Exponential$(\lambda)$ distribution where $\lambda \sim \text{Gamma}(\alpha_0, \beta_0)$. Determine the prior predictive distribution of $\bar{x}$.
+\end{exercise}
+
+\begin{solution}
+We have that $Y = n\bar{X} \sim \text{Gamma}(n, \theta)$, so the prior predictive distribution of $Y$ is given by
+\begin{align*}
+    m(y) &= \int_0^{\infty} \frac{\theta^n}{\Gamma(n)} y^{n-1} \exp(-y\theta) \frac{\beta_0^{\alpha_0} \theta^{\alpha_0-1} e^{-\beta_0 \theta}}{\Gamma(\alpha_0)} \, \mathrm{d}\theta \\
+    &= \frac{\beta_0^{\alpha_0}}{\Gamma(\alpha_0) \Gamma(n)} y^{n-1} \int_0^{\infty} \theta^{n+\alpha_0-1} \exp(-(\beta_0 + y)\theta) \, \mathrm{d}\theta \\
+    &= \frac{\beta_0^{\alpha_0}}{\Gamma(\alpha_0) \Gamma(n)} \frac{\Gamma(\alpha_0 + n)}{(\beta_0 + y)^{n+\alpha_0}} y^{n-1} = \frac{\Gamma(\alpha_0 + n)}{\Gamma(\alpha_0) \Gamma(n)} \left(\frac{y}{\beta_0}\right)^{n-1} \left(1 + \frac{y}{\beta_0}\right)^{-(\alpha_0+n)} \frac{1}{\beta_0}.
+\end{align*}
+Making the transformation $\bar{x} = y/n$, we see that the prior predictive density of $\bar{X}$ is given by
+\[
+    m(\bar{x}) = \frac{\Gamma(\alpha_0 + n)}{\Gamma(\alpha_0) \Gamma(n)} \left(\frac{n\bar{x}}{\beta_0}\right)^{n-1} \left(1 + \frac{n\bar{x}}{\beta_0}\right)^{-(\alpha_0+n)} \frac{n}{\beta_0}
+\]
+and from this we deduce that the prior predictive of $\alpha_0 \bar{X}/\beta_0$ is $F(n, \alpha_0)$.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.2.9}
+Suppose that $s_1, \ldots, s_n$ is a sample from a Multinomial$(1, \theta_1, \ldots, \theta_k)$ distribution, where $(\theta_1, \ldots, \theta_{k-1}) \sim \text{Dirichlet}(\alpha_1, \ldots, \alpha_k)$. Determine the prior predictive distribution of $(x_1, \ldots, x_k)$, where $x_i$ is the count in the $i$th category.
+\end{exercise}
+
+\begin{solution}
+We know that $(x_1, \ldots, x_k) \sim \text{Multinomial}(n, \theta_1, \ldots, \theta_k)$. Therefore, the prior predictive distribution of $(x_1, \ldots, x_k)$ is given by
+\begin{align*}
+    m(x_1, \ldots, x_k) &= \binom{n}{x_1 \cdots x_k} \frac{\Gamma(\alpha_1 + \cdots + \alpha_k)}{\Gamma(\alpha_1) \cdots \Gamma(\alpha_k)} \int_0^1 \cdots \int_0^{1-\theta_2-\cdots-\theta_{k-1}} \theta_1^{\alpha_1+x_1-1} \cdots \\
+    &\quad \times (1 - \theta_1 - \cdots - \theta_{k-1})^{\alpha_k+x_k-1} \, \mathrm{d}\theta_1 \cdots \mathrm{d}\theta_{k-1} \\
+    &= \binom{n}{x_1 \cdots x_k} \frac{\Gamma(\alpha_1 + \cdots + \alpha_k)}{\Gamma(\alpha_1) \cdots \Gamma(\alpha_k)} \frac{\Gamma(\alpha_1 + x_1) \cdots \Gamma(\alpha_k + x_k)}{\Gamma(\alpha_1 + \cdots + \alpha_k + n)}.
+\end{align*}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.2.10}
+Suppose that $x_1, \ldots, x_n$ is a sample from a Uniform$[0, \theta]$ distribution, where $\theta$ has prior density given by $\beta_1 \theta^{-(\beta_1+1)} I_{[\theta_1, \infty)}(\theta)$, where $\theta_1 > 0$. Determine the prior predictive distribution of $x_{(n)}$.
+\end{exercise}
+
+\begin{solution}
+When $X_1, \ldots, X_n$ is a sample from the Uniform$[0, \theta]$ distribution then $X_{(n)}$ has density given by $n(x_{(n)})^{n-1}/\theta^n$ for $0 < x_{(n)} < \theta$. Therefore, the prior predictive density of $X_{(n)}$ is given by
+\begin{align*}
+    m(x_{(n)}) &= \int_0^{\infty} \frac{n}{\theta^n} (x_{(n)})^{n-1} \indc_{[x_{(n)}, \infty)}(\theta) \frac{\theta^{-\alpha} \indc_{[\beta, \infty)}(\theta)}{(\alpha - 1) \beta^{\alpha-1}} \, \mathrm{d}\theta \\
+    &= \frac{n(x_{(n)})^{n-1}}{(\alpha - 1) \beta^{\alpha-1}} \int_0^{\infty} \theta^{-\alpha-n} \indc_{[\max\{x_{(n)}, \beta\}, \infty)}(\theta) \, \mathrm{d}\theta \\
+    &= \frac{n(x_{(n)})^{n-1}}{(\alpha - 1) \beta^{\alpha-1}} \int_{\max\{x_{(n)}, \beta\}}^{\infty} \theta^{-\alpha-n} \, \mathrm{d}\theta \\
+    &= \frac{n(x_{(n)})^{n-1}}{(\alpha + n - 1)(\alpha - 1) \beta^{\alpha-1}} (\max\{x_{(n)}, \beta\})^{-\alpha-n+1}.
+\end{align*}
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.2.11}
+Suppose we have the context of Example~\ref{ex:9.2.3}. Determine the limiting P-value for checking for prior--data conflict as $n \to \infty$. Interpret the meaning of this P-value in terms of the prior and the true value of $\mu$.
+\end{exercise}
+
+\begin{solution}
+Suppose $\mu^*$ is the true value of $\mu$. The $P$-value for checking for prior-data conflict in Example \ref{ex:9.2.3} is given by
+\[
+    M(|\bar{X} - \mu_0| \geqslant |\bar{x} - \mu_0|) = 2(1 - \Phi(|\bar{x} - \mu_0|/(\tau_0^2 + \sigma_0^2/n)^{1/2})).
+\]
+Since $\bar{x} \to \mu^*$ and $\sigma_0^2/n \to 0$ as $n \to \infty$, the limit $P$-value is
+\begin{align*}
+    \lim_{n \to \infty} M(|\bar{X} - \mu_0| \geqslant |\bar{x} - \mu_0|) &= 2 - 2 \lim_{n \to \infty} \Phi(|\bar{x} - \mu_0|/(\tau_0^2 + \sigma_0^2/n)^{1/2}) \\
+    &= 2 - 2\Phi(|\mu^* - \mu_0|/\tau_0).
+\end{align*}
+So we see that, in the limit, we have prior-data conflict when the true value of the parameter lies in the tails of the prior.
+\end{solution}
+
+\begin{exercise}
+\label{exer:9.2.12}
+Suppose that $x \sim \text{Geometric}(\theta)$ distribution and $\theta \sim \text{Uniform}[0, 1]$.
+\begin{enumerate}[(a)]
+\item Determine the appropriate P-value for checking for prior--data conflict.
+\item Based on the P-value determined in part (a), describe the circumstances under which evidence of prior--data conflict will exist.
+\item If we use a continuous prior that is positive at a point, then this is an assertion that the point is possible. In light of this, discuss whether or not a continuous prior that is positive at 0 makes sense for the Geometric$(\theta)$ distribution.
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}[(a)]
+    \item The prior predictive distribution is $m(x) = \int_0^1 \theta(1-\theta)^x \, \mathrm{d}\theta = \text{Beta}(2, x+1) = 1/[(x+1)(x+2)]$. Since $m(x)$ is strictly decreasing, the set of values at least as surprising as $x_0$ is $\{x \geqslant x_0\}$. Thus, the appropriate $P$-value for checking for prior-data conflict is
+    \[
+        M(x \geqslant x_0) = \sum_{x=x_0}^{\infty} \frac{1}{(x+1)(x+2)} = \sum_{x=x_0}^{\infty} \left(\frac{1}{x+1} - \frac{1}{x+2}\right) = \frac{1}{x_0 + 1}.
+    \]
+    
+    \item Since the $P$-value in (a) is decreasing as $x_0$ increases, the bigger value $x_0$ causes the stronger prior-data conflict.
+    
+    \item Note that the Geometric$(0)$ does not make sense as it implies that we will never observe any data. So putting a prior on $\theta$ which is positive at 0 does not make sense as this implies that $\theta = 0$ is a possibility. Note we cannot eliminate this possibility by simply defining the prior density to be 0 at 0 because $\lim_{\theta \to 0} \pi(\theta) = 1$ so every small interval about $\theta = 0$ has non-negligible prior probability. We conclude that the U$[0, 1]$ prior does not make sense in this example.
+\end{enumerate}
+\end{solution}
+
+\subsection*{Challenges}
+
+\begin{exercise}
+\label{exer:9.2.13}
+Suppose that $X_1, \ldots, X_n$ is a sample from an $\text{N}(\mu, \sigma^2)$ distribution where $(\mu, \sigma^2) \sim \text{N}(\mu_0, \sigma^2/\tau_0^2) \times (1/\sigma^2) \sim \text{Gamma}(\alpha_0, \beta_0)$. Then determine a form for the prior predictive density of $(\bar{X}, S^2)$ that you could evaluate without integrating. (Hint: Use the algebraic manipulations found in Section~\ref{sec:7.5}.)
+\end{exercise}
+
+\begin{solution}
+The prior predictive distribution is given by the joint density of $(\bar{X}, S^2, \mu, 1/\sigma^2)$ divided by the posterior density of $(\mu, 1/\sigma^2)$. The joint density of $(\bar{X}, S^2, \mu, 1/\sigma^2)$, using the fact $\bar{X} \sim N(\mu, \sigma^2/n)$ independent of $(n-1)S^2/\sigma^2 \sim \chi^2(n-1)$, is given by
+\begin{align*}
+    &\left\{\frac{n^{1/2}}{\sqrt{2\pi}\sigma} \exp\left(-\frac{n}{2\sigma^2}(\bar{x} - \mu)^2\right)\right\} \left\{\frac{1}{\Gamma((n-1)/2)} \left(\frac{n-1}{2\sigma^2}\right)^{\frac{n-1}{2}} (s^2)^{\frac{n-1}{2}-1} \exp\left(-\frac{n-1}{2\sigma^2} s^2\right)\right\} \\
+    &\times \left\{\frac{1}{\sqrt{2\pi}\tau_0\sigma} \exp\left(-\frac{1}{2\tau_0^2\sigma^2}(\mu - \mu_0)^2\right)\right\} \left\{\frac{\beta_0^{\alpha_0}}{\Gamma(\alpha_0)} \left(\frac{1}{\sigma^2}\right)^{\alpha_0-1} \exp\left(-\frac{\beta_0}{\sigma^2}\right)\right\}.
+\end{align*}
+Then using the same algebraic manipulations as carried out in Section \ref{sec:7.5}, we have that this joint density equals
+\begin{align*}
+    &\left\{\frac{n^{1/2}}{\sqrt{2\pi}} \frac{(n-1)^{\frac{n-1}{2}} (s^2)^{\frac{n-1}{2}-1}}{\Gamma((n-1)/2)}\right\} \left\{\frac{1}{\tau_0} \frac{\beta_0^{\alpha_0}}{\Gamma(\alpha_0)}\right\} \left\{\left(n + \frac{1}{\tau_0^2}\right)^{-1/2} \frac{\Gamma(\alpha_0 + n/2)}{\beta_x^{\alpha_0 + n/2}}\right\} \\
+    &\times \frac{1}{\sqrt{2\pi}} \left(n + \frac{1}{\tau_0^2}\right)^{1/2} \left(\frac{1}{\sigma^2}\right)^{1/2} \exp\left(-\frac{1}{2\sigma^2}\left(n + \frac{1}{\tau_0^2}\right)(\mu - \mu_x)^2\right) \\
+    &\times \frac{\beta_x^{\alpha_0 + n/2}}{\Gamma(\alpha_0 + n/2)} \left(\frac{1}{\sigma^2}\right)^{\alpha_0 + n/2 - 1} \exp\left(-\beta_x \frac{1}{\sigma^2}\right),
+\end{align*}
+where $\mu_x = (n + 1/\tau_0^2)^{-1}(\mu_0/\tau_0^2 + n\bar{x})$ and
+\[
+    \beta_x = \beta_0 + \frac{n}{2}\bar{x}^2 + \frac{\mu_0^2}{2\tau_0^2} + \frac{n-1}{2}s^2 - \frac{1}{2}\left(n + \frac{1}{\tau_0^2}\right)^{-1}\left(\frac{\mu_0}{\tau_0^2} + n\bar{x}\right)^2.
+\]
+Since we know that the posterior distribution of $(\mu, \sigma^2)$ is given by $\mu \mid \sigma^2, x \sim N(\mu_x, (n + 1/\tau_0^2)^{-1}\sigma^2)$ and $1/\sigma^2 \mid x \sim \text{Gamma}(\alpha_0 + n/2, \beta_x)$, this implies that the prior predictive density of $(\bar{X}, S^2)$ is given by
+\[
+    \left\{\frac{n^{1/2}}{\sqrt{2\pi}} \frac{(n-1)^{\frac{n-1}{2}} (s^2)^{\frac{n-1}{2}-1}}{\Gamma((n-1)/2)}\right\} \left\{\frac{1}{\tau_0} \frac{\beta_0^{\alpha_0}}{\Gamma(\alpha_0)}\right\} \left\{\left(n + \frac{1}{\tau_0^2}\right)^{-1/2} \frac{\Gamma(\alpha_0 + n/2)}{\beta_x^{\alpha_0 + n/2}}\right\}.
+\]
+\end{solution}
+
+\section{The Problem with Multiple Checks}
+\label{sec:9.3}
+
+As we have mentioned throughout this text, model checking is a part of good statistical practice. In other words, one should always be wary of the value of statistical work in which the investigators have not engaged in, and reported the results of, reasonably rigorous model checking. It is really the job of those who report statistical results to convince us that their models are reasonable for the data collected, bearing in mind the effects of both underfitting and overfitting.
+
+In this chapter, we have reported some of the possible model-checking approaches available. We have focused on the main categories of procedures and perhaps the most often used methods from within these. There are many others. At this point, we cannot say that any one approach is the best possible method. Perhaps greater insight along these lines will come with further research into the topic, and then a clearer recommendation could be made.
+
+One recommendation that can be made now, however, is that it is not reasonable to go about model checking by implementing every possible model-checking procedure you can. A simple example illustrates the folly of such an approach.
+
+\begin{example}
+\label{ex:9.3.1}
+Suppose that $x_1, \ldots, x_n$ is supposed to be a sample from the $\text{N}(0, 1)$ distribution. Suppose we decide to check this model by computing the P-values
+\[
+\prb_i = \prb(X_i^2 \geqslant x_i^2)
+\]
+for $i = 1, \ldots, n$, where $X_i^2 \sim \chi^2(1)$. Furthermore, we will decide that the model is incorrect if the minimum of these P-values is less than 0.05.
+
+Now consider the repeated sampling behavior of this method when the model is correct. We have that
+\[
+\min(\prb_1, \ldots, \prb_n) \leqslant 0.05
+\]
+if and only if
+\[
+\max(x_1^2, \ldots, x_n^2) \geqslant \chi^2_{0.95}(1)
+\]
+and so
+\begin{align*}
+\prb(\min(\prb_1, \ldots, \prb_n) \leqslant 0.05) &= \prb(\max(X_1^2, \ldots, X_n^2) \geqslant \chi^2_{0.95}(1))\\
+&= 1 - \prb(\max(X_1^2, \ldots, X_n^2) \leqslant \chi^2_{0.95}(1))\\
+&= 1 - \prod_{i=1}^{n} \prb(X_i^2 \leqslant \chi^2_{0.95}(1))\\
+&= 1 - 0.95^n \to 1
+\end{align*}
+as $n \to \infty$. This tells us that if $n$ is large enough, we will reject the model with virtual certainty even though it is correct! Note that $n$ does not have to be very large for there to be an appreciable probability of making an error. For example, when $n = 10$ the probability of making an error is 0.40; when $n = 20$ the probability of making an error is 0.64; and when $n = 100$ the probability of making an error is 0.99.
+\end{example}
+
+We can learn an important lesson from Example~\ref{ex:9.3.1}, for, if we carry out too many model-checking procedures, we are almost certain to find something wrong --- even if the model is correct. The cure for this is that before actually observing the data (so that our choices are not determined by the actual data obtained), we decide on a few relevant model-checking procedures to be carried out and implement only these.
+
+The problem we have been discussing here is sometimes referred to as the problem of \emph{multiple comparisons}, which comes up in other situations as well --- e.g., see Section~\ref{ssec:10.4.1}, where multiple means are compared via pairwise tests for differences in the means. One approach for avoiding the multiple-comparisons problem is to simply lower the cutoff for the P-value so that the probability of making a mistake is appropriately small. For example, if we decided in Example~\ref{ex:9.3.1} that evidence against the model is only warranted when an individual P-value is smaller than 0.0001, then the probability of making a mistake is $\approx 0.01$ when $n = 100$. A difficulty with this approach generally is that our model-checking procedures will not be independent, and it does not always seem possible to determine an appropriate cutoff for the individual P-values. More advanced methods are needed to deal with this problem.
+
+\bigskip
+\noindent\textbf{Summary of Section~\ref{sec:9.3}}
+
+\begin{itemize}
+\item Carrying out too many model checks is not a good idea, as we will invariably find something that leads us to conclude that the model is incorrect. Rather than engaging in a ``fishing expedition,'' where we just keep on checking the model, it is better to choose a few procedures before we see the data, and use these, and only these, for the model checking.
+\end{itemize}
